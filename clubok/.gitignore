@@ -1,0 +1,10 @@
+# IntelliJ
+.idea/
+*.iml
+*.iws
+
+# Maven
+log/
+target/
+
+src/main/java/dc/clubok/config/config.json
