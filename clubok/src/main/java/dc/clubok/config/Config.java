@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class Config {
-    private Properties properties;
+    private static Properties properties;
 
     public Config() {
         String env = (System.getenv("JAVA_ENV") != null) ? System.getenv("JAVA_ENV") : "development";
@@ -12,19 +12,21 @@ public class Config {
 
         InputStream input;
         try {
-            if (env.equals("development")) {
-                input = new FileInputStream("./src/main/java/dc/clubok/config/development.properties");
-                properties.load(input);
-            } else if (env.equals("test")) {
-                input = new FileInputStream("./src/main/java/dc/clubok/config/test.properties");
-                properties.load(input);
-            } else {
-                properties.setProperty("port", System.getenv("PORT"));
-                properties.setProperty("mongodb_uri", System.getenv("MONGODB_URI"));
-                properties.setProperty("secret", System.getenv("SECRET"));
+            switch (env) {
+                case "development":
+                    input = new FileInputStream("./src/main/java/dc/clubok/config/development.properties");
+                    properties.load(input);
+                    break;
+                case "test":
+                    input = new FileInputStream("./src/main/java/dc/clubok/config/test.properties");
+                    properties.load(input);
+                    break;
+                default:
+                    properties.setProperty("port", System.getenv("PORT"));
+                    properties.setProperty("mongodb_uri", System.getenv("MONGODB_URI"));
+                    properties.setProperty("secret", System.getenv("SECRET"));
+                    break;
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
