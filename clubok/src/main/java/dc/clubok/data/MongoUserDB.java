@@ -1,70 +1,59 @@
 package dc.clubok.data;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.mongodb.client.MongoCollection;
-import dc.clubok.db.MongoHandle;
-import dc.clubok.models.UserEntity;
+import dc.clubok.App;
+import dc.clubok.models.Token;
+import dc.clubok.models.User;
 import org.bson.Document;
-import org.bson.json.JsonParseException;
 
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 
 
-public class MongoUserDB implements UserDB {
-    private static MongoCollection<Document> collection;
+public class MongoUserDB{
+    private static MongoCollection<User> collection = App.mongo.getDb().getCollection("users", User.class);
 
-    public MongoUserDB() {
-        MongoHandle mongo = new MongoHandle();
-        collection = mongo.getCollection("users");
-    }
-
-    @Override
-    public void add(UserEntity user) {
-
-        // Password encryption
-        String hashedPassword = Crypt.hash(user.getPassword().toCharArray());
-
-        Document userDocument = new Document("email", user.getEmail())
-                .append("password", hashedPassword)
-                .append("fname", user.getFname())
-                .append("lname", user.getLname());
-
-        collection.insertOne(userDocument);
+    public static void save(User user) {
+        collection.insertOne(user);
         System.out.println("User has been created");
     }
 
-    @Override
-    public void add(List<UserEntity> users) {
-//        TODO Complete add many implementation
+    public static void update(User user, Document update) {
+        collection.updateOne(eq("_id", user.getId()), new Document("$set", update));
     }
 
-    @Override
-    public void delete(UserEntity user) {
-//        TODO Complete delete implementation
+    public static String generateAuthToken(User user) {
+        String token = null;
+
+        try {
+            token = JWT.create()
+                    .withIssuedAt(new Date(System.currentTimeMillis()))
+                    .withClaim("id", user.getId().toHexString())
+                    .withClaim("access", "auth")
+                    .sign(Algorithm.HMAC256(App.config.getProperties().getProperty("secret")));
+
+            user.getTokens().add(new Token("auth", token));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return token;
     }
 
-    @Override
-    public UserEntity findById(String id) {
-//        TODO Complete findById implementation
-        return null;
-    }
+    public static User findByCredentials(String email, String password)
+            throws NullPointerException {
+        User user = collection.find(eq("email", email)).first();
 
-    @Override
-    public UserEntity findByCredentials(String email, String password)
-            throws NullPointerException, IllegalArgumentException {
-        System.out.println("Searching user by credentials: " + email + ":" + password);
-        Document userDocument = collection.find(eq("email", email)).first();
-
-        if (userDocument == null)
+        if (user != null && Crypt.compare(password.toCharArray(), user.getPassword())) {
+            return user;
+        } else
             throw new NullPointerException();
 
-        UserEntity user = UserEntity.fromDocument(userDocument);
-
-
-        if (Crypt.compare(password.toCharArray(), user.getPassword()))
-            return user;
-        else
-            throw new IllegalArgumentException();
     }
 }

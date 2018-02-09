@@ -1,6 +1,6 @@
 package dc.clubok.models;
 
-public class PostEntity extends BaseEntity {
+public class PostEntity {
 //    TODO Finish Post Entity
     private String title;
     private String body;

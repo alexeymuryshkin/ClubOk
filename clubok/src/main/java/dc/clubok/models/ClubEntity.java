@@ -1,5 +1,6 @@
 package dc.clubok.models;
 
-public class ClubEntity extends BaseEntity {
+public class ClubEntity {
+
 //    TODO Create Club Entity
 }
