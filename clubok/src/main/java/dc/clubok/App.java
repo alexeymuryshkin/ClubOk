@@ -1,15 +1,18 @@
 package dc.clubok;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import dc.clubok.config.Config;
 import dc.clubok.data.Crypt;
+import dc.clubok.data.MongoUserDB;
 import dc.clubok.db.MongoHandle;
 import dc.clubok.models.User;
-import dc.clubok.data.MongoUserDB;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
-import static spark.Spark.*;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.route.HttpMethod.get;
 
 public class App {
     public final static Config config = new Config();
@@ -23,22 +26,30 @@ public class App {
 
         post("/users", "application/json", (req, res) -> {
             System.out.println("POST /users\n" + req.body());
-            User user = gson.fromJson(req.body(), User.class);
-            res.type("application/json");
-
-            user.setId(new ObjectId());
-            user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
-
             try {
-                String authToken = MongoUserDB.generateAuthToken(user);
+                User user = gson.fromJson(req.body(), User.class);
+//                if (!MongoUserDB.isValid(user)) {
+//                    res.status(400);
+//                    return "";
+//                }
+
+                user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
+                res.header("x-auth", MongoUserDB.generateAuthToken(user));
                 MongoUserDB.save(user);
-                res.header("x-auth", authToken);
+
+                res.status(200);
+                res.type("application/json");
                 return user;
-            } catch (Exception e){
+            } catch (JsonParseException jpe) {
+                res.status(400);
+                return "";
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
+                res.status(400);
                 return "";
             }
-        }, gson ::toJson);
+
+        }, gson::toJson);
 
         post("/users/login", "application/json", (req, res) -> {
             System.out.println("POST /users/login\n" + req.body());
@@ -58,6 +69,6 @@ public class App {
                 res.status(400);
                 return "";
             }
-        }, gson ::toJson);
+        }, gson::toJson);
     }
 }

@@ -14,12 +14,25 @@ import java.util.*;
 import static com.mongodb.client.model.Filters.eq;
 
 
-public class MongoUserDB{
+public class MongoUserDB {
     private static MongoCollection<User> collection = App.mongo.getDb().getCollection("users", User.class);
 
-    public static void save(User user) {
+    public static boolean isValid(User user) {
+        return user.getEmail() != null && !user.getEmail().isEmpty()
+                && user.getPassword() != null && user.getPassword().length() >= 6;
+    }
+
+    public static void save(User user)
+            throws Exception {
+        if (findByEmail(user.getEmail()) != null)
+            throw new Exception("User with email " + user.getEmail() + " already exists");
+
         collection.insertOne(user);
         System.out.println("User has been created");
+    }
+
+    public static User findByEmail(String email) {
+        return collection.find(eq("email", email)).first();
     }
 
     public static void update(User user, Document update) {
@@ -48,7 +61,7 @@ public class MongoUserDB{
 
     public static User findByCredentials(String email, String password)
             throws NullPointerException {
-        User user = collection.find(eq("email", email)).first();
+        User user = findByEmail(email);
 
         if (user != null && Crypt.compare(password.toCharArray(), user.getPassword())) {
             return user;

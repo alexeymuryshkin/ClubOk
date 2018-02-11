@@ -1,6 +1,6 @@
 package dc.clubok.models;
 
-public class Token {
+public final class Token {
     private String access;
     private String token;
 
