@@ -6,7 +6,8 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.List;
 
-public @Data class User {
+@Data
+public class User {
     private ObjectId id;
     private String email;
     private String password;
@@ -19,6 +20,11 @@ public @Data class User {
         setId(new ObjectId());
         tokens = new ArrayList<>();
         subscriptions = new ArrayList<>();
+    }
+
+    public User(String email, String password) {
+        setEmail(email);
+        setPassword(password);
     }
 
 }
