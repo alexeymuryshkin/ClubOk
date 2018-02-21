@@ -23,8 +23,8 @@ public class User {
     }
 
     public User(String email, String password) {
+        this();
         setEmail(email);
         setPassword(password);
     }
-
 }
