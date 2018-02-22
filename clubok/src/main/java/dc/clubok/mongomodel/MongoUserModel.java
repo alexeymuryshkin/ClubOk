@@ -126,6 +126,11 @@ public class MongoUserModel
         collection.updateOne(eq("_id", user.getId()), new Document("$set", update));
     }
 
+    @Override
+    public void removeToken(User user, String token) {
+        user.getTokens().remove(new Token("auth", token));
+        update(user, new Document("tokens", user.getTokens()));
+    }
 
     // DELETE METHODS
 

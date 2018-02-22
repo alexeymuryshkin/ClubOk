@@ -25,4 +25,6 @@ public interface UserModel {
     User authenticate(Request req, Response res);
 
     void update(User user, Document update);
+
+    void removeToken(User user, String token);
 }

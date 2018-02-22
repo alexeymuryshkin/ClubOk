@@ -267,6 +267,7 @@ public class UsersRouteTest {
 
     }
 
+    @Test
     public void PostUsersLogin_InvalidPassword_BAD()
             throws IOException {
         HttpUriRequest request = RequestBuilder.post(url + "/users/login")
@@ -288,4 +289,48 @@ public class UsersRouteTest {
         assertEquals("authentication token was created",
                 1, userDb.getTokens().size());
     }
+
+    @Test
+    public void PostUsersLogin_NonExistingEmail_NOTFOUND()
+            throws IOException {
+        String email = "nonExistingMail@example.com";
+        String password = "somePass";
+
+        HttpUriRequest request = RequestBuilder.post(url + "/users/login")
+                .setEntity(new StringEntity(gson.toJson(
+                        new User(
+                                email,
+                                password
+                        )
+                )))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertFalse("authentication token was returned",
+                response.containsHeader("x-auth"));
+
+        assertEquals("does not return BAD",
+                400, response.getStatusLine().getStatusCode());
+    }
+
+    // DELETE /users/me/token
+    @Test
+    public void DeleteUsersMeToken_ValidData_OK()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.delete(url + "/users/me/token")
+                .addHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("does not return OK",
+                200, response.getStatusLine().getStatusCode());
+
+        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
+        assertTrue("user was not returned",
+                userResponse != null);
+
+        assertTrue("authentication token was not deleted",
+                userResponse.getTokens().size() == 0);
+    }
+
 }

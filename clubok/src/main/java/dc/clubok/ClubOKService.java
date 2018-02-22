@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import dc.clubok.config.Config;
 import dc.clubok.db.MongoHandle;
 import dc.clubok.models.Entity;
+import dc.clubok.models.Token;
 import dc.clubok.models.User;
 import dc.clubok.models.UserModel;
 import dc.clubok.mongomodel.MongoUserModel;
@@ -82,13 +83,16 @@ public class ClubOKService {
                 }
             }, gson::toJson);
 
-            delete("me/token", (req, res) -> {
+            delete("/me/token", (req, res) -> {
+                System.out.println("DELETE /users/me/token");
+                res.type("application/json");
                 User user = userModel.authenticate(req, res);
                 if (user == null)
                     throw halt(401);
 
-
-                return "";
+                userModel.removeToken(user, req.headers("x-auth"));
+                res.status(200);
+                return user;
             }, gson::toJson);
         });
 
