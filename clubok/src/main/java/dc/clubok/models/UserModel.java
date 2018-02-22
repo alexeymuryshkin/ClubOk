@@ -22,7 +22,7 @@ public interface UserModel {
 
     User findByToken(String token);
 
-    User authenticate(Request req, Response res);
+    boolean authenticate(Request req, Response res);
 
     void update(User user, Document update);
 

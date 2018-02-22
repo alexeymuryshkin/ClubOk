@@ -105,19 +105,9 @@ public class MongoUserModel
     }
 
     @Override
-    public User authenticate(Request req, Response res) {
+    public boolean authenticate(Request req, Response res) {
         String token = req.headers("x-auth");
-        if (token == null)
-            throw halt(401);
-
-        User user = findByToken(token);
-
-        if (user == null) {
-            throw halt(401);
-        }
-
-        res.type("application/json");
-        return user;
+        return token != null && findByToken(token) != null;
     }
 
     // UPDATE METHODS

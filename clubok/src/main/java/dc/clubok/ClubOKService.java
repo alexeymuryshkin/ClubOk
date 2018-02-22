@@ -10,10 +10,13 @@ import dc.clubok.models.User;
 import dc.clubok.models.UserModel;
 import dc.clubok.mongomodel.MongoUserModel;
 import org.bson.Document;
+import spark.Spark;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+
+import java.util.logging.Logger;
 
 import static spark.Spark.*;
 
@@ -21,6 +24,7 @@ public class ClubOKService {
     public final static Config config = new Config();
     public final static MongoHandle mongo = new MongoHandle();
     public static Validator validator;
+    public static final Logger logger = Logger.getLogger(ClubOKService.class.getCanonicalName());
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
@@ -59,8 +63,13 @@ public class ClubOKService {
 
             }, gson::toJson);
 
+            before("/me", ((req, res) -> {
+                if(!userModel.authenticate(req, res))
+                    throw halt(401);
+            }));
             get("/me", (req, res) -> {
-                return userModel.authenticate(req, res);
+                res.type("application/json");
+                return userModel.findByToken(req.headers("x-auth"));
             }, gson::toJson);
 
             post("/login", "application/json", (req, res) -> {
@@ -83,13 +92,14 @@ public class ClubOKService {
                 }
             }, gson::toJson);
 
+            before("/me/token", (req, res) -> {
+                if (!userModel.authenticate(req, res))
+                    throw halt(401);
+            });
             delete("/me/token", (req, res) -> {
                 System.out.println("DELETE /users/me/token");
                 res.type("application/json");
-                User user = userModel.authenticate(req, res);
-                if (user == null)
-                    throw halt(401);
-
+                User user = userModel.findByToken(req.headers("x-auth"));
                 userModel.removeToken(user, req.headers("x-auth"));
                 res.status(200);
                 return user;
