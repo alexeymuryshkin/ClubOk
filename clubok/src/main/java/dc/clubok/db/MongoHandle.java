@@ -2,9 +2,8 @@ package dc.clubok.db;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import dc.clubok.App;
+import dc.clubok.ClubOKService;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
@@ -17,7 +16,7 @@ public class MongoHandle {
     private MongoDatabase db;
 
     public MongoHandle() {
-        Properties prop = App.config.getProperties();
+        Properties prop = ClubOKService.config.getProperties();
         MongoClientURI uri = new MongoClientURI(prop.getProperty("mongodb_uri"));
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()));
