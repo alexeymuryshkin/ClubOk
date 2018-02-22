@@ -1,2 +1,2 @@
 # ClubOk
-Social Network for University Club
+Social Network for University Clubs
