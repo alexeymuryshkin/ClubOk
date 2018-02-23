@@ -1,9 +1,8 @@
 package dc.clubok.seed;
 
-import dc.clubok.Crypt;
-import dc.clubok.mongomodel.MongoUserModel;
-import dc.clubok.entities.Token;
-import dc.clubok.entities.User;
+import dc.clubok.mongomodel.MongoModel;
+import dc.clubok.models.Token;
+import dc.clubok.models.User;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,11 +16,11 @@ public class Seed {
         User user2 = new User("userTwoEmail@example.com", "userTwoPass");
         users = Arrays.asList(user1, user2);
 
-        user1.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user1))));
-        user2.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user2))));
+        user1.setTokens(Collections.singletonList(new Token("auth", MongoModel.generateAuthToken(user1))));
+        user2.setTokens(Collections.singletonList(new Token("auth", MongoModel.generateAuthToken(user2))));
 
         try {
-            new MongoUserModel().saveMany(users);
+            new MongoModel().saveMany(users, User.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

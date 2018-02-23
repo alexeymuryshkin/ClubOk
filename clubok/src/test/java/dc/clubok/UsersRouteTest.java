@@ -1,11 +1,10 @@
 package dc.clubok;
 
 import com.google.gson.Gson;
-import dc.clubok.entities.Entity;
-import dc.clubok.entities.Token;
-import dc.clubok.entities.User;
-import dc.clubok.entities.models.UserModel;
-import dc.clubok.mongomodel.MongoUserModel;
+import dc.clubok.models.Token;
+import dc.clubok.models.User;
+import dc.clubok.models.Model;
+import dc.clubok.mongomodel.MongoModel;
 import dc.clubok.seed.Seed;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -25,7 +24,7 @@ import static org.junit.Assert.*;
 
 public class UsersRouteTest {
     private static Validator validator;
-    private static UserModel userModel;
+    private static Model model;
     private final Gson gson = new Gson();
     private final HttpClient client = HttpClients.createDefault();
     private final String url = "http://localhost:3000";
@@ -34,7 +33,7 @@ public class UsersRouteTest {
     public static void setUp() {
         ClubOKService.main(new String[0]);
         validator = ClubOKService.validator;
-        userModel = new MongoUserModel();
+        model = new MongoModel();
     }
 
     @Before
@@ -74,9 +73,9 @@ public class UsersRouteTest {
                 email, userResponse.getEmail());
 
         // Assertions in DB
-        User userDB = userModel.findByEmail(email);
+        User userDB = model.findByEmail(email);
         assertEquals("number of users is incorrect",
-                3, userModel.count());
+                3, model.count(User.class));
         assertTrue("user is not created",
                 userDB != null);
         assertNotEquals("password is not hashed",
@@ -91,7 +90,7 @@ public class UsersRouteTest {
                 .setEntity(new StringEntity(gson.toJson(
                         new User(
                                 Seed.users.get(0).getEmail(),
-                                Seed.users.get(0).getPassword()
+                                "SomePass"
                         ))))
                 .build();
         HttpResponse response = client.execute(request);
@@ -100,7 +99,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         assertEquals("number of users is incorrect",
-                2, userModel.count());
+                2, model.count(User.class));
     }
 
     @Test
@@ -126,9 +125,9 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = userModel.findByEmail(email);
+        User userDB = model.findByEmail(email);
         assertEquals("number of users is incorrect",
-                2, userModel.count());
+                2, model.count(User.class));
         assertTrue("User exists",
                 userDB == null);
     }
@@ -156,11 +155,11 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = userModel.findByEmail(email);
+        User userDB = model.findByEmail(email);
         assertTrue("User exists",
                 userDB == null);
         assertEquals("number of users is incorrect",
-                2, userModel.count());
+                2, model.count(User.class));
     }
 
     @Test
@@ -179,7 +178,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         assertEquals("number of users is incorrect",
-                2, userModel.count());
+                2, model.count(User.class));
     }
 
     // GET /users/me
@@ -258,7 +257,7 @@ public class UsersRouteTest {
                 userResponse != null);
 
         // Assertions in DB
-        User userDB = userModel.findById(userResponse.getId());
+        User userDB = model.findById(userResponse.getId(), User.class);
         assertTrue("user is not in DB",
                 userDB != null);
         assertTrue("authentication token is not created",
@@ -284,7 +283,7 @@ public class UsersRouteTest {
         assertFalse("authentication token is returned",
                 response.containsHeader("x-auth"));
 
-        User userDb = userModel.findById(Seed.users.get(0).getId());
+        User userDb = model.findById(Seed.users.get(0).getId(), User.class);
         assertEquals("authentication token was created",
                 1, userDb.getTokens().size());
     }

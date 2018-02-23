@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import dc.clubok.config.Config;
 import dc.clubok.db.MongoHandle;
-import dc.clubok.entities.User;
-import dc.clubok.entities.models.UserModel;
-import dc.clubok.mongomodel.MongoUserModel;
+import dc.clubok.models.User;
+import dc.clubok.models.Model;
+import dc.clubok.mongomodel.MongoModel;
 import org.bson.Document;
 
 import javax.validation.Validation;
@@ -25,7 +25,7 @@ public class ClubOKService {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
         System.out.println("Server started at port " + config.getProperties().getProperty("port"));
 
-        UserModel userModel = new MongoUserModel();
+        Model model = new MongoModel();
 
         path("/users", () -> {
             post("", "application/json", (req, res) -> {
@@ -33,8 +33,8 @@ public class ClubOKService {
                 try {
                     User user = gson.fromJson(req.body(), User.class);
 
-                    res.header("x-auth", MongoUserModel.generateAuthToken(user));
-                    userModel.save(user);
+                    res.header("x-auth", MongoModel.generateAuthToken(user));
+                    model.save(user, User.class);
 
                     res.status(200);
                     res.type("application/json");
@@ -51,12 +51,12 @@ public class ClubOKService {
             }, gson::toJson);
 
             before("/me", ((req, res) -> {
-                if(!userModel.authenticate(req, res))
+                if(!model.authenticate(req, res))
                     throw halt(401);
             }));
             get("/me", (req, res) -> {
                 res.type("application/json");
-                return userModel.findByToken(req.headers("x-auth"));
+                return model.findByToken(req.headers("x-auth"));
             }, gson::toJson);
 
             post("/login", "application/json", (req, res) -> {
@@ -64,13 +64,13 @@ public class ClubOKService {
                 res.type("application/json");
 
                 try {
-                    User user = userModel.findByCredentials(
+                    User user = model.findByCredentials(
                             gson.fromJson(req.body(), User.class).getEmail(),
                             gson.fromJson(req.body(), User.class).getPassword()
                     );
 
-                    res.header("x-auth", MongoUserModel.generateAuthToken(user));
-                    userModel.update(user, new Document("tokens", user.getTokens()));
+                    res.header("x-auth", MongoModel.generateAuthToken(user));
+                    model.update(user, new Document("tokens", user.getTokens()), User.class);
                     res.type("application/json");
                     return user;
                 } catch (NullPointerException e) {
@@ -80,14 +80,14 @@ public class ClubOKService {
             }, gson::toJson);
 
             before("/me/token", (req, res) -> {
-                if (!userModel.authenticate(req, res))
+                if (!model.authenticate(req, res))
                     throw halt(401);
             });
             delete("/me/token", (req, res) -> {
                 System.out.println("DELETE /users/me/token");
                 res.type("application/json");
-                User user = userModel.findByToken(req.headers("x-auth"));
-                userModel.removeToken(user, req.headers("x-auth"));
+                User user = model.findByToken(req.headers("x-auth"));
+                model.removeToken(user, req.headers("x-auth"));
                 res.status(200);
                 return user;
             }, gson::toJson);
