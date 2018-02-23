@@ -1,8 +1,7 @@
-package dc.clubok.models;
+package dc.clubok.entities;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.bson.types.ObjectId;
 
 import java.util.Date;
 

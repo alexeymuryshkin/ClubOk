@@ -8,20 +8,22 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mongodb.client.MongoCollection;
 import dc.clubok.ClubOKService;
 import dc.clubok.Crypt;
-import dc.clubok.models.UserModel;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
+import dc.clubok.entities.Entity;
+import dc.clubok.entities.Token;
+import dc.clubok.entities.User;
+import dc.clubok.entities.models.UserModel;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import spark.Request;
 import spark.Response;
 
+import javax.validation.ConstraintViolation;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
-import static spark.Spark.halt;
 
 
 public class MongoUserModel
@@ -34,21 +36,19 @@ public class MongoUserModel
 
     // INSERT METHODS
     @Override
-    public void save(User user)
-            throws Exception {
-        if (findByEmail(user.getEmail()) != null)
-            throw new Exception("User with email " + user.getEmail() + " already exists");
+    public void save(User user) throws Exception {
+        validate(user);
+        user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
 
         collection.insertOne(user);
         System.out.println("User has been created");
     }
 
     @Override
-    public void saveMany(List<User> users)
-            throws Exception {
+    public void saveMany(List<User> users) throws Exception {
         for (User user : users) {
-            if (findByEmail(user.getEmail()) != null)
-                throw new Exception("User with email " + user.getEmail() + " already exists");
+            validate(user);
+            user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
         }
         collection.insertMany(users);
         System.out.println("Users have been created");
@@ -120,6 +120,29 @@ public class MongoUserModel
     public void removeToken(User user, String token) {
         user.getTokens().remove(new Token("auth", token));
         update(user, new Document("tokens", user.getTokens()));
+    }
+
+
+    public void validate(User user)
+            throws Exception {
+        Set<ConstraintViolation<Entity>> violations = ClubOKService.validator.validate(user);
+
+        StringBuilder message = new StringBuilder();
+
+        for (ConstraintViolation<Entity> violation: violations) {
+            message
+                    .append("VALIDATION ERROR:\n")
+                    .append("Property: ").append(violation.getPropertyPath())
+                    .append(", Value: ").append(violation.getInvalidValue())
+                    .append(", Message: ").append(violation.getMessage())
+                    .append("\n");
+        }
+
+        if (violations.size() != 0)
+            throw new Exception(message.toString());
+
+        if (findByEmail(user.getEmail()) != null)
+            throw new Exception("VALIDATION ERROR: User with email " + user.getEmail() + " already exists");
     }
 
     // DELETE METHODS

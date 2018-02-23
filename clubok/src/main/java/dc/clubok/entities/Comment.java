@@ -1,4 +1,4 @@
-package dc.clubok.models;
+package dc.clubok.entities;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

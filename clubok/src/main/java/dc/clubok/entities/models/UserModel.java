@@ -1,5 +1,6 @@
-package dc.clubok.models;
+package dc.clubok.entities.models;
 
+import dc.clubok.entities.User;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import spark.Request;
@@ -27,4 +28,6 @@ public interface UserModel {
     void update(User user, Document update);
 
     void removeToken(User user, String token);
+
+    void validate(User user) throws Exception;
 }

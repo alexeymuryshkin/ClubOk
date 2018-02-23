@@ -4,48 +4,35 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import dc.clubok.config.Config;
 import dc.clubok.db.MongoHandle;
-import dc.clubok.models.Entity;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
-import dc.clubok.models.UserModel;
+import dc.clubok.entities.User;
+import dc.clubok.entities.models.UserModel;
 import dc.clubok.mongomodel.MongoUserModel;
 import org.bson.Document;
-import spark.Spark;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
-import java.util.logging.Logger;
 
 import static spark.Spark.*;
 
 public class ClubOKService {
     public final static Config config = new Config();
     public final static MongoHandle mongo = new MongoHandle();
-    public static Validator validator;
-    public static final Logger logger = Logger.getLogger(ClubOKService.class.getCanonicalName());
+    public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+//    public static final Logger logger = Logger.getLogger(ClubOKService.class.getCanonicalName());
+    private static final Gson gson = new Gson();
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
         System.out.println("Server started at port " + config.getProperties().getProperty("port"));
 
-        ValidatorFactory vf = Validation.buildDefaultValidatorFactory();
-        validator = vf.getValidator();
-
         UserModel userModel = new MongoUserModel();
-
-        final Gson gson = new Gson();
 
         path("/users", () -> {
             post("", "application/json", (req, res) -> {
                 System.out.println("POST /users\n" + req.body());
                 try {
                     User user = gson.fromJson(req.body(), User.class);
-                    if (user == null || !Entity.validate(user, validator))
-                        throw halt(400);
 
-                    user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
                     res.header("x-auth", MongoUserModel.generateAuthToken(user));
                     userModel.save(user);
 

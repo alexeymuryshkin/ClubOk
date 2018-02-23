@@ -1,10 +1,10 @@
 package dc.clubok;
 
 import com.google.gson.Gson;
-import dc.clubok.models.Entity;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
-import dc.clubok.models.UserModel;
+import dc.clubok.entities.Entity;
+import dc.clubok.entities.Token;
+import dc.clubok.entities.User;
+import dc.clubok.entities.models.UserModel;
 import dc.clubok.mongomodel.MongoUserModel;
 import dc.clubok.seed.Seed;
 import org.apache.http.HttpResponse;
@@ -51,7 +51,6 @@ public class UsersRouteTest {
         String password = "testPass";
 
         User user = new User(email, password);
-        assertTrue(Entity.validate(user, validator));
 
         HttpUriRequest request = RequestBuilder.post(url + "/users")
                 .addHeader("Content-Type", "application/json")
@@ -242,7 +241,7 @@ public class UsersRouteTest {
                 .setEntity(new StringEntity(gson.toJson(
                         new User(
                             Seed.users.get(1).getEmail(),
-                            Seed.users.get(1).getPassword()
+                            "userTwoPass"
                         )
                 )))
                 .build();

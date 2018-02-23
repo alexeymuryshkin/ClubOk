@@ -2,8 +2,8 @@ package dc.clubok.seed;
 
 import dc.clubok.Crypt;
 import dc.clubok.mongomodel.MongoUserModel;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
+import dc.clubok.entities.Token;
+import dc.clubok.entities.User;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,20 +17,11 @@ public class Seed {
         User user2 = new User("userTwoEmail@example.com", "userTwoPass");
         users = Arrays.asList(user1, user2);
 
-        User user1Db = new User(user1.getEmail(), Crypt.hash(user1.getPassword().toCharArray()));
-        user1Db.setId(user1.getId());
-        User user2Db = new User(user2.getEmail(), Crypt.hash(user2.getPassword().toCharArray()));
-        user2Db.setId(user2.getId());
-        List<User> usersDb = Arrays.asList(user1Db, user2Db);
-
-        user1.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user1Db))));
-        user2.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user2Db))));
-
-        user1Db.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user1Db))));
-        user2Db.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user2Db))));
+        user1.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user1))));
+        user2.setTokens(Collections.singletonList(new Token("auth", MongoUserModel.generateAuthToken(user2))));
 
         try {
-            new MongoUserModel().saveMany(usersDb);
+            new MongoUserModel().saveMany(users);
         } catch (Exception e) {
             e.printStackTrace();
         }
