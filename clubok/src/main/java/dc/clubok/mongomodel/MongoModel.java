@@ -12,6 +12,8 @@ import dc.clubok.models.*;
 import dc.clubok.models.Model;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 
@@ -24,6 +26,8 @@ import java.util.Set;
 import static com.mongodb.client.model.Filters.eq;
 
 public class MongoModel implements Model {
+    private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
+
     private <T extends Entity> MongoCollection<T> getCollection(Class<T> type) {
         return ClubOKService.mongo.getDb().getCollection(
                 type.getSimpleName().toLowerCase() + "s",
@@ -40,7 +44,7 @@ public class MongoModel implements Model {
             ((User) entity).setPassword(Crypt.hash(((User) entity).getPassword().toCharArray()));
 
         collection.insertOne(entity);
-        System.out.println("Entity [" + entity.getClass().getSimpleName() + "] was created");
+        logger.info("Entity [" + entity.getClass().getSimpleName() + "] was created");
     }
 
     @Override
@@ -54,7 +58,7 @@ public class MongoModel implements Model {
         }
 
         collection.insertMany(entities);
-        System.out.println("Entities [" + entities.getClass().getSimpleName() + "] were created");
+        logger.info("Entities [" + entities.get(0).getClass().getSimpleName() + "] were created");
     }
 
     @Override
@@ -86,6 +90,7 @@ public class MongoModel implements Model {
     @Override
     public <T extends Entity> void update(T entity, Document update, Class<T> type) {
         getCollection(type).updateOne(eq("_id", entity.getId()), new Document("$set", update));
+        logger.info("Entity [" + entity.getClass().getSimpleName() + "] was updated");
     }
 
     @Override
@@ -126,22 +131,20 @@ public class MongoModel implements Model {
     public <T extends Entity> void validate(T entity) throws Exception {
         Set<ConstraintViolation<Entity>> violations = ClubOKService.validator.validate(entity);
 
-        StringBuilder message = new StringBuilder();
-
         for (ConstraintViolation<Entity> violation: violations) {
-            message
-                    .append("VALIDATION ERROR:\n")
-                    .append("Property: ").append(violation.getPropertyPath())
-                    .append(", Value: ").append(violation.getInvalidValue())
-                    .append(", Message: ").append(violation.getMessage())
-                    .append("\n");
+            logger.error("Validation Error [" + entity.getClass().getSimpleName() + "] - " +
+                    "Property: " + violation.getPropertyPath() +
+                    "Value: " + violation.getInvalidValue() +
+                    "Message: " + violation.getMessage());
         }
 
         if (violations.size() != 0)
-            throw new Exception(message.toString());
+            throw new Exception();
 
-        if (entity instanceof User && findByEmail(((User) entity).getEmail()) != null)
-            throw new Exception("VALIDATION ERROR: User with email " + ((User) entity).getEmail() + " already exists");
+        if (entity instanceof User && findByEmail(((User) entity).getEmail()) != null) {
+            logger.error("Validation Error: User with email " + ((User) entity).getEmail() + " already exists");
+            throw new Exception();
+        }
 
     }
 

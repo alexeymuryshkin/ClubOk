@@ -16,6 +16,10 @@ public interface Model {
 
     <T extends Entity> T findById(ObjectId id, Class<T> c);
 
+    <T extends Entity> void update(T entity, Document update, Class<T> type);
+
+    <T extends Entity> void validate(T entity) throws Exception;
+
     User findByEmail(String email);
 
     User findByCredentials(String email, String password)
@@ -23,11 +27,7 @@ public interface Model {
 
     User findByToken(String token);
 
-    <T extends Entity> void update(T entity, Document update, Class<T> type);
-
     void removeToken(User user, String headers);
 
     boolean authenticate(Request req, Response res);
-
-    <T extends Entity> void validate(T entity) throws Exception;
 }

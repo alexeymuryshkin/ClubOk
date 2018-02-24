@@ -27,7 +27,7 @@ public class UsersRouteTest {
     private static Model model;
     private final Gson gson = new Gson();
     private final HttpClient client = HttpClients.createDefault();
-    private final String url = "http://localhost:3000";
+    private final String url = "http://localhost:3000/api";
 
     @BeforeClass
     public static void setUp() {
