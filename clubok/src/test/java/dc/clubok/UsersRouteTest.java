@@ -44,7 +44,7 @@ public class UsersRouteTest {
 
     // POST /users
     @Test
-    public void PostUsers_ValidData_OK()
+    public void PostUsers_ValidData_CREATED()
             throws IOException {
         String email = "testmail@example.com";
         String password = "testPass";
@@ -58,7 +58,7 @@ public class UsersRouteTest {
         HttpResponse response = client.execute(request);
 
         assertEquals("request does not return OK status",
-                200, response.getStatusLine().getStatusCode());
+                201, response.getStatusLine().getStatusCode());
 
         // RESPONSE
         // Fetching user
@@ -321,14 +321,7 @@ public class UsersRouteTest {
         HttpResponse response = client.execute(request);
 
         assertEquals("does not return OK",
-                200, response.getStatusLine().getStatusCode());
-
-        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertTrue("user was not returned",
-                userResponse != null);
-
-        assertTrue("authentication token was not deleted",
-                userResponse.getTokens().size() == 0);
+                204, response.getStatusLine().getStatusCode());
     }
 
 }

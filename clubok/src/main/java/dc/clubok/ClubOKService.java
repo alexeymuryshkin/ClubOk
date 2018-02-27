@@ -41,7 +41,7 @@ public class ClubOKService {
                         res.header("x-auth", MongoModel.generateAuthToken(user));
                         model.save(user, User.class);
 
-                        res.status(200);
+                        res.status(201);
                         res.type("application/json");
                         return user;
                     } catch (Exception e) {
@@ -90,12 +90,16 @@ public class ClubOKService {
                     res.type("application/json");
                     User user = model.findByToken(req.headers("x-auth"));
                     model.removeToken(user, req.headers("x-auth"));
-                    res.status(200);
-                    return user;
+                    res.status(204);
+                    return "";
                 }, gson::toJson);
             });
 
             path("/clubs", () -> {
+                before("", (req, res) -> {
+                    if (!model.authenticate(req, res))
+                        throw halt(401);
+                });
                 post("", "application/json", (req, res) -> {
                     try {
                         Club club = gson.fromJson(req.body(), Club.class);
@@ -110,6 +114,21 @@ public class ClubOKService {
                         return "";
                     }
                 }, gson::toJson);
+            });
+
+            path("/comments", () -> {
+
+            });
+
+            path("/posts", () -> {
+
+            });
+
+            path("/events", () -> {
+
+            });
+
+            path("/subscriptions", () -> {
 
             });
         });
