@@ -9,4 +9,8 @@
 log/
 target/
 
+# MyProject
+node/
+node_modules/
+
 *.properties
