@@ -190,7 +190,7 @@ public class UsersRouteTest {
                 .build();
         HttpResponse response = client.execute(request);
 
-        assertEquals("request does not retun OK",
+        assertEquals("request does not return OK",
                 200, response.getStatusLine().getStatusCode());
 
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);

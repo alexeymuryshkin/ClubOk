@@ -19,6 +19,7 @@ import spark.Response;
 
 import javax.validation.ConstraintViolation;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +70,11 @@ public class MongoModel implements Model {
     @Override
     public <T extends Entity> T findById(ObjectId id, Class<T> type) {
         return getCollection(type).find(eq(id)).first();
+    }
+
+    @Override
+    public <T extends Entity> List<T> findByIdAll(String fieldName, ObjectId id, Class<T> type) {
+        return getCollection(type).find(eq(fieldName, id)).into(new ArrayList<>());
     }
 
     @Override
@@ -146,6 +152,17 @@ public class MongoModel implements Model {
             throw new Exception();
         }
 
+    }
+
+    @Override
+    public <T extends Entity> void removeById(ObjectId id, Class<T> type) {
+        getCollection(type).deleteOne(new Document("_id", id));
+    }
+
+    @Override
+    public <T extends Entity> List<T> findByUserAll(User user, Class<T> type) {
+        //TODO
+        return null;
     }
 
     public static String generateAuthToken(User user) {

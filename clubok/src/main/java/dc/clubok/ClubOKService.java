@@ -8,6 +8,7 @@ import dc.clubok.config.Config;
 import dc.clubok.db.MongoHandle;
 import dc.clubok.models.Club;
 import dc.clubok.models.Event;
+import dc.clubok.models.Post;
 import dc.clubok.models.User;
 import dc.clubok.models.Model;
 import dc.clubok.mongomodel.MongoModel;
@@ -130,7 +131,64 @@ public class ClubOKService {
             });
 
             path("/posts", () -> {
+                before("", (req, res) -> {
+                    logger.debug("Post /posts " + req.headers("x-auth"));
+                    if (!model.authenticate(req, res))
+                        throw halt(401);
+                });
+                post("", "application/json", (req, res) -> {
+                    try {
+                        Post post = gson.fromJson(req.body(), Post.class);
 
+                        model.save(post, Post.class);
+                        res.type("application/json");
+                        res.status(200);
+
+                        return post;
+                    } catch (Exception e) {
+                        res.status(400);
+                        return "";
+                    }
+                }, gson::toJson);
+
+                before("/club", ((req, res) -> {
+                    logger.debug("Get /posts " + req.headers("x-auth"));
+                    if(!model.authenticate(req, res))
+                        throw halt(401);
+                }));
+                get("/club", (req, res) -> {
+                    logger.debug("GET /posts/club " + req.headers("x-auth"));
+
+                    ObjectId clubId = gson.fromJson(req.body(), ObjectId.class);
+                    res.type("application/json");
+                    return model.findByIdAll("clubId", clubId, Post.class);
+                }, gson::toJson);
+
+                before("/my", (req, res) -> {
+                    if (!model.authenticate(req, res))
+                        throw halt(401);
+                });
+                get("", (req, res) -> {
+                    logger.debug("DELETE /posts/my " + req.headers("x-auth"));
+
+                    ObjectId postId = gson.fromJson(req.body(), ObjectId.class);
+                    res.type("application/json");
+                    User user = model.findByToken(req.headers("x-auth"));
+                    return model.findByUserAll(user, Post.class);
+                }, gson::toJson);
+
+                before("", (req, res) -> {
+                    if (!model.authenticate(req, res))
+                        throw halt(401);
+                });
+                delete("", (req, res) -> {
+                    logger.debug("DELETE /posts " + req.headers("x-auth"));
+                    res.type("application/json");
+                    ObjectId postId = gson.fromJson(req.body(), ObjectId.class);
+                    model.removeById(postId, Post.class);
+                    res.status(204);
+                    return "";
+                }, gson::toJson);
             });
 
             path("/events", () -> {
