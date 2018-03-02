@@ -1,19 +1,30 @@
 package dc.clubok;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import dc.clubok.config.Config;
 import dc.clubok.db.MongoHandle;
 import dc.clubok.models.Club;
+import dc.clubok.models.Event;
 import dc.clubok.models.User;
 import dc.clubok.models.Model;
 import dc.clubok.mongomodel.MongoModel;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static spark.Spark.*;
 
@@ -103,11 +114,9 @@ public class ClubOKService {
                 post("", "application/json", (req, res) -> {
                     try {
                         Club club = gson.fromJson(req.body(), Club.class);
-
                         model.save(club, Club.class);
                         res.type("application/json");
                         res.status(200);
-
                         return club;
                     } catch (Exception e) {
                         res.status(400);
@@ -125,11 +134,104 @@ public class ClubOKService {
             });
 
             path("/events", () -> {
-
+                post("/update", "application/json", (req, res) -> {
+                    try {
+                        Event event = gson.fromJson(req.body(), Event.class);
+                        if (model.findById(event.getId(), Event.class) != null){
+                            model.update(event, new Document().append("datetime", event.getDatetime()), Event.class);
+                            model.update(event, new Document().append("description", event.getDescription()), Event.class);
+                            model.update(event, new Document().append("title", event.getTitle()), Event.class);
+                            res.type("application/json");
+                            res.status(200);
+                            return event;
+                        }else{
+                            res.status(404);
+                            return "";
+                        }
+                    } catch (Exception e) {
+                        res.status(400);
+                        return "";
+                    }
+                }, gson::toJson);
+                post("/register", "application/json", (req, res) -> {
+                    try {
+                        Event event = gson.fromJson(req.body(), Event.class);
+                        model.save(event, Event.class);
+                        res.type("application/json");
+                        res.status(200);
+                        return event;
+                    } catch (Exception e) {
+                        res.status(400);
+                        return "";
+                    }
+                }, gson::toJson);
             });
 
             path("/subscriptions", () -> {
+                before("", (req, res) -> {
+                    if (!model.authenticate(req, res))
+                        throw halt(401);
+                });
+                System.out.println();
+                post("/subscribe", "application/json", (req, res) -> {
+                    Type listType = new TypeToken<ArrayList<ObjectId>>(){}.getType();
+                    List<ObjectId> a = gson.fromJson(req.body(), listType);
+                    ObjectId clubId = a.get(1);
+                    ObjectId userId = a.get(0);
+                    User user = model.findById(userId, User.class);
+                    Club club = model.findById(clubId, Club.class);
+                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
+                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
+                    if (!UsersArray.contains(clubId) &&
+                            !ClubsArray.contains(userId)){
 
+                        UsersArray.add(clubId);
+                        ClubsArray.add(userId);
+                        try {
+                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
+                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
+                            res.type("application/json");
+                            res.status(200);
+                            return "works";
+                        } catch (Exception e) {
+                            res.status(400);
+                            return "";
+                        }
+                    }else{
+                        res.status(302);
+                        return "";
+                    }
+                }, gson::toJson);
+
+                post("/unsubscribe", "application/json", (req, res) -> {
+                    Type listType = new TypeToken<ArrayList<ObjectId>>(){}.getType();
+                    List<ObjectId> a = gson.fromJson(req.body(), listType);
+                    ObjectId clubId = a.get(1);
+                    ObjectId userId = a.get(0);
+                    User user = model.findById(userId, User.class);
+                    Club club = model.findById(clubId, Club.class);
+                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
+                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
+                    if (UsersArray.contains(clubId) &&
+                            ClubsArray.contains(userId)){
+
+                        UsersArray.remove(clubId);
+                        ClubsArray.remove(userId);
+                        try {
+                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
+                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
+                            res.type("application/json");
+                            res.status(200);
+                            return "works";
+                        } catch (Exception e) {
+                            res.status(400);
+                            return "";
+                        }
+                    }else{
+                        res.status(404);
+                        return "";
+                    }
+                }, gson::toJson);
             });
         });
 
