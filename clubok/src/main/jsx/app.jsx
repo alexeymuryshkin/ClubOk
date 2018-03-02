@@ -1,12 +1,40 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
-import Hello from './Hello.jsx'
+import AppBar from './Components/AppBar';
+import SideBar from './Components/SideBar';
+import MainView from './Components/MainView';
 
-import './app.less'
+import ServerRequest from './ServerRequest';
+
+import Hello from './Hello.jsx';
+
+import './app.less';
+
+class App extends Component {
+    constructor() {
+		super();
+
+		this.state = {
+            server_request: ServerRequest.sharedInstance 
+		}
+	}
+
+	render() {
+    	return (
+			<div className="App">
+            	<AppBar width='100%' />
+            	<div>
+            		<SideBar float='left' overflow='hidden' />
+            		<MainView float='left' overflow='hidden' />
+            	</div>   
+		  	</div>
+    	);
+  	}
+}
 
 ReactDOM.render(
-    <Hello who="React"/>,
+    <App/>,
     document.getElementById('app')
 )
 
