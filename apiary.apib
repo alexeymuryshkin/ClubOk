@@ -1,0 +1,107 @@
+FORMAT: 1A
+HOST: http://www.clubok.kz/api
+
+# ClubOk
+
+Polls is a simple API allowing consumers to view polls and vote in them.
+
+## Users [/users]
+
+### Sign Up [POST]
+
++ Request (application/json)
+    + Attributes
+        + email: testmail@example.com (string, required) - User's email
+        + password: testPass (string, required) - User's password
+        + fname: Name (string, optional) - User's first name
+        + lname: Surname (string, optional) - User's last name
+        
++ Response 201 (application/json)
+
+    + Headers
+    
+            x-auth: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0
+        
+    + Body
+    
+            {
+                "_id": "5a941b6c28d0072c2c0a31c7",
+                "email": "test@example.com",
+                "password": "$31$16$4OZvSlgUQcMcQfVxc1e8RKrQuKV8BWnRX17B2lfPH9Y"
+                "subscriptions": []
+                "tokens": [
+                    {
+                        "access": "auth",
+                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0"
+                    }
+                ]
+            }
+
++ Response 400
+
+## Login [/users/login]
+
+### Log In [POST]
+
++ Request (application/json)
+    + Attributes
+        + email: testmail@example.com (string, required) - User email
+        + password: somePass (string, required) - User password
+
++ Response 200 (application/json)
+
+    + Headers
+    
+            x-auth: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0
+    
+    + Body
+    
+            {
+                "_id": "5a941b6c28d0072c2c0a31c7",
+                "email": "test@example.com",
+                "password": "$31$16$4OZvSlgUQcMcQfVxc1e8RKrQuKV8BWnRX17B2lfPH9Y"
+                "subscriptions": []
+                "tokens": [
+                    {
+                        "access": "auth",
+                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0"
+                    }
+                ]
+            }
+
+## Token [/users/me/token]
+
+### Log Out [DELETE]
++ Request
+
+    + Headers
+    
+            x-auth: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0
+        
++ Response 204 (application/json)
+
+## Me [/users/me]
+
+### Retrieve User's Data [GET]
++ Request
+
+    + Headers
+    
+            x-auth: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0
+            
++ Response 200 (application/json)
+
+    + Body
+    
+            {
+                "_id": "5a941b6c28d0072c2c0a31c7",
+                "email": "test@example.com",
+                "password": "$31$16$4OZvSlgUQcMcQfVxc1e8RKrQuKV8BWnRX17B2lfPH9Y"
+                "subscriptions": []
+                "tokens": [
+                    {
+                        "access": "auth",
+                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YTk0MWI2YzI4ZDAwNzJjMmMwYTMxYzciLCJpYXQiOjE1MTk2NTU3ODh9.Cz-eaMnJflzLtRIdR3VXZ4OJPXXB3Bdel8T5nTT5Ey0"
+                    }
+                ]
+            }
