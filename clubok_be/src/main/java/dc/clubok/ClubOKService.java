@@ -38,6 +38,7 @@ public class ClubOKService {
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
+        staticFiles.location("/public");
 
         logger.info("Server started at port " + config.getProperties().getProperty("port"));
 

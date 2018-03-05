@@ -1,0 +1,36 @@
+# Project
+clubok_be/src/main/resources/public/assets/
+clubok_be/src/main/java/dc/clubok/config/*.properties
+
+# IntelliJ
+.idea/
+*.iws
+*.iml
+
+# Maven
+log/
+target/
+dependency-reduced-pom.xml
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Log file
+*.log
+
+# Mac
+.DS_Store
+
+# NodeJS
+node_modules/
+node/

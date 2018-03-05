@@ -14,7 +14,7 @@ public class Config {
         try {
             switch (env) {
                 case "development":
-                    input = new FileInputStream("./src/main/java/dc/clubok/config/development.properties");
+                    input = new FileInputStream("./clubok_be/src/main/java/dc/clubok/config/development.properties");
                     properties.load(input);
                     break;
                 case "test":
