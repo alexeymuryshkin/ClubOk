@@ -1,0 +1,31 @@
+{
+  "name": "clubok_fe",
+  "version": "1.0.0",
+  "description": "Frontend of the Clubok",
+  "repository": "https://github.com/alexeymuryshkin/ClubOk",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack -p",
+    "start:dev": "webpack-dev-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.3",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.10",
+    "less": "^2.3.1",
+    "less-loader": "^4.0.6",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "style-loader": "^0.20.2",
+    "webpack": "^3.1.0",
+    "webpack-dev-server": "^2.4.1"
+  },
+  "dependencies": {
+    "extract-text-webpack-plugin": "^3.0.2"
+  }
+}
