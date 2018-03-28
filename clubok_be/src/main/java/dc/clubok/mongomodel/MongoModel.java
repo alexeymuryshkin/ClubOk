@@ -101,6 +101,7 @@ public class MongoModel implements Model {
 
     @Override
     public User findByToken(String token) {
+        logger.debug("findByToken()");
         String id = null;
         try {
             Algorithm algorithm = Algorithm.HMAC256(ClubOKService.config.getProperties().getProperty("secret"));
@@ -109,7 +110,7 @@ public class MongoModel implements Model {
             DecodedJWT jwt = verifier.verify(token);
             id = jwt.getClaim("id").asString();
         } catch (UnsupportedEncodingException | JWTVerificationException exception) {
-            //UTF-8 encoding not supported
+            logger.error(exception.getMessage());
         }
 
         if (id == null)
@@ -134,6 +135,7 @@ public class MongoModel implements Model {
 
     @Override
     public boolean authenticate(Request req, Response res) {
+        logger.debug("authenticate()");
         String token = req.headers("x-auth");
         return token != null && findByToken(token) != null;
     }

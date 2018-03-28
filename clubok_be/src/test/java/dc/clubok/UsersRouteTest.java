@@ -23,7 +23,6 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class UsersRouteTest {
-    private static Validator validator;
     private static Model model;
     private final Gson gson = new Gson();
     private final HttpClient client = HttpClients.createDefault();
@@ -32,7 +31,6 @@ public class UsersRouteTest {
     @BeforeClass
     public static void setUp() {
         ClubOKService.main(new String[0]);
-        validator = ClubOKService.validator;
         model = new MongoModel();
     }
 
@@ -181,6 +179,35 @@ public class UsersRouteTest {
                 2, model.count(User.class));
     }
 
+    // GET /users/:id
+    @Test
+    public void GetUsersId_CorrectId_OK()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users/" + Seed.users.get(1).getId().toHexString())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("request does not return OK",
+                200, response.getStatusLine().getStatusCode());
+
+        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
+        assertNotNull("user is not returned",
+                userResponse);
+        assertEquals("user has incorrect id",
+                Seed.users.get(1).getId(), userResponse.getId());
+    }
+
+    @Test
+    public void GetUsersId_IncorrectId_NOTFOUND()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users/123321")
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("request does not return NOT FOUND",
+                404, response.getStatusLine().getStatusCode());
+    }
+
     // GET /users/me
     @Test
     public void GetUsersMe_Authenticated_OK()
@@ -196,7 +223,7 @@ public class UsersRouteTest {
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
         assertTrue("user is not returned",
                 userResponse != null);
-        assertEquals("user has correct id",
+        assertEquals("user has incorrect id",
                 Seed.users.get(1).getId(), userResponse.getId());
     }
 

@@ -67,25 +67,13 @@ public class ClubOKService {
 
                 }, gson::toJson);
 
-                path("/:id", () -> {
-                    get("", (req, res) -> {
-                        logger.debug("GET /users/" + req.params(":id"));
-
-                        User user = model.findById(new ObjectId(req.params(":id")), User.class);
-                        if (user == null) {
-                            res.type(JSON);
-                            res.status(404);
-                            return "";
-                        }
-
-                        res.type(JSON);
-                        res.status(200);
-                        return user;
-                    }, gson::toJson);
-                });
-
                 path("/me", () -> {
-                    before("*", (req, res) -> {
+                    before("", (req, res) -> {
+                        if (!model.authenticate(req, res)) {
+                            throw halt(401);
+                        }
+                    });
+                    before("/*", (req, res) -> {
                         if (!model.authenticate(req, res)) {
                             throw halt(401);
                         }
@@ -94,6 +82,7 @@ public class ClubOKService {
                         logger.debug("GET /users/me " + req.headers("x-auth"));
 
                         res.type(JSON);
+                        res.status(200);
                         return model.findByToken(req.headers("x-auth"));
                     }, gson::toJson);
 
@@ -117,6 +106,33 @@ public class ClubOKService {
                         res.type(JSON);
                         res.status(204);
                         return "";
+                    }, gson::toJson);
+                });
+
+                path("/:id", () -> {
+                    get("", (req, res) -> {
+                        logger.debug("GET /users/" + req.params(":id"));
+
+                        try {
+                            User user = model.findById(new ObjectId(req.params(":id")), User.class);
+                            if (user == null) {
+                                res.type(JSON);
+                                res.status(404);
+                                return "";
+                            }
+
+                            res.type(JSON);
+                            res.status(200);
+                            return user;
+                        } catch (IllegalArgumentException e) {
+                            res.type(JSON);
+                            res.status(404);
+                            return "";
+                        } catch (Exception e) {
+                            res.type(JSON);
+                            res.status(400);
+                            return e;
+                        }
                     }, gson::toJson);
                 });
 
