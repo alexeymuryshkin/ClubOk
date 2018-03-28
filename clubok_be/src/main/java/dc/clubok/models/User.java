@@ -23,7 +23,7 @@ public class User
     private @NotNull String password;
     private String fname;
     private String lname;
-    private List<ObjectId> subscriptions;
+    private List<String> subscriptions;
     private List<Token> tokens;
 
     public User() {

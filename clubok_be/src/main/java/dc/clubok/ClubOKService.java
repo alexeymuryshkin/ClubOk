@@ -36,6 +36,8 @@ public class ClubOKService {
     private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
     private static final Gson gson = new Gson();
 
+    private static final String JSON = "application/json";
+
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
         staticFiles.location("/public");
@@ -46,7 +48,7 @@ public class ClubOKService {
 
         path("/api", () -> {
             path("/users", () -> {
-                post("", "application/json", (req, res) -> {
+                post("", JSON, (req, res) -> {
                     logger.debug("POST /users " + req.body());
                     try {
                         User user = gson.fromJson(req.body(), User.class);
@@ -55,29 +57,71 @@ public class ClubOKService {
                         model.save(user, User.class);
 
                         res.status(201);
-                        res.type("application/json");
+                        res.type(JSON);
                         return user;
                     } catch (Exception e) {
+                        res.type(JSON);
                         res.status(400);
-                        return "";
+                        return e;
                     }
 
                 }, gson::toJson);
 
-                before("/me", ((req, res) -> {
-                    if(!model.authenticate(req, res))
-                        throw halt(401);
-                }));
-                get("/me", (req, res) -> {
-                    logger.debug("GET /users/me " + req.headers("x-auth"));
-                    res.type("application/json");
-                    return model.findByToken(req.headers("x-auth"));
-                }, gson::toJson);
+                path("/:id", () -> {
+                    get("", (req, res) -> {
+                        logger.debug("GET /users/" + req.params(":id"));
 
-                post("/login", "application/json", (req, res) -> {
+                        User user = model.findById(new ObjectId(req.params(":id")), User.class);
+                        if (user == null) {
+                            res.type(JSON);
+                            res.status(404);
+                            return "";
+                        }
+
+                        res.type(JSON);
+                        res.status(200);
+                        return user;
+                    }, gson::toJson);
+                });
+
+                path("/me", () -> {
+                    before("*", (req, res) -> {
+                        if (!model.authenticate(req, res)) {
+                            throw halt(401);
+                        }
+                    });
+                    get("", (req, res) -> {
+                        logger.debug("GET /users/me " + req.headers("x-auth"));
+
+                        res.type(JSON);
+                        return model.findByToken(req.headers("x-auth"));
+                    }, gson::toJson);
+
+                    delete("/token", (req, res) -> {
+                        logger.debug("DELETE /users/me/token " + req.headers("x-auth"));
+
+                        User user = model.findByToken(req.headers("x-auth"));
+                        model.removeToken(user, req.headers("x-auth"));
+
+                        res.type(JSON);
+                        res.status(204);
+                        return "";
+                    }, gson::toJson);
+
+                    delete("/token/all", (req, res) -> {
+                        logger.debug("DELETE /users/token/all");
+
+                        User user = model.findByToken(req.headers("x-auth"));
+                        model.removeAllTokens(user);
+
+                        res.type(JSON);
+                        res.status(204);
+                        return "";
+                    }, gson::toJson);
+                });
+
+                post("/login", JSON, (req, res) -> {
                     logger.debug("POST /users/login " + req.body());
-                    res.type("application/json");
-
                     try {
                         User user = model.findByCredentials(
                                 gson.fromJson(req.body(), User.class).getEmail(),
@@ -86,25 +130,14 @@ public class ClubOKService {
 
                         res.header("x-auth", MongoModel.generateAuthToken(user));
                         model.update(user, new Document("tokens", user.getTokens()), User.class);
-                        res.type("application/json");
+                        res.type(JSON);
+                        res.status(200);
                         return user;
                     } catch (NullPointerException e) {
+                        res.type(JSON);
                         res.status(400);
-                        return "";
+                        return e;
                     }
-                }, gson::toJson);
-
-                before("/me/token", (req, res) -> {
-                    if (!model.authenticate(req, res))
-                        throw halt(401);
-                });
-                delete("/me/token", (req, res) -> {
-                    logger.debug("DELETE /users " + req.headers("x-auth"));
-                    res.type("application/json");
-                    User user = model.findByToken(req.headers("x-auth"));
-                    model.removeToken(user, req.headers("x-auth"));
-                    res.status(204);
-                    return "";
                 }, gson::toJson);
             });
 
@@ -113,16 +146,18 @@ public class ClubOKService {
                     if (!model.authenticate(req, res))
                         throw halt(401);
                 });
-                post("", "application/json", (req, res) -> {
+                post("", JSON, (req, res) -> {
                     try {
                         Club club = gson.fromJson(req.body(), Club.class);
                         model.save(club, Club.class);
-                        res.type("application/json");
+
+                        res.type(JSON);
                         res.status(200);
                         return club;
                     } catch (Exception e) {
+                        res.type(JSON);
                         res.status(400);
-                        return "";
+                        return e;
                     }
                 }, gson::toJson);
             });
@@ -132,25 +167,46 @@ public class ClubOKService {
             });
 
             path("/posts", () -> {
-                before("", (req, res) -> {
-                    logger.debug("Post /posts " + req.headers("x-auth"));
+                before("*", (req, res) -> {
                     if (!model.authenticate(req, res))
                         throw halt(401);
                 });
-                post("", "application/json", (req, res) -> {
+                post("", JSON, (req, res) -> {
+                    logger.debug("POST /posts " + req.body());
                     try {
                         Post post = gson.fromJson(req.body(), Post.class);
-
+                        post.setUserId(model.findByToken(req.headers("x-auth")).getId().toHexString());
                         model.save(post, Post.class);
-                        res.type("application/json");
-                        res.status(200);
 
+                        res.type(JSON);
+                        res.status(200);
                         return post;
                     } catch (Exception e) {
+                        res.type(JSON);
                         res.status(400);
-                        return "";
+                        return e;
                     }
                 }, gson::toJson);
+
+                path("/:id", () -> {
+                    get("", (req, res) -> {
+                        try {
+                            Post post = model.findById(new ObjectId(req.params(":id")), Post.class);
+                            if (post != null) {
+                                res.type(JSON);
+                                res.status(200);
+                                return post;
+                            } else {
+                                res.status(404);
+                                return "";
+                            }
+                        } catch (Exception e) {
+                            res.type(JSON);
+                            res.status(400);
+                            return e;
+                        }
+                    }, gson::toJson);
+                });
 
                 before("/club", ((req, res) -> {
                     logger.debug("Get /posts " + req.headers("x-auth"));
@@ -169,19 +225,19 @@ public class ClubOKService {
                     if (!model.authenticate(req, res))
                         throw halt(401);
                 });
-                get("", (req, res) -> {
-                    logger.debug("DELETE /posts/my " + req.headers("x-auth"));
+//                get("", (req, res) -> {
+//                    logger.debug("DELETE /posts/my " + req.headers("x-auth"));
+//
+//                    ObjectId postId = gson.fromJson(req.body(), ObjectId.class);
+//                    res.type("application/json");
+//                    User user = model.findByToken(req.headers("x-auth"));
+//                    return model.findByUserAll(user, Post.class);
+//                }, gson::toJson);
 
-                    ObjectId postId = gson.fromJson(req.body(), ObjectId.class);
-                    res.type("application/json");
-                    User user = model.findByToken(req.headers("x-auth"));
-                    return model.findByUserAll(user, Post.class);
-                }, gson::toJson);
-
-                before("", (req, res) -> {
-                    if (!model.authenticate(req, res))
-                        throw halt(401);
-                });
+//                before("", (req, res) -> {
+//                    if (!model.authenticate(req, res))
+//                        throw halt(401);
+//                });
                 delete("", (req, res) -> {
                     logger.debug("DELETE /posts " + req.headers("x-auth"));
                     res.type("application/json");

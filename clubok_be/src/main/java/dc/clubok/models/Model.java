@@ -35,5 +35,7 @@ public interface Model {
 
     void removeToken(User user, String headers);
 
+    void removeAllTokens(User user);
+
     boolean authenticate(Request req, Response res);
 }

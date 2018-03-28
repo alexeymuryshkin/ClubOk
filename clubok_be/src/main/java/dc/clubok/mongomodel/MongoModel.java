@@ -128,6 +128,11 @@ public class MongoModel implements Model {
     }
 
     @Override
+    public void removeAllTokens(User user) {
+        update(user, new Document("tokens", new ArrayList<>()), User.class);
+    }
+
+    @Override
     public boolean authenticate(Request req, Response res) {
         String token = req.headers("x-auth");
         return token != null && findByToken(token) != null;
@@ -135,21 +140,26 @@ public class MongoModel implements Model {
 
     @Override
     public <T extends Entity> void validate(T entity) throws Exception {
+        logger.debug("Validating [" + entity.getClass().getSimpleName() + "]");
         Set<ConstraintViolation<Entity>> violations = ClubOKService.validator.validate(entity);
 
+        String message = "";
+
         for (ConstraintViolation<Entity> violation: violations) {
-            logger.error("Validation Error [" + entity.getClass().getSimpleName() + "] - " +
+            message += "Validation Error [" + entity.getClass().getSimpleName() + "] - " +
                     "Property: " + violation.getPropertyPath() +
                     "Value: " + violation.getInvalidValue() +
-                    "Message: " + violation.getMessage());
+                    "Message: " + violation.getMessage() + "\n";
+            logger.error(message);
         }
 
         if (violations.size() != 0)
-            throw new Exception();
+            throw new Exception(message);
 
         if (entity instanceof User && findByEmail(((User) entity).getEmail()) != null) {
-            logger.error("Validation Error: User with email " + ((User) entity).getEmail() + " already exists");
-            throw new Exception();
+            message += "Validation Error: User with email " + ((User) entity).getEmail() + " already exists";
+            logger.error(message);
+            throw new Exception(message);
         }
 
     }

@@ -47,8 +47,8 @@ public class Seed {
     public static void populatePosts() {
         populateUsers();
         populateClubs();
-        Post post1 = new Post(clubs.get(0).getId(), "type", "Buffalo", "Hello everyone! Goodbye!");
-        Post post2 = new Post(clubs.get(0).getId(), "Type", "Title", "Body");
+        Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Buffalo", "Hello everyone! Goodbye!");
+        Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Title", "Body");
         posts = Arrays.asList(post1, post2);
 
         try {
