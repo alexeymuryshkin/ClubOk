@@ -1,6 +1,7 @@
 package dc.clubok;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dc.clubok.models.Token;
 import dc.clubok.models.User;
 import dc.clubok.models.Model;
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import javax.validation.Validator;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -177,6 +179,18 @@ public class UsersRouteTest {
 
         assertEquals("number of users is incorrect",
                 2, model.count(User.class));
+    }
+
+    // GET /users
+    @Test
+    public void GetUsers_OK()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users").build();
+        HttpResponse response = client.execute(request);
+
+        List<User> usersResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), new TypeToken<List<User>>(){}.getType());
+        assertEquals("number of users is incorrect",
+                2, usersResponse.size());
     }
 
     // GET /users/:id

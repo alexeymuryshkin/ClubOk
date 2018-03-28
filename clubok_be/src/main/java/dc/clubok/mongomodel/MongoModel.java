@@ -86,11 +86,6 @@ public class MongoModel implements Model {
     }
 
     @Override
-    public <T extends Entity> List<T> findByIdAll(String fieldName, ObjectId id, Class<T> type) {
-        return getCollection(type).find(eq(fieldName, id)).into(new ArrayList<>());
-    }
-
-    @Override
     public User findByEmail(String email) {
         return getCollection(User.class).find(eq("email", email)).first();
     }
@@ -177,17 +172,6 @@ public class MongoModel implements Model {
             throw new Exception(message);
         }
 
-    }
-
-    @Override
-    public <T extends Entity> void removeById(ObjectId id, Class<T> type) {
-        getCollection(type).deleteOne(new Document("_id", id));
-    }
-
-    @Override
-    public <T extends Entity> List<T> findByUserAll(User user, Class<T> type) {
-        //TODO
-        return null;
     }
 
     public static String generateAuthToken(User user) {
