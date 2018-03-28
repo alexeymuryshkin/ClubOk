@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import dc.clubok.ClubOKService;
 import dc.clubok.Crypt;
 import dc.clubok.models.*;
@@ -70,6 +71,18 @@ public class MongoModel implements Model {
     @Override
     public <T extends Entity> T findById(ObjectId id, Class<T> type) {
         return getCollection(type).find(eq(id)).first();
+    }
+
+    @Override
+    public <T extends Entity> List<T> findAll(Class<T> type) {
+        List<T> list = new ArrayList<>();
+
+        try (MongoCursor<T> cursor = getCollection(type).find().iterator()) {
+            while (cursor.hasNext()) {
+                list.add(cursor.next());
+            }
+        }
+        return list;
     }
 
     @Override

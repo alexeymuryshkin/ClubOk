@@ -67,6 +67,20 @@ public class ClubOKService {
 
                 }, gson::toJson);
 
+                get("", (req, res) -> {
+                    logger.debug("GET /users");
+
+                    try {
+                        res.type(JSON);
+                        res.status(200);
+                        return model.findAll(User.class);
+                    } catch (Exception e) {
+                        res.type(JSON);
+                        res.status(400);
+                        return e;
+                    }
+                }, gson::toJson);
+
                 path("/me", () -> {
                     before("", (req, res) -> {
                         if (!model.authenticate(req, res)) {
@@ -134,6 +148,8 @@ public class ClubOKService {
                             return e;
                         }
                     }, gson::toJson);
+
+
                 });
 
                 post("/login", JSON, (req, res) -> {

@@ -16,6 +16,8 @@ public interface Model {
 
     <T extends Entity> T findById(ObjectId id, Class<T> c);
 
+    <T extends Entity> List<T> findAll(Class<T> type);
+
     <T extends Entity> List<T> findByIdAll(String fieldName, ObjectId id, Class<T> type);
 
     <T extends Entity> void update(T entity, Document update, Class<T> type);
