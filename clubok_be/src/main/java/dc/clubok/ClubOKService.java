@@ -1,40 +1,26 @@
 package dc.clubok;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import dc.clubok.config.Config;
 import dc.clubok.controllers.ClubController;
 import dc.clubok.controllers.PostController;
 import dc.clubok.controllers.UserController;
-import dc.clubok.db.MongoHandle;
 import dc.clubok.models.Club;
 import dc.clubok.models.Event;
 import dc.clubok.models.User;
-import dc.clubok.models.Model;
-import dc.clubok.mongomodel.MongoModel;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dc.clubok.utils.Constants.*;
 import static spark.Spark.*;
 
 public class ClubOKService {
-    public final static Config config = new Config();
-    public final static MongoHandle mongo = new MongoHandle();
-    public static final Model model = new MongoModel();
-    public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
     private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
-    private static final Gson gson = new Gson();
-
-    private static final String JSON = "application/json";
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
@@ -50,12 +36,12 @@ public class ClubOKService {
 
                 path("/me", () -> {
                     before("", (request, response) -> {
-                        if (!model.authenticate(request, response)) {
+                        if (!UserController.authenticate(request, response)) {
                             throw halt(401);
                         }
                     });
                     before("/*", (request, response) -> {
-                        if (!model.authenticate(request, response)) {
+                        if (!UserController.authenticate(request, response)) {
                             throw halt(401);
                         }
                     });
@@ -74,7 +60,7 @@ public class ClubOKService {
 
             path("/clubs", () -> {
                 before("", (request, response) -> {
-                    if (!model.authenticate(request, response))
+                    if (!UserController.authenticate(request, response))
                         throw halt(401);
                 });
                 get("", ClubController.fetchAllClubs, gson::toJson);
@@ -92,11 +78,11 @@ public class ClubOKService {
 
             path("/posts", () -> {
                 before("", (request, response) -> {
-                    if (!model.authenticate(request, response))
+                    if (!UserController.authenticate(request, response))
                         throw halt(401);
                 });
                 before("/*", (request, response) -> {
-                    if (!model.authenticate(request, response))
+                    if (!UserController.authenticate(request, response))
                         throw halt(401);
                 });
                 get("", PostController.fetchAllPosts, gson::toJson);
@@ -136,7 +122,7 @@ public class ClubOKService {
                 post("/register", "application/json", (request, response) -> {
                     try {
                         Event event = gson.fromJson(request.body(), Event.class);
-                        model.save(event, Event.class);
+                        model.saveOne(event, Event.class);
                         response.type("application/json");
                         response.status(200);
                         return event;
@@ -149,7 +135,7 @@ public class ClubOKService {
 
             path("/subscriptions", () -> {
                 before("", (request, response) -> {
-                    if (!model.authenticate(request, response))
+                    if (!UserController.authenticate(request, response))
                         throw halt(401);
                 });
                 System.out.println();

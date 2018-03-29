@@ -1,11 +1,9 @@
 package dc.clubok;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dc.clubok.controllers.UserController;
 import dc.clubok.models.Token;
 import dc.clubok.models.User;
-import dc.clubok.models.Model;
-import dc.clubok.mongomodel.MongoModel;
 import dc.clubok.seed.Seed;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,27 +16,24 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.Validator;
 import java.io.IOException;
 import java.util.List;
 
+import static dc.clubok.utils.Constants.*;
 import static org.junit.Assert.*;
 
 public class UsersRouteTest {
-    private static Model model;
-    private final Gson gson = new Gson();
     private final HttpClient client = HttpClients.createDefault();
     private final String url = "http://localhost:3000/api";
 
     @BeforeClass
     public static void setUp() {
         ClubOKService.main(new String[0]);
-        model = new MongoModel();
     }
 
     @Before
     public void setDb() {
-        ClubOKService.mongo.getDb().drop();
+        mongo.getDb().drop();
         Seed.populateUsers();
     }
 
@@ -73,7 +68,7 @@ public class UsersRouteTest {
                 email, userResponse.getEmail());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 3, model.count(User.class));
         assertTrue("user is not created",
@@ -125,7 +120,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 2, model.count(User.class));
         assertTrue("User exists",
@@ -155,7 +150,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertTrue("User exists",
                 userDB == null);
         assertEquals("number of users is incorrect",

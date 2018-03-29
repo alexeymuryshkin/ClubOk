@@ -1,29 +1,23 @@
 package dc.clubok.controllers;
 
-import com.google.gson.Gson;
-import dc.clubok.ClubOKService;
-import dc.clubok.models.Club;
-import dc.clubok.models.Model;
 import dc.clubok.models.Post;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.*;
 
+import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
 public class PostController {
-    private static final String JSON = "application/json";
     private static Logger logger = LoggerFactory.getLogger(ClubController.class.getCanonicalName());
-    private static final Gson gson = new Gson();
-    private static final Model model = ClubOKService.model;
 
     public static Route createPost = (Request request, Response response) -> {
         logger.debug("POST /posts " + request.body());
         try {
             Post post = gson.fromJson(request.body(), Post.class);
-            post.setUserId(model.findByToken(request.headers("x-auth")).getId().toHexString());
-            model.save(post, Post.class);
+            post.setUserId(UserController.findByToken(request.headers("x-auth")).getId().toHexString());
+            model.saveOne(post, Post.class);
 
             response.type(JSON);
             response.status(SC_OK);
