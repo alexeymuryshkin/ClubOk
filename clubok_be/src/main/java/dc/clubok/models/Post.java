@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
-public @Data
-class Post
+@Data
+public class Post
         extends Entity {
     private @NotEmpty (message = "Club Id is not specified")
     String clubId;
@@ -25,7 +25,7 @@ class Post
     private List<String> likes;
     private List<Comment> comments;
 
-    private Post() {
+    public Post() {
         setId(new ObjectId());
         likes = new ArrayList<>();
         comments = new ArrayList<>();
