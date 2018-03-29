@@ -16,9 +16,9 @@ public @Data class Club
     private String name;
     private String logoSrc;
     private String description;
-    private List<ObjectId> moderators;
-    private List<ObjectId> participants;
-    private List<ObjectId> subscribers;
+    private List<String> moderators;
+    private List<String> participants;
+    private List<String> subscribers;
 
     public Club() {
         setId(new ObjectId());

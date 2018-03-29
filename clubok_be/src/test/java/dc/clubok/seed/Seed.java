@@ -1,13 +1,12 @@
 package dc.clubok.seed;
 
+import dc.clubok.controllers.UserController;
 import dc.clubok.models.Club;
 import dc.clubok.models.Post;
 import dc.clubok.mongomodel.MongoModel;
 import dc.clubok.models.Token;
 import dc.clubok.models.User;
-import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +21,8 @@ public class Seed {
         User user2 = new User("userTwoEmail@example.com", "userTwoPass");
         users = Arrays.asList(user1, user2);
 
-        user1.setTokens(Collections.singletonList(new Token("auth", MongoModel.generateAuthToken(user1))));
-        user2.setTokens(Collections.singletonList(new Token("auth", MongoModel.generateAuthToken(user2))));
+        user1.setTokens(Collections.singletonList(new Token("auth", UserController.generateAuthToken(user1))));
+        user2.setTokens(Collections.singletonList(new Token("auth", UserController.generateAuthToken(user2))));
 
         try {
             new MongoModel().saveMany(users, User.class);
@@ -47,8 +46,8 @@ public class Seed {
     public static void populatePosts() {
         populateUsers();
         populateClubs();
-        Post post1 = new Post(clubs.get(0).getId(), "type", "Buffalo", "Hello everyone! Goodbye!");
-        Post post2 = new Post(clubs.get(0).getId(), "Type", "Title", "Body");
+        Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Buffalo", "Hello everyone! Goodbye!");
+        Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Title", "Body");
         posts = Arrays.asList(post1, post2);
 
         try {

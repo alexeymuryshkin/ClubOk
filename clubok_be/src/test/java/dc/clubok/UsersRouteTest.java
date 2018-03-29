@@ -1,10 +1,9 @@
 package dc.clubok;
 
-import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import dc.clubok.controllers.UserController;
 import dc.clubok.models.Token;
 import dc.clubok.models.User;
-import dc.clubok.models.Model;
-import dc.clubok.mongomodel.MongoModel;
 import dc.clubok.seed.Seed;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,28 +16,24 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.Validator;
 import java.io.IOException;
+import java.util.List;
 
+import static dc.clubok.utils.Constants.*;
 import static org.junit.Assert.*;
 
 public class UsersRouteTest {
-    private static Validator validator;
-    private static Model model;
-    private final Gson gson = new Gson();
     private final HttpClient client = HttpClients.createDefault();
     private final String url = "http://localhost:3000/api";
 
     @BeforeClass
     public static void setUp() {
         ClubOKService.main(new String[0]);
-        validator = ClubOKService.validator;
-        model = new MongoModel();
     }
 
     @Before
     public void setDb() {
-        ClubOKService.mongo.getDb().drop();
+        mongo.getDb().drop();
         Seed.populateUsers();
     }
 
@@ -73,7 +68,7 @@ public class UsersRouteTest {
                 email, userResponse.getEmail());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 3, model.count(User.class));
         assertTrue("user is not created",
@@ -125,7 +120,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 2, model.count(User.class));
         assertTrue("User exists",
@@ -155,7 +150,7 @@ public class UsersRouteTest {
                 400, response.getStatusLine().getStatusCode());
 
         // Assertions in DB
-        User userDB = model.findByEmail(email);
+        User userDB = UserController.findByEmail(email);
         assertTrue("User exists",
                 userDB == null);
         assertEquals("number of users is incorrect",
@@ -181,6 +176,47 @@ public class UsersRouteTest {
                 2, model.count(User.class));
     }
 
+    // GET /users
+    @Test
+    public void GetUsers_OK()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users").build();
+        HttpResponse response = client.execute(request);
+
+        List<User> usersResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), new TypeToken<List<User>>(){}.getType());
+        assertEquals("number of users is incorrect",
+                2, usersResponse.size());
+    }
+
+    // GET /users/:id
+    @Test
+    public void GetUsersId_CorrectId_OK()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users/" + Seed.users.get(1).getId().toHexString())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("request does not return OK",
+                200, response.getStatusLine().getStatusCode());
+
+        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
+        assertNotNull("user is not returned",
+                userResponse);
+        assertEquals("user has incorrect id",
+                Seed.users.get(1).getId(), userResponse.getId());
+    }
+
+    @Test
+    public void GetUsersId_IncorrectId_NOTFOUND()
+            throws IOException {
+        HttpUriRequest request = RequestBuilder.get(url + "/users/123321")
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("request does not return NOT FOUND",
+                404, response.getStatusLine().getStatusCode());
+    }
+
     // GET /users/me
     @Test
     public void GetUsersMe_Authenticated_OK()
@@ -196,7 +232,7 @@ public class UsersRouteTest {
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
         assertTrue("user is not returned",
                 userResponse != null);
-        assertEquals("user has correct id",
+        assertEquals("user has incorrect id",
                 Seed.users.get(1).getId(), userResponse.getId());
     }
 

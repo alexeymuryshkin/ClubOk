@@ -1,43 +1,38 @@
 package dc.clubok.mongomodel;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import dc.clubok.ClubOKService;
 import dc.clubok.Crypt;
+import dc.clubok.controllers.UserController;
 import dc.clubok.models.*;
 import dc.clubok.models.Model;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.Request;
-import spark.Response;
 
 import javax.validation.ConstraintViolation;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
+import static dc.clubok.utils.Constants.*;
 
 public class MongoModel implements Model {
     private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
 
     private <T extends Entity> MongoCollection<T> getCollection(Class<T> type) {
-        return ClubOKService.mongo.getDb().getCollection(
+        return mongo.getDb().getCollection(
                 type.getSimpleName().toLowerCase() + "s",
                 type
         );
     }
 
+    /* Save to Database */
     @Override
-    public <T extends Entity> void save(T entity, Class<T> type) throws Exception {
+    public <T extends Entity> void saveOne(T entity, Class<T> type) throws Exception {
         MongoCollection<T> collection = getCollection(type);
         validate(entity);
 
@@ -62,9 +57,28 @@ public class MongoModel implements Model {
         logger.info("Entities [" + entities.get(0).getClass().getSimpleName() + "] were created");
     }
 
+    /* Count entries */
     @Override
     public <T extends Entity> long count(Class<T> type) {
         return getCollection(type).count();
+    }
+
+    /* Finding in Database */
+    @Override
+    public <T extends Entity> T findOne(Document document, Class<T> type) {
+        return getCollection(type).find(document).first();
+    }
+
+    @Override
+    public <T extends Entity> List<T> findAll(Class<T> type) {
+        List<T> list = new ArrayList<>();
+
+        try (MongoCursor<T> cursor = getCollection(type).find().iterator()) {
+            while (cursor.hasNext()) {
+                list.add(cursor.next());
+            }
+        }
+        return list;
     }
 
     @Override
@@ -73,116 +87,42 @@ public class MongoModel implements Model {
     }
 
     @Override
-    public <T extends Entity> List<T> findByIdAll(String fieldName, ObjectId id, Class<T> type) {
-        return getCollection(type).find(eq(fieldName, id)).into(new ArrayList<>());
+    public <T extends Entity> T findByField(String fieldName, String value, Class<T> type) {
+        return getCollection(type).find(eq(fieldName, value)).first();
     }
 
-    @Override
-    public User findByEmail(String email) {
-        return getCollection(User.class).find(eq("email", email)).first();
-    }
-
-    @Override
-    public User findByCredentials(String email, String password)
-            throws NullPointerException {
-        User user = findByEmail(email);
-
-        if (user != null && Crypt.compare(password.toCharArray(), user.getPassword())) {
-            return user;
-        } else
-            throw new NullPointerException();
-    }
-
+    /* Updating entries in Database */
     @Override
     public <T extends Entity> void update(T entity, Document update, Class<T> type) {
         getCollection(type).updateOne(eq("_id", entity.getId()), new Document("$set", update));
         logger.info("Entity [" + entity.getClass().getSimpleName() + "] was updated");
     }
 
-    @Override
-    public User findByToken(String token) {
-        String id = null;
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(ClubOKService.config.getProperties().getProperty("secret"));
-            JWTVerifier verifier = JWT.require(algorithm)
-                    .build();
-            DecodedJWT jwt = verifier.verify(token);
-            id = jwt.getClaim("id").asString();
-        } catch (UnsupportedEncodingException | JWTVerificationException exception) {
-            //UTF-8 encoding not supported
-        }
-
-        if (id == null)
-            return null;
-
-        return getCollection(User.class).find(
-                new Document("_id", new ObjectId(id))
-                        .append("tokens", new Token("auth", token))
-        ).first();
-    }
-
-    @Override
-    public void removeToken(User user, String token) {
-        user.getTokens().remove(new Token("auth", token));
-        update(user, new Document("tokens", user.getTokens()), User.class);
-    }
-
-    @Override
-    public boolean authenticate(Request req, Response res) {
-        String token = req.headers("x-auth");
-        return token != null && findByToken(token) != null;
-    }
-
+    /* Model Validation */
     @Override
     public <T extends Entity> void validate(T entity) throws Exception {
-        Set<ConstraintViolation<Entity>> violations = ClubOKService.validator.validate(entity);
+        logger.debug("Validating [" + entity.getClass().getSimpleName() + "]");
+        Set<ConstraintViolation<Entity>> violations = validator.validate(entity);
+
+        String message = "";
 
         for (ConstraintViolation<Entity> violation: violations) {
-            logger.error("Validation Error [" + entity.getClass().getSimpleName() + "] - " +
+            message += "Validation Error [" + entity.getClass().getSimpleName() + "] - " +
                     "Property: " + violation.getPropertyPath() +
                     "Value: " + violation.getInvalidValue() +
-                    "Message: " + violation.getMessage());
+                    "Message: " + violation.getMessage() + "\n";
+            logger.error(message);
         }
 
         if (violations.size() != 0)
-            throw new Exception();
+            throw new Exception(message);
 
-        if (entity instanceof User && findByEmail(((User) entity).getEmail()) != null) {
-            logger.error("Validation Error: User with email " + ((User) entity).getEmail() + " already exists");
-            throw new Exception();
+        if (entity instanceof User && UserController.findByEmail(((User) entity).getEmail()) != null) {
+            message += "Validation Error: User with email " + ((User) entity).getEmail() + " already exists";
+            logger.error(message);
+            throw new Exception(message);
         }
 
-    }
-
-    @Override
-    public <T extends Entity> void removeById(ObjectId id, Class<T> type) {
-        getCollection(type).deleteOne(new Document("_id", id));
-    }
-
-    @Override
-    public <T extends Entity> List<T> findByUserAll(User user, Class<T> type) {
-        //TODO
-        return null;
-    }
-
-    public static String generateAuthToken(User user) {
-        String token = null;
-
-        try {
-            token = JWT.create()
-                    .withIssuedAt(new Date(System.currentTimeMillis()))
-                    .withClaim("id", user.getId().toHexString())
-                    .withClaim("access", "auth")
-                    .sign(Algorithm.HMAC256(ClubOKService.config.getProperties().getProperty("secret")));
-
-            user.getTokens().add(new Token("auth", token));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return token;
     }
 
 }
