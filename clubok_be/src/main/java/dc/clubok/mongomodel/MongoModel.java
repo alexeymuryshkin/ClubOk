@@ -91,6 +91,11 @@ public class MongoModel implements Model {
         return getCollection(type).find(eq(fieldName, value)).first();
     }
 
+    @Override
+    public <T extends Entity> void deleteOne(Document document, Class<T> type) {
+        getCollection(type).deleteOne(document);
+    }
+
     /* Updating entries in Database */
     @Override
     public <T extends Entity> void update(T entity, Document update, Class<T> type) {
@@ -124,5 +129,7 @@ public class MongoModel implements Model {
         }
 
     }
+
+
 
 }
