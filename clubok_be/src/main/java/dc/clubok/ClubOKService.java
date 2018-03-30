@@ -1,10 +1,7 @@
 package dc.clubok;
 
 import com.google.gson.reflect.TypeToken;
-import dc.clubok.controllers.ClubController;
-import dc.clubok.controllers.EventController;
-import dc.clubok.controllers.PostController;
-import dc.clubok.controllers.UserController;
+import dc.clubok.controllers.*;
 import dc.clubok.models.Club;
 import dc.clubok.models.Event;
 import dc.clubok.models.Post;
@@ -105,8 +102,13 @@ public class ClubOKService {
                     post("/comments", JSON, PostController.addCommentToPost, gson::toJson);
                     get("/likes", PostController.getLikesByPostId, gson::toJson);
                     post("/likes", PostController.addLikeToPost, gson::toJson);
+                    delete("/likes", PostController.deleteLikesByPostId, gson::toJson);
                     delete("", PostController.deletePostById, gson::toJson);
                     patch("", PostController.editPostById, gson::toJson);
+                    path("/comments", () -> {
+                        patch("/:cid", PostController.editCommentByPostId, gson::toJson);
+                        delete("/:cid", PostController.deleteCommentByPostId, gson::toJson);
+                    });
                 });
             });
 
@@ -116,40 +118,10 @@ public class ClubOKService {
 
                 path("/:id", () -> {
                     get("", EventController.getEventById, gson::toJson);
+                    patch("" , EventController.editEventById, gson::toJson);
+                    delete("", EventController.deleteEventById, gson::toJson);
                 });
 
-
-                post("/update", "application/json", (request, response) -> {
-                    try {
-                        Event event = gson.fromJson(request.body(), Event.class);
-                        if (model.findById(event.getId(), Event.class) != null) {
-                            model.update(event, new Document().append("datetime", event.getDatetime()), Event.class);
-                            model.update(event, new Document().append("description", event.getDescription()), Event.class);
-                            model.update(event, new Document().append("title", event.getTitle()), Event.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return event;
-                        } else {
-                            response.status(404);
-                            return "";
-                        }
-                    } catch (Exception e) {
-                        response.status(400);
-                        return "";
-                    }
-                }, gson::toJson);
-                post("/register", "application/json", (request, response) -> {
-                    try {
-                        Event event = gson.fromJson(request.body(), Event.class);
-                        model.saveOne(event, Event.class);
-                        response.type("application/json");
-                        response.status(200);
-                        return event;
-                    } catch (Exception e) {
-                        response.status(400);
-                        return "";
-                    }
-                }, gson::toJson);
             });
 
             path("/subscriptions", () -> {
@@ -157,68 +129,13 @@ public class ClubOKService {
                     if (!UserController.authenticate(request, response))
                         throw halt(401);
                 });
-                System.out.println();
-                post("/subscribe", "application/json", (request, response) -> {
-                    Type listType = new TypeToken<ArrayList<ObjectId>>() {
-                    }.getType();
-                    List<ObjectId> a = gson.fromJson(request.body(), listType);
-                    ObjectId clubId = a.get(1);
-                    ObjectId userId = a.get(0);
-                    User user = model.findById(userId, User.class);
-                    Club club = model.findById(clubId, Club.class);
-                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
-                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
-                    if (!UsersArray.contains(clubId) &&
-                            !ClubsArray.contains(userId)) {
+                before("/*", (request, response) -> {
+                    if (!UserController.authenticate(request, response))
+                        throw halt(401);
+                });
 
-                        UsersArray.add(clubId);
-                        ClubsArray.add(userId);
-                        try {
-                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
-                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return "works";
-                        } catch (Exception e) {
-                            response.status(400);
-                            return "";
-                        }
-                    } else {
-                        response.status(302);
-                        return "";
-                    }
-                }, gson::toJson);
-
-                post("/unsubscribe", "application/json", (request, response) -> {
-                    Type listType = new TypeToken<ArrayList<ObjectId>>() {
-                    }.getType();
-                    List<ObjectId> a = gson.fromJson(request.body(), listType);
-                    ObjectId clubId = a.get(1);
-                    ObjectId userId = a.get(0);
-                    User user = model.findById(userId, User.class);
-                    Club club = model.findById(clubId, Club.class);
-                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
-                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
-                    if (UsersArray.contains(clubId) &&
-                            ClubsArray.contains(userId)) {
-
-                        UsersArray.remove(clubId);
-                        ClubsArray.remove(userId);
-                        try {
-                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
-                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return "works";
-                        } catch (Exception e) {
-                            response.status(400);
-                            return "";
-                        }
-                    } else {
-                        response.status(404);
-                        return "";
-                    }
-                }, gson::toJson);
+                post("", SubscriptionController.addSubscription, gson::toJson);
+                delete("", SubscriptionController.deleteSubscription, gson::toJson);
             });
         });
 
