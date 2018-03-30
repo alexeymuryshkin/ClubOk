@@ -152,6 +152,13 @@ public class UserController {
         return "";
     };
 
+    public static Route getPersonalSubscriptions = (Request request, Response response) -> {
+//        TODO
+        return "";
+    };
+
+    public static Route getPersonalTokens;
+
     public static String generateAuthToken(User user) {
         String token = null;
 

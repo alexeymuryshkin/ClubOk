@@ -20,6 +20,8 @@ public interface Model {
 
     <T extends Entity> T findByField(String fieldName, String value, Class<T> type);
 
+    <T extends Entity> void deleteOne(Document document, Class<T> type);
+
     <T extends Entity> void update(T entity, Document update, Class<T> type);
 
     <T extends Entity> void validate(T entity) throws Exception;

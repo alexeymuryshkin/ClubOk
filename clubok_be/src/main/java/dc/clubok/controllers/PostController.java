@@ -1,5 +1,6 @@
 package dc.clubok.controllers;
 
+import dc.clubok.ClubOKService;
 import dc.clubok.models.Post;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ public class PostController {
 
             response.type(JSON);
             response.status(SC_OK);
+            ClubOKService.broadcastPost(post);
             return post;
         } catch (Exception e) {
             response.type(JSON);
