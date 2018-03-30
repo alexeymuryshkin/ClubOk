@@ -1,12 +1,12 @@
-package dc.clubok.mongomodel;
+package dc.clubok.db.mongomodel;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import dc.clubok.ClubOKService;
-import dc.clubok.Crypt;
-import dc.clubok.controllers.UserController;
-import dc.clubok.models.*;
-import dc.clubok.models.Model;
+import dc.clubok.utils.Crypt;
+import dc.clubok.db.controllers.UserController;
+import dc.clubok.db.models.*;
+import dc.clubok.db.models.Model;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -82,6 +82,11 @@ public class MongoModel implements Model {
     }
 
     @Override
+    public <T extends Entity> T findById(String id, Class<T> type) {
+        return findById(new ObjectId(id), type);
+    }
+
+    @Override
     public <T extends Entity> T findById(ObjectId id, Class<T> type) {
         return getCollection(type).find(eq(id)).first();
     }
@@ -91,9 +96,15 @@ public class MongoModel implements Model {
         return getCollection(type).find(eq(fieldName, value)).first();
     }
 
+    /* Deleting entries in Database */
     @Override
-    public <T extends Entity> void deleteOne(Document document, Class<T> type) {
-        getCollection(type).deleteOne(document);
+    public <T extends Entity> void deleteById(String id, Class<T> type) {
+        getCollection(type).deleteOne(eq(id));
+    }
+
+    @Override
+    public <T extends Entity> void deleteById(ObjectId id, Class<T> type) {
+        getCollection(type).deleteOne(eq(id));
     }
 
     /* Updating entries in Database */

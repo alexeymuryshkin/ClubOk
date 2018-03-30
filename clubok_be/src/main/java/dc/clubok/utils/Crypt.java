@@ -1,4 +1,4 @@
-package dc.clubok;
+package dc.clubok.utils;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

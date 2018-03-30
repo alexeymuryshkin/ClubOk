@@ -1,13 +1,9 @@
-package dc.clubok.models;
+package dc.clubok.db.models;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)

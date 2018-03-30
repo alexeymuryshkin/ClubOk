@@ -1,4 +1,4 @@
-package dc.clubok.models;
+package dc.clubok.db.models;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -16,11 +16,15 @@ public interface Model {
 
     <T extends Entity> List<T> findAll(Class<T> type);
 
-    <T extends Entity> T findById(ObjectId id, Class<T> c);
+    <T extends Entity> T findById(String id, Class<T> type);
+
+    <T extends Entity> T findById(ObjectId id, Class<T> type);
 
     <T extends Entity> T findByField(String fieldName, String value, Class<T> type);
 
-    <T extends Entity> void deleteOne(Document document, Class<T> type);
+    <T extends Entity> void deleteById(String id, Class<T> type);
+
+    <T extends Entity> void deleteById(ObjectId id, Class<T> type);
 
     <T extends Entity> void update(T entity, Document update, Class<T> type);
 

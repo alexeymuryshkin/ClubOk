@@ -1,9 +1,9 @@
 package dc.clubok;
 
 import com.google.gson.reflect.TypeToken;
-import dc.clubok.controllers.UserController;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
+import dc.clubok.db.controllers.UserController;
+import dc.clubok.db.models.Token;
+import dc.clubok.db.models.User;
 import dc.clubok.seed.Seed;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -54,18 +54,6 @@ public class UsersRouteTest {
 
         assertEquals("request does not return OK status",
                 201, response.getStatusLine().getStatusCode());
-
-        // RESPONSE
-        // Fetching user
-        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-
-        // Assertions in response
-        assertTrue("authorization token does not exist",
-                response.getHeaders("x-auth") != null);
-        assertTrue("user does not have id",
-                userResponse.getId() != null);
-        assertEquals("User email is not same",
-                email, userResponse.getEmail());
 
         // Assertions in DB
         User userDB = UserController.findByEmail(email);
@@ -285,15 +273,8 @@ public class UsersRouteTest {
         assertEquals("request does not return OK",
                 200, response.getStatusLine().getStatusCode());
 
-        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-
-        assertTrue("header does not exist",
-                response.containsHeader("x-auth"));
-        assertTrue("user is not returned",
-                userResponse != null);
-
         // Assertions in DB
-        User userDB = model.findById(userResponse.getId(), User.class);
+        User userDB = model.findById(Seed.users.get(1).getId(), User.class);
         assertTrue("user is not in DB",
                 userDB != null);
         assertTrue("authentication token is not created",

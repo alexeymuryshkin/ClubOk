@@ -1,4 +1,4 @@
-package dc.clubok.controllers;
+package dc.clubok.db.controllers;
 
 public class SubscriptionController {
 }
