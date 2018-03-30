@@ -138,26 +138,90 @@ public class UserController {
     };
 
     public static Route getSubscriptionsByUserId = (Request request, Response response) -> {
-//        TODO
-        return "";
+        logger.debug("GET /users/" + request.params(":id") + "/subscriptions");
+        try {
+            User user = model.findById(new ObjectId(request.params(":id")), User.class);
+            if (user == null) {
+                response.type(JSON);
+                response.status(SC_NOT_FOUND);
+                return "";
+            }
+            response.type(JSON);
+            response.status(SC_OK);
+            return user.getSubscriptions();
+        } catch (IllegalArgumentException e) {
+            response.type(JSON);
+            response.status(SC_NOT_FOUND);
+            return "";
+        } catch (Exception e) {
+            response.type(JSON);
+            response.status(SC_BAD_REQUEST);
+            return e;
+        }
     };
 
     public static Route getTokensByUserId = (Request request, Response response) -> {
-//        TODO
-        return "";
+        logger.debug("GET /users/" + request.params(":id") + "/tokens");
+        try{
+            User user = model.findById(new ObjectId(request.params(":id")), User.class);
+            if (user == null) {
+                response.type(JSON);
+                response.status(SC_NOT_FOUND);
+                return "";
+            }
+            response.type(JSON);
+            response.status(SC_OK);
+            return user.getTokens();
+        } catch (IllegalArgumentException e) {
+            response.type(JSON);
+            response.status(SC_NOT_FOUND);
+            return "";
+        } catch (Exception e) {
+            response.type(JSON);
+            response.status(SC_BAD_REQUEST);
+            return e;
+        }
     };
 
     public static Route deleteUserById = (Request request, Response response) -> {
-//        TODO
-        return "";
+        logger.debug("DELETE /users/" + request.params(":id"));
+        try {
+            User user = model.findById(new ObjectId(request.params(":id")), User.class);
+            if (user == null) {
+                response.type(JSON);
+                response.status(SC_NOT_FOUND);
+                return "";
+            }
+            model.deleteOne(new Document("_id", user.getId()), User.class);
+            response.type(JSON);
+            response.status(SC_OK);
+            return "";
+        } catch (IllegalArgumentException e) {
+            response.type(JSON);
+            response.status(SC_NOT_FOUND);
+            return "";
+        } catch (Exception e) {
+            response.type(JSON);
+            response.status(SC_BAD_REQUEST);
+            return e;
+        }
     };
 
     public static Route getPersonalSubscriptions = (Request request, Response response) -> {
-//        TODO
-        return "";
+        logger.debug("GET /users/me/subscriptions");
+        ObjectId UserId = UserController.findByToken(request.headers("x-auth")).getId();
+        response.type(JSON);
+        response.status(SC_OK);
+        return model.findById(UserId, User.class).getSubscriptions();
     };
 
-    public static Route getPersonalTokens;
+    public static Route getPersonalTokens = (Request request, Response response) -> {
+        logger.debug("GET /users/me/tokens");
+        ObjectId UserId = UserController.findByToken(request.headers("x-auth")).getId();
+        response.type(JSON);
+        response.status(SC_OK);
+        return model.findById(UserId, User.class).getTokens();
+    };
 
     public static String generateAuthToken(User user) {
         String token = null;
