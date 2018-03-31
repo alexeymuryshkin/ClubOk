@@ -1,27 +1,22 @@
 package dc.clubok;
 
-import com.google.gson.reflect.TypeToken;
-import dc.clubok.db.models.Club;
 import dc.clubok.db.models.Event;
 import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dc.clubok.routes.ClubRoute.*;
 import static dc.clubok.routes.EventRoute.*;
 import static dc.clubok.routes.PostRoute.*;
+import static dc.clubok.routes.SubscriptionRoute.DeleteSubscriptions;
+import static dc.clubok.routes.SubscriptionRoute.PostSubscriptions;
 import static dc.clubok.routes.UserRoute.*;
 import static dc.clubok.utils.Constants.*;
 import static spark.Spark.*;
@@ -56,16 +51,20 @@ public class ClubOKService {
                     });
 
                     get("", GetUsersMe, gson::toJson);
+
                     get("/subscriptions", GetUsersMeSubscriptions, gson::toJson);
+
                     get("/tokens", GetUsersMeTokens, gson::toJson);
                     delete("/tokens", DeleteUsersMeTokens, gson::toJson);
                     delete("/token", DeleteUsersMeToken, gson::toJson);
                 });
                 path("/:id", () -> {
                     get("", GetUsersId, gson::toJson);
-                    get("/subscriptions", GetUsersIdSubscriptions, gson::toJson);
-                    get("/tokens", GetUsersIdTokens, gson::toJson);
                     delete("", DeleteUsersId, gson::toJson);
+
+                    get("/subscriptions", GetUsersIdSubscriptions, gson::toJson);
+
+                    get("/tokens", GetUsersIdTokens, gson::toJson);
                 });
             });
 
@@ -79,11 +78,14 @@ public class ClubOKService {
 
                 path("/:id", () -> {
                     get("", GetClubsId, gson::toJson);
-                    get("/subscribers", GetClubsIdSubscribers, gson::toJson);
-                    get("/participants", GetClubsIdParticipants, gson::toJson);
-                    get("/moderators", GetClubsIdModerators, gson::toJson);
                     delete("", DeleteClubsId, gson::toJson);
                     patch("", JSON, PatchClubsId, gson::toJson);
+
+                    get("/subscribers", GetClubsIdSubscribers, gson::toJson);
+
+                    get("/participants", GetClubsIdParticipants, gson::toJson);
+
+                    get("/moderators", GetClubsIdModerators, gson::toJson);
                 });
             });
 
@@ -101,14 +103,17 @@ public class ClubOKService {
 
                 path("/:id", () -> {
                     get("", GetPostsId, gson::toJson);
-                    get("/comments", GetPostsIdComments, gson::toJson);
-                    post("/comments", PostPostsIdComments, gson::toJson);
-                    get("/likes", GetPostsIdLikes, gson::toJson);
-                    post("/likes", PostPostsIdLikes, gson::toJson);
                     delete("", DeletePostsId, gson::toJson);
                     patch("", JSON, PatchPostsId, gson::toJson);
+
+                    get("/comments", GetPostsIdComments, gson::toJson);
+                    post("/comments", PostPostsIdComments, gson::toJson);
                     patch("/comments/:cid", JSON, PatchPostsIdCommentsId, gson::toJson);
                     delete("/comments/:cid", DeletePostsIdCommentId, gson::toJson);
+
+                    get("/likes", GetPostsIdLikes, gson::toJson);
+                    post("/likes", PostPostsIdLikes, gson::toJson);
+                    delete("/likes", DeletePostsIdLikes, gson::toJson);
                 });
             });
 
@@ -159,76 +164,15 @@ public class ClubOKService {
                     if (notAuthenticated(request, response))
                         throw halt(401);
                 });
-                System.out.println();
-                post("/subscribe", "application/json", (request, response) -> {
-                    Type listType = new TypeToken<ArrayList<ObjectId>>() {
-                    }.getType();
-                    List<ObjectId> a = gson.fromJson(request.body(), listType);
-                    ObjectId clubId = a.get(1);
-                    ObjectId userId = a.get(0);
-                    User user = model.findById(userId, User.class);
-                    Club club = model.findById(clubId, Club.class);
-                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
-                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
-                    if (!UsersArray.contains(clubId) &&
-                            !ClubsArray.contains(userId)) {
 
-                        UsersArray.add(clubId);
-                        ClubsArray.add(userId);
-                        try {
-                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
-                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return "works";
-                        } catch (Exception e) {
-                            response.status(400);
-                            return "";
-                        }
-                    } else {
-                        response.status(302);
-                        return "";
-                    }
-                }, gson::toJson);
-
-                post("/unsubscribe", "application/json", (request, response) -> {
-                    Type listType = new TypeToken<ArrayList<ObjectId>>() {
-                    }.getType();
-                    List<ObjectId> a = gson.fromJson(request.body(), listType);
-                    ObjectId clubId = a.get(1);
-                    ObjectId userId = a.get(0);
-                    User user = model.findById(userId, User.class);
-                    Club club = model.findById(clubId, Club.class);
-                    ArrayList<ObjectId> UsersArray = new ArrayList(user.getSubscriptions());
-                    ArrayList<ObjectId> ClubsArray = new ArrayList(club.getSubscribers());
-                    if (UsersArray.contains(clubId) &&
-                            ClubsArray.contains(userId)) {
-
-                        UsersArray.remove(clubId);
-                        ClubsArray.remove(userId);
-                        try {
-                            model.update(club, new Document().append("subscribers", ClubsArray), Club.class);
-                            model.update(user, new Document().append("subscriptions", UsersArray), User.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return "works";
-                        } catch (Exception e) {
-                            response.status(400);
-                            return "";
-                        }
-                    } else {
-                        response.status(404);
-                        return "";
-                    }
-                }, gson::toJson);
+                post("", JSON, PostSubscriptions, gson::toJson);
+                delete("", JSON, DeleteSubscriptions, gson::toJson);
             });
 
             path("/search", () -> {
 
             });
         });
-
-
         init();
     }
 

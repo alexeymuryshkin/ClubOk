@@ -172,16 +172,35 @@ public class PostRoute {
     public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
         logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
 
-        try{
-            Post post = PostController.getPostById(request.params(":id"));
-            PostController.deleteComment(post, request.params(":id"));
-
-            return noContent(response);
-        } catch (IllegalArgumentException e) {
-            return notFound(response);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return badRequest(response, e);
-        }
+//        try{
+//            Post post = PostController.getPostById(request.params(":id"));
+//            PostController.deleteComment(post, request.params(":id"));
+//
+//            return noContent(response);
+//        } catch (IllegalArgumentException e) {
+//            return notFound(response);
+//        } catch (Exception e) {
+//            logger.error(e.getMessage());
+//            return badRequest(response, e);
+//        }
+        return notFound(response);
     };
+
+    public static Route DeletePostsIdLikes = (Request request, Response response) -> {
+        logger.debug("DELETE /posts/" + request.params(":id") + "/likes/" + request.headers("x-auth"));
+
+//        try{
+//            Post post = PostController.getPostById(request.params(":id"));
+//            PostController.deleteComment(post, request.params(":id"));
+//
+//            return noContent(response);
+//        } catch (IllegalArgumentException e) {
+//            return notFound(response);
+//        } catch (Exception e) {
+//            logger.error(e.getMessage());
+//            return badRequest(response, e);
+//        }
+        return notFound(response);
+    };
+
 }

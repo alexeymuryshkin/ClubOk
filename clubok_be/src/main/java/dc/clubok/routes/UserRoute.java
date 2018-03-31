@@ -63,14 +63,24 @@ public class UserRoute {
 
     public static Route GetUsersMeSubscriptions = (Request request, Response response) -> {
         logger.debug("GET /users/me/subscriptions " + request.headers("x-auth"));
-//        TODO
-        return notFound(response);
+
+        try {
+            return ok(response, UserController.getSubscriptionsByToken(request.headers("x-auth")));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return badRequest(response, e);
+        }
     };
 
     public static Route GetUsersMeTokens = (Request request, Response response) -> {
         logger.debug("GET /users/me/tokens " + request.headers("x-auth"));
-//        TODO
-        return notFound(response);
+
+        try {
+            return ok(response, UserController.getTokensByToken(request.headers("x-auth")));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return badRequest(response, e);
+        }
     };
 
     public static Route DeleteUsersMeTokens = (Request request, Response response) -> {
@@ -113,20 +123,40 @@ public class UserRoute {
 
     public static Route GetUsersIdSubscriptions = (Request request, Response response) -> {
         logger.debug("GET /users/" + request.params(":id") + "/subscriptions");
-//        TODO
-        return notFound(response);
+
+        try {
+            return ok(response, UserController.getSubscriptionsByUserId(request.params(":id")));
+        } catch (IllegalArgumentException e) {
+            return notFound(response);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return badRequest(response, e);
+        }
     };
 
     public static Route GetUsersIdTokens = (Request request, Response response) -> {
         logger.debug("GET /users/" + request.params(":id") + "/tokens");
-//        TODO
-        return notFound(response);
+
+        try{
+            return ok(response, UserController.getTokensByUserId(request.params(":id")));
+        } catch (IllegalArgumentException e) {
+            return notFound(response);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return badRequest(response, e);
+        }
     };
 
     public static Route DeleteUsersId = (Request request, Response response) -> {
         logger.debug("DELETE /users/" + request.params(":id"));
-//        TODO
-        return notFound(response);
+
+        try {
+            UserController.deleteUserById(request.params(":id"));
+            return noContent(response);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return badRequest(response, e);
+        }
     };
 
     public static boolean notAuthenticated(Request request, Response response) {

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static dc.clubok.utils.Constants.config;
 import static dc.clubok.utils.Constants.model;
@@ -80,28 +81,40 @@ public class UserController {
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
     }
 
-    public static List<ObjectId> getSubscriptionsByUserId(String id) {
-//        TODO
-        return null;
+    public static Set<ObjectId> getSubscriptionsByUserId(String id) throws Exception {
+        Set<ObjectId> result;
+        User user = model.findById(id, User.class);
+        result = user.getSubscriptions();
+
+        return result;
     }
 
-    public static List<Token> getTokensByUserId(String id) {
-//        TODO
-        return null;
+    public static List<Token> getTokensByUserId(String id) throws Exception {
+        List<Token> result;
+        User user = model.findById(id, User.class);
+        result = user.getTokens();
+
+        return result;
     }
 
-    public static void deleteUserById (String id) {
-//        TODO
+    public static void deleteUserById (String id) throws Exception {
+        model.deleteById(id, User.class);
     }
 
-    public static List<ObjectId> getSubscriptionsByToken (String token) {
-//        TODO
-        return null;
+    public static Set<ObjectId> getSubscriptionsByToken (String token) throws Exception {
+        Set<ObjectId> result;
+        User user = getUserByToken(token);
+        result = user.getSubscriptions();
+
+        return result;
     }
 
-    public static List<Token> getTokensByToken (String token) {
-//        TODO
-        return null;
+    public static List<Token> getTokensByToken (String token) throws Exception {
+        List<Token> result;
+        User user = getUserByToken(token);
+        result = user.getTokens();
+
+        return result;
     }
 
     public static Token generateAuthToken(User user) throws Exception {

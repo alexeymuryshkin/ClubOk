@@ -70,12 +70,16 @@ public class PostController {
 
     }
 
-//    public static void deleteComment(Post post, String id) throws Exception {
+    public static void deleteComment(Post post, String id) throws Exception {
 //        List<Comment> comment = post.getComments().stream().filter(comment1 -> comment1.getId().toHexString().equals(id)).collect(Collectors.toList());
 //        logger.debug(post.getComments().lastIndexOf());
 //        logger.debug(String.valueOf(comment.size()));
 //
 //
 //        model.update(post, pull("comments", comment.get(0)), Post.class);
-//    }
+    }
+
+    public static void deleteLike(Post post, String token) throws Exception {
+
+    }
 }
