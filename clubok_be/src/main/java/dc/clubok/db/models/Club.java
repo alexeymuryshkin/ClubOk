@@ -6,8 +6,8 @@ import org.bson.types.ObjectId;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 public @Data class Club
@@ -16,15 +16,15 @@ public @Data class Club
     private String name;
     private String logoSrc;
     private String description;
-    private List<String> moderators;
-    private List<String> participants;
-    private List<String> subscribers;
+    private Set<ObjectId> moderators;
+    private Set<ObjectId> participants;
+    private Set<ObjectId> subscribers;
 
     public Club() {
         setId(new ObjectId());
-        moderators = new ArrayList<>();
-        participants = new ArrayList<>();
-        subscribers = new ArrayList<>();
+        moderators = new HashSet<>();
+        participants = new HashSet<>();
+        subscribers = new HashSet<>();
     }
 
     public Club(String name) {

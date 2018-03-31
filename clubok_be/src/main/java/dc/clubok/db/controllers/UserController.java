@@ -4,9 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import dc.clubok.utils.Crypt;
 import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
+import dc.clubok.utils.Crypt;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -16,14 +16,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static dc.clubok.utils.Constants.*;
+import static dc.clubok.utils.Constants.config;
+import static dc.clubok.utils.Constants.model;
 
 public class UserController {
     private static Logger logger = LoggerFactory.getLogger(UserController.class.getCanonicalName());
 
     public static Token createUser(User user) throws Exception {
+        Token token = generateAuthToken(user);
         model.saveOne(user, User.class);
-        return generateAuthToken(user);
+        return token;
     }
 
     public static Token loginUser(String email, String password) throws Exception {

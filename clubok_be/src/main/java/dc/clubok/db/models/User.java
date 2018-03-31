@@ -8,7 +8,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -23,13 +25,13 @@ public class User
     private @NotNull String password;
     private String fname;
     private String lname;
-    private List<String> subscriptions;
+    private Set<ObjectId> subscriptions;
     private List<Token> tokens;
 
     public User() {
         setId(new ObjectId());
         tokens = new ArrayList<>();
-        subscriptions = new ArrayList<>();
+        subscriptions = new HashSet<>();
     }
 
     public User(String email, String password) {

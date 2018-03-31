@@ -31,7 +31,7 @@ public class UserRoute {
             User user = gson.fromJson(request.body(), User.class);
 
             response.header("x-auth", UserController.createUser(user).getToken());
-            return created(response);
+            return created(response, user.getId().toHexString());
         } catch (Exception e) {
             return badRequest(response, e);
         }

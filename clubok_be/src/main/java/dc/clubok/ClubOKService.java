@@ -106,7 +106,9 @@ public class ClubOKService {
                     get("/likes", GetPostsIdLikes, gson::toJson);
                     post("/likes", PostPostsIdLikes, gson::toJson);
                     delete("", DeletePostsId, gson::toJson);
-                    patch("", PatchPostsId, gson::toJson);
+                    patch("", JSON, PatchPostsId, gson::toJson);
+                    patch("/comments/:cid", JSON, PatchPostsIdCommentsId, gson::toJson);
+                    delete("/comments/:cid", DeletePostsIdCommentId, gson::toJson);
                 });
             });
 

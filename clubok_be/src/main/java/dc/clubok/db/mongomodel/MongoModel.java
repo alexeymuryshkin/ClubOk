@@ -3,11 +3,13 @@ package dc.clubok.db.mongomodel;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import dc.clubok.ClubOKService;
-import dc.clubok.utils.Crypt;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.*;
+import dc.clubok.db.models.Entity;
 import dc.clubok.db.models.Model;
+import dc.clubok.db.models.User;
+import dc.clubok.utils.Crypt;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
-import static dc.clubok.utils.Constants.*;
+import static dc.clubok.utils.Constants.mongo;
+import static dc.clubok.utils.Constants.validator;
 
 public class MongoModel implements Model {
     private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
@@ -109,9 +112,18 @@ public class MongoModel implements Model {
 
     /* Updating entries in Database */
     @Override
-    public <T extends Entity> void update(T entity, Document update, Class<T> type) {
-        getCollection(type).updateOne(eq("_id", entity.getId()), new Document("$set", update));
-        logger.info("Entity [" + entity.getClass().getSimpleName() + "] was updated");
+    public <T extends Entity> void update(Document query, Document command, Class<T> type) {
+        getCollection(type).updateOne(query, command);
+        logger.info("Entity [" + type.getSimpleName() + "] was updated");
+    }
+
+    @Override
+    public <T extends Entity> void update(T entity, Bson update, Class<T> type) {
+        getCollection(type).updateOne(
+                eq("_id", entity.getId()),
+                update
+        );
+        logger.info("Entity (" + entity.getId() + ") [" + entity.getClass().getSimpleName() + "] was updated");
     }
 
     /* Model Validation */
@@ -122,7 +134,7 @@ public class MongoModel implements Model {
 
         String message = "";
 
-        for (ConstraintViolation<Entity> violation: violations) {
+        for (ConstraintViolation<Entity> violation : violations) {
             message += "Validation Error [" + entity.getClass().getSimpleName() + "] - " +
                     "Property: " + violation.getPropertyPath() +
                     "Value: " + violation.getInvalidValue() +
