@@ -35,8 +35,9 @@ public class ClubRoute {
         logger.debug("POST /clubs " + request.body());
 
         try {
-            ClubController.createClub(gson.fromJson(request.body(), Club.class));
-            return response(response, SC_CREATED);
+            Club club = gson.fromJson(request.body(), Club.class);
+            ClubController.createClub(club);
+            return response(response, SC_CREATED, club.getId().toHexString());
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());

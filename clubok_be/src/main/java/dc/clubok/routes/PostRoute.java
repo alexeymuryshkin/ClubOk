@@ -212,5 +212,4 @@ public class PostRoute {
             return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
-
 }

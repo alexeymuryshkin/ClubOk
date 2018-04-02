@@ -4,11 +4,12 @@ import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Club;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
-import dc.clubok.db.mongomodel.MongoModel;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static dc.clubok.utils.Constants.model;
 
 public class Seed {
     public static List<User> users;
@@ -28,7 +29,7 @@ public class Seed {
         }
 
         try {
-            new MongoModel().saveMany(users, User.class);
+            model.saveMany(users, User.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,21 +41,21 @@ public class Seed {
         clubs = Arrays.asList(club1, club2);
 
         try {
-            new MongoModel().saveMany(clubs, Club.class);
+            model.saveMany(clubs, Club.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void populatePosts() {
-        populateUsers();
-        populateClubs();
         Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Buffalo", "Hello everyone! Goodbye!");
+        post1.setUserId(users.get(0).getId().toHexString());
         Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Title", "Body");
+        post2.setUserId(users.get(1).getId().toHexString());
         posts = Arrays.asList(post1, post2);
 
         try {
-            new MongoModel().saveMany(posts, Post.class);
+            model.saveMany(posts, Post.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

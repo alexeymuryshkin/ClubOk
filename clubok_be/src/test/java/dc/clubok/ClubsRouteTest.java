@@ -10,6 +10,9 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.bson.types.ObjectId;
+import org.eclipse.jetty.http.HttpStatus;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,8 +20,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static dc.clubok.utils.Constants.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import static spark.Spark.stop;
 
 public class ClubsRouteTest {
     private final HttpClient client = HttpClients.createDefault();
@@ -29,6 +32,11 @@ public class ClubsRouteTest {
         ClubOKService.main(new String[0]);
     }
 
+    @AfterClass
+    public static void finish() {
+        stop();
+    }
+
     @Before
     public void setDb() {
         mongo.getDb().drop();
@@ -37,33 +45,28 @@ public class ClubsRouteTest {
     }
 
     @Test
-    public void PostClubs_ValidData_OK()
-            throws IOException, ClubOkException {
+    public void PostClubs_ValidData_SUCCESS() throws IOException, ClubOkException {
         String name = "Test Club";
         Club club = new Club(name);
 
         HttpUriRequest request = RequestBuilder.post(url + "/clubs")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
                 .setEntity(new StringEntity(gson.toJson(club)))
                 .build();
         HttpResponse response = client.execute(request);
 
-        assertEquals("request does not return OK",
-                200, response.getStatusLine().getStatusCode());
+        // Assertions in response
+        assertTrue("should return success code",
+                HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
 
-        Club clubResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), Club.class);
+        String id = gson.fromJson(EntityUtils.toString(response.getEntity()), String.class);
+        assertTrue("should return valid id", ObjectId.isValid(id));
 
-        assertNotNull("club was not returned",
-                clubResponse);
-        assertNotNull("club does not have id",
-                clubResponse.getId());
+        Club clubDb = model.findById(id, Club.class);
 
-        Club clubDB = model.findById(clubResponse.getId(), Club.class);
-
-        assertEquals("number of clubs is incorrect",
-                3, model.count(Club.class));
-        assertNotNull("club is not created",
-                clubDB);
-
+        assertEquals("db should have correct number of clubs", 3, model.count(Club.class));
+        assertNotNull("db should create user entry", clubDb);
+        assertEquals("db entry should match returned id", id, clubDb.getId().toHexString());
     }
 
 }
