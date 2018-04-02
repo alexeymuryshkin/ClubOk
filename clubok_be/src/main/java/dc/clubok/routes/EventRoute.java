@@ -33,7 +33,8 @@ public class EventRoute {
         logger.debug("POST /events " + request.body());
 
         try {
-            EventController.createEvent(gson.fromJson(request.body(), Event.class));
+            Event event = gson.fromJson(request.body(), Event.class);
+            EventController.createEvent(event);
             return response(response, SC_CREATED);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());

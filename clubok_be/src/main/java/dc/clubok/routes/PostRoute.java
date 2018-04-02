@@ -12,8 +12,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import static dc.clubok.utils.Constants.gson;
-import static dc.clubok.utils.Constants.response;
+import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
 public class PostRoute {
@@ -57,6 +56,9 @@ public class PostRoute {
 
         try {
             Post post = PostController.getPostById(request.params(":id"));
+            if (post == null) {
+                throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            }
 
             return response(response, SC_OK, post);
         } catch (ClubOkException e) {
@@ -182,35 +184,33 @@ public class PostRoute {
     public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
         logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
 
-//        try{
-//            Post post = PostController.getPostById(request.params(":id"));
-//            PostController.deleteComment(post, request.params(":id"));
-//
-//            return response(response, SC_NO_CONTENT);
-//        } catch (IllegalArgumentException e) {
-//            return response(response, SC_NOT_FOUND);
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//            return badRequest(response, e);
-//        }
-        return response(response, SC_NOT_FOUND);
+        try{
+            PostController.deleteComment(request.params(":id"), request.params(":cid"));
+
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
     };
 
     public static Route DeletePostsIdLikes = (Request request, Response response) -> {
         logger.debug("DELETE /posts/" + request.params(":id") + "/likes/" + request.headers("x-auth"));
 
-//        try{
-//            Post post = PostController.getPostById(request.params(":id"));
-//            PostController.deleteComment(post, request.params(":id"));
-//
-//            return response(response, SC_NO_CONTENT);
-//        } catch (IllegalArgumentException e) {
-//            return response(response, SC_NOT_FOUND);
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//            return badRequest(response, e);
-//        }
-        return response(response, SC_NOT_FOUND);
+        try{
+            PostController.deleteComment(request.params(":id"), request.headers("x-auth"));
+
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
     };
 
 }

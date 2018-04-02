@@ -85,8 +85,8 @@ public class UserController {
                 User.class);
     }
 
-    public static User getUserById(String id) throws ClubOkException {
-        return model.findById(id, User.class);
+    public static User getUserById(String userId) throws ClubOkException {
+        return model.findById(userId, User.class);
     }
 
     public static void logout(String token) throws Exception {
@@ -109,9 +109,9 @@ public class UserController {
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
     }
 
-    public static Set<ObjectId> getSubscriptionsByUserId(String id) throws ClubOkException {
+    public static Set<ObjectId> getSubscriptionsByUserId(String userId) throws ClubOkException {
         Set<ObjectId> result;
-        User user = model.findById(id, User.class);
+        User user = model.findById(userId, User.class);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
         }
@@ -120,9 +120,15 @@ public class UserController {
         return result;
     }
 
-    public static List<Token> getTokensByUserId(String id) throws ClubOkException {
+    public static void deleteSubscription(String userId, String clubId) throws ClubOkException {
+//        TODO
+//        User user = getUserById(userId);
+
+    }
+
+    public static List<Token> getTokensByUserId(String userId) throws ClubOkException {
         List<Token> result;
-        User user = model.findById(id, User.class);
+        User user = model.findById(userId, User.class);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
         }
@@ -131,8 +137,8 @@ public class UserController {
         return result;
     }
 
-    public static void deleteUserById(String id) throws ClubOkException {
-        model.deleteById(id, User.class);
+    public static void deleteUserById(String userId) throws ClubOkException {
+        model.deleteById(userId, User.class);
     }
 
     public static Set<ObjectId> getSubscriptionsByToken(String token) throws ClubOkException {

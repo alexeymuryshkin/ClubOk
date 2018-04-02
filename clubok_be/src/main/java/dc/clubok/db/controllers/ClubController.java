@@ -1,8 +1,8 @@
 package dc.clubok.db.controllers;
 
 import dc.clubok.db.models.Club;
-import dc.clubok.db.models.Event;
 import dc.clubok.utils.exceptions.ClubOkException;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,17 @@ public class ClubController {
         return null;
     }
 
+    public static void deleteSubscriber(String clubId, String userId) {
+//        TODO
+    }
+
     public static List<ObjectId> getModeratorsByClubId(String clubId) throws ClubOkException {
 //        TODO
         return null;
+    }
+
+    public static void deleteModerator(String clubId, String userId) throws ClubOkException {
+//        TODO
     }
 
     public static List<ObjectId> getParticipantsByClubId(String clubId) throws ClubOkException {
@@ -43,12 +51,15 @@ public class ClubController {
         return null;
     }
 
+    public static void deleteParticipant(String clubId, String userId) throws ClubOkException {
+//        TODO
+    }
+
     public static void deleteClubById(String clubId) throws ClubOkException {
 //        TODO
     }
 
-    public static void editClubInfoById(String clubId, Event update) throws ClubOkException {
+    public static void editClub(String clubId, Document update) throws ClubOkException {
 //        TODO
     }
-
 }

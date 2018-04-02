@@ -1,9 +1,7 @@
 package dc.clubok;
 
-import dc.clubok.db.models.Event;
 import dc.clubok.db.models.Post;
 import dc.clubok.utils.exceptions.ClubOkException;
-import org.bson.Document;
 import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static dc.clubok.routes.ClubRoute.*;
 import static dc.clubok.routes.EventRoute.*;
 import static dc.clubok.routes.PostRoute.*;
-import static dc.clubok.routes.SubscriptionRoute.DeleteSubscriptions;
-import static dc.clubok.routes.SubscriptionRoute.PostSubscriptions;
 import static dc.clubok.routes.UserRoute.*;
 import static dc.clubok.utils.Constants.*;
 import static spark.Spark.*;
@@ -54,6 +50,7 @@ public class ClubOKService {
                     get("", GetUsersMe, gson::toJson);
 
                     get("/subscriptions", GetUsersMeSubscriptions, gson::toJson);
+                    delete("/subscriptions/:id", DeleteUsersMeSubscriptionsId, gson::toJson);
 
                     get("/tokens", GetUsersMeTokens, gson::toJson);
                     delete("/tokens", DeleteUsersMeTokens, gson::toJson);
@@ -83,10 +80,13 @@ public class ClubOKService {
                     patch("", JSON, PatchClubsId, gson::toJson);
 
                     get("/subscribers", GetClubsIdSubscribers, gson::toJson);
+                    delete("/subscribers/:uid", DeleteClubsIdSubscribersId, gson::toJson);
 
                     get("/participants", GetClubsIdParticipants, gson::toJson);
+                    delete("/participants/:uid", DeleteClubsIdParticipantsId, gson::toJson);
 
                     get("/moderators", GetClubsIdModerators, gson::toJson);
+                    delete("/moderators/:uid", DeleteClubsIdModeratorsId, gson::toJson);
                 });
             });
 
@@ -125,49 +125,6 @@ public class ClubOKService {
                 path("/:id", () -> {
                     get("", GetEventsId, gson::toJson);
                 });
-
-
-                post("/update", "application/json", (request, response) -> {
-                    try {
-                        Event event = gson.fromJson(request.body(), Event.class);
-                        if (model.findById(event.getId(), Event.class) != null) {
-                            model.update(event, new Document().append("datetime", event.getDatetime()), Event.class);
-                            model.update(event, new Document().append("description", event.getDescription()), Event.class);
-                            model.update(event, new Document().append("title", event.getTitle()), Event.class);
-                            response.type("application/json");
-                            response.status(200);
-                            return event;
-                        } else {
-                            response.status(404);
-                            return "";
-                        }
-                    } catch (Exception e) {
-                        response.status(400);
-                        return "";
-                    }
-                }, gson::toJson);
-                post("/register", "application/json", (request, response) -> {
-                    try {
-                        Event event = gson.fromJson(request.body(), Event.class);
-                        model.saveOne(event, Event.class);
-                        response.type("application/json");
-                        response.status(200);
-                        return event;
-                    } catch (Exception e) {
-                        response.status(400);
-                        return "";
-                    }
-                }, gson::toJson);
-            });
-
-            path("/subscriptions", () -> {
-                before("", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
-
-                post("", JSON, PostSubscriptions, gson::toJson);
-                delete("", JSON, DeleteSubscriptions, gson::toJson);
             });
 
             path("/search", () -> {

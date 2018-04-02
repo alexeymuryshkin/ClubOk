@@ -1,6 +1,7 @@
 package dc.clubok.routes;
 
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
@@ -18,7 +19,7 @@ public class UserRoute {
     private static Logger logger = LoggerFactory.getLogger(UserRoute.class.getCanonicalName());
 
     public static Route GetUsers = (Request request, Response response) -> {
-        logger.debug("GET /users");
+        logger.debug("GET /users " + request.queryString());
         
         try {
             return response(response, SC_OK, UserController.getUsers(request.queryString()));
@@ -85,6 +86,22 @@ public class UserRoute {
 
         try {
             return response(response, SC_OK, UserController.getSubscriptionsByToken(request.headers("x-auth")));
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
+    public static Route DeleteUsersMeSubscriptionsId = (Request request, Response response) -> {
+        logger.debug("DELETE /users/me/subscriptions/:id");
+
+        try {
+            UserController.deleteSubscription(request.headers("x-auth"), request.params(":id"));
+            ClubController.deleteSubscriber(request.params("id"), request.headers("x-auth"));
+            return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());

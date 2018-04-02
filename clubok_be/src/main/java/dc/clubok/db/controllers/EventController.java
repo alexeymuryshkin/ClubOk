@@ -19,44 +19,13 @@ public class EventController {
     }
 
     public static List<Event> getEvents(String params) throws ClubOkException {
+//        TODO Add parameter handler
         return model.findAll(Event.class);
     }
 
     public static Event getEventById(String eventId) throws ClubOkException {
         return model.findById(eventId, Event.class);
     }
-
-//    public static void getEventsByClubId (String id) {
-//        logger.debug("GET /events/" + request.params(":id"));
-//        try {
-//            List<Event> eventList = model.findAll(Event.class);
-//            List<Event> ClubEvents = new ArrayList<>();
-//
-//            if (eventList.isEmpty()) {
-//                response.type(JSON);
-//                response.status(SC_NOT_FOUND);
-//                return "";
-//            }
-//            for (Event i: eventList){
-//                if (i.getId().toHexString().equals(request.params(":id"))){
-//                    ClubEvents.add(i);
-//                    System.out.println(i.getTitle());
-//                }
-//            }
-//
-//            response.type(JSON);
-//            response.status(SC_OK);
-//            return ClubEvents;
-//        } catch (IllegalArgumentException e) {
-//            response.type(JSON);
-//            response.status(SC_NOT_FOUND);
-//            return "";
-//        } catch (Exception e) {
-//            response.type(JSON);
-//            response.status(SC_BAD_REQUEST);
-//            return e;
-//        }
-//    };
 
     public static void deleteEventById(String eventId) throws ClubOkException {
         model.deleteById(eventId, Event.class);
