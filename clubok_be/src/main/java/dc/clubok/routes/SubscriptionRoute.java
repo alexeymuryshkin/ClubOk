@@ -6,7 +6,8 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import static dc.clubok.utils.Constants.notFound;
+import static dc.clubok.utils.Constants.response;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class SubscriptionRoute {
     private static Logger logger = LoggerFactory.getLogger(SubscriptionRoute.class.getCanonicalName());
@@ -14,13 +15,13 @@ public class SubscriptionRoute {
     public static Route PostSubscriptions = (Request request, Response response) -> {
         logger.debug("POST /subscriptions " + request.body());
 //        TODO
-        return notFound(response);
+        return response(response, SC_NOT_FOUND);
     };
 
     public static Route DeleteSubscriptions = (Request request, Response response) -> {
         logger.debug("DELETE /subscriptions " + request.body());
 //        TODO
-        return notFound(response);
+        return response(response, SC_NOT_FOUND);
     };
 
 }

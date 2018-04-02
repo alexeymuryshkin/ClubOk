@@ -1,6 +1,7 @@
 package dc.clubok.db.controllers;
 
 import dc.clubok.db.models.Event;
+import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,16 +14,16 @@ public class EventController {
 
     private static Logger logger = LoggerFactory.getLogger(EventController.class.getCanonicalName());
 
-    public static void createEvent(Event event) throws Exception {
+    public static void createEvent(Event event) throws ClubOkException {
         model.saveOne(event, Event.class);
     }
 
-    public static List<Event> getEvents(String params) throws Exception {
+    public static List<Event> getEvents(String params) throws ClubOkException {
         return model.findAll(Event.class);
     }
 
-    public static Event getEventById(String id) {
-        return model.findById(id, Event.class);
+    public static Event getEventById(String eventId) throws ClubOkException {
+        return model.findById(eventId, Event.class);
     }
 
 //    public static void getEventsByClubId (String id) {
@@ -57,12 +58,12 @@ public class EventController {
 //        }
 //    };
 
-    public static void deleteEventById(String id) throws Exception {
-        model.deleteById(id, Event.class);
+    public static void deleteEventById(String eventId) throws ClubOkException {
+        model.deleteById(eventId, Event.class);
     }
 
-    public static void editEventById(String id, Event event) throws Exception {
-        model.update(event, new Document("_id", id), Event.class);
+    public static void editEventById(String eventId, Event event) throws ClubOkException {
+        model.update(event, new Document("_id", eventId), Event.class);
     }
 
 }

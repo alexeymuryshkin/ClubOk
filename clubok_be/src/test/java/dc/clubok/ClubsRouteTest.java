@@ -2,6 +2,7 @@ package dc.clubok;
 
 import dc.clubok.db.models.Club;
 import dc.clubok.seed.Seed;
+import dc.clubok.utils.exceptions.ClubOkException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -15,8 +16,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
 import static dc.clubok.utils.Constants.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class ClubsRouteTest {
     private final HttpClient client = HttpClients.createDefault();
@@ -36,7 +38,7 @@ public class ClubsRouteTest {
 
     @Test
     public void PostClubs_ValidData_OK()
-            throws IOException{
+            throws IOException, ClubOkException {
         String name = "Test Club";
         Club club = new Club(name);
 

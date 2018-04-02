@@ -10,8 +10,6 @@ import spark.Response;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import static org.apache.http.HttpStatus.*;
-
 public class Constants {
     public static final Config config = new Config();
 
@@ -25,49 +23,28 @@ public class Constants {
     public static final Gson gson = new Gson();
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
-    public static Object ok(Response response) {
-        response.status(SC_OK);
-        response.type(JSON);
-        return "";
-    }
+    /* Error Codes */
+    public static final int VALIDATION_ERROR = 101;
 
-    public static Object ok(Response response, Object o) {
-        response.status(SC_OK);
+    public static final int DB_SAVE_ERROR = 102;
+    public static final int DB_ERROR = 102;
+    public static final int DB_QUERY_ERROR = 103;
+    public static final int DB_UPDATE_ERROR = 104;
+    public static final int LOGIN_ERROR = 105;
+    public static final int USER_NOT_FOUND = 105;
+    public static final int POST_NOT_FOUND = 105;
+    public static final int INCORRECT_USER_ID = 105105105;
+    public static final int LOGOUT_ERROR = 105105105;
+
+
+    /* Http Responses */
+    public static Object response(Response response, int statusCode, Object o) {
+        response.status(statusCode);
         response.type(JSON);
         return o;
     }
 
-    public static Object created(Response response) {
-        response.status(SC_CREATED);
-        response.type(JSON);
-        return "";
-    }
-
-    public static Object created(Response response, Object o) {
-        response.status(SC_CREATED);
-        response.type(JSON);
-        return o;
-    }
-
-    public static Object noContent(Response response) {
-        response.status(SC_NO_CONTENT);
-        return "";
-    }
-
-    public static Object badRequest(Response response, Object o) {
-        response.status(SC_BAD_REQUEST);
-        response.type(JSON);
-        return o;
-    }
-
-    public static Object notFound(Response response) {
-        response.status(SC_NOT_FOUND);
-        response.type(JSON);
-        return "";
-    }
-    public static Object notFound(Response response, Object o) {
-        response.status(SC_NOT_FOUND);
-        response.type(JSON);
-        return o;
+    public static Object response(Response response, int statusCode) {
+        return response(response, statusCode, "");
     }
 }

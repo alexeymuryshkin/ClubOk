@@ -2,6 +2,7 @@ package dc.clubok;
 
 import dc.clubok.db.models.Event;
 import dc.clubok.db.models.Post;
+import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
@@ -195,6 +196,8 @@ public class ClubOKService {
             user.getRemote().sendString(gson.toJson(model.findAll(Post.class)));
         } catch (IOException e) {
             logger.error(e.getMessage());
+        } catch (ClubOkException e) {
+            e.printStackTrace();
         }
     }
 }

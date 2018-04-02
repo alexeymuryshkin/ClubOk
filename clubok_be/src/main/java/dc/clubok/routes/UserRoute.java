@@ -3,6 +3,7 @@ package dc.clubok.routes;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.User;
+import dc.clubok.utils.exceptions.ClubOkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -11,16 +12,22 @@ import spark.Route;
 
 import static dc.clubok.db.controllers.UserController.getUserByToken;
 import static dc.clubok.utils.Constants.*;
+import static org.apache.http.HttpStatus.*;
 
 public class UserRoute {
     private static Logger logger = LoggerFactory.getLogger(UserRoute.class.getCanonicalName());
 
     public static Route GetUsers = (Request request, Response response) -> {
         logger.debug("GET /users");
+        
         try {
-            return ok(response, UserController.getUsers(request.queryString()));
+            return response(response, SC_OK, UserController.getUsers(request.queryString()));
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -31,9 +38,13 @@ public class UserRoute {
             User user = gson.fromJson(request.body(), User.class);
 
             response.header("x-auth", UserController.createUser(user).getToken());
-            return created(response, user.getId().toHexString());
+            return response(response, SC_CREATED, user.getId().toHexString());
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -44,9 +55,13 @@ public class UserRoute {
             User user = gson.fromJson(request.body(), User.class);
 
             response.header("x-auth", UserController.loginUser(user.getEmail(), user.getPassword()).getToken());
-            return ok(response);
+            return response(response, SC_OK);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -54,9 +69,13 @@ public class UserRoute {
         logger.debug("GET /users/me " + request.headers("x-auth"));
 
         try {
-            return ok(response, getUserByToken(request.headers("x-auth")));
+            return response(response, SC_OK, getUserByToken(request.headers("x-auth")));
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
 
     };
@@ -65,10 +84,13 @@ public class UserRoute {
         logger.debug("GET /users/me/subscriptions " + request.headers("x-auth"));
 
         try {
-            return ok(response, UserController.getSubscriptionsByToken(request.headers("x-auth")));
-        } catch (Exception e) {
+            return response(response, SC_OK, UserController.getSubscriptionsByToken(request.headers("x-auth")));
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return badRequest(response, e);
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -76,10 +98,13 @@ public class UserRoute {
         logger.debug("GET /users/me/tokens " + request.headers("x-auth"));
 
         try {
-            return ok(response, UserController.getTokensByToken(request.headers("x-auth")));
-        } catch (Exception e) {
+            return response(response, SC_OK, UserController.getTokensByToken(request.headers("x-auth")));
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return badRequest(response, e);
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -88,9 +113,13 @@ public class UserRoute {
 
         try {
             UserController.logoutAll(request.headers("x-auth"));
-            return noContent(response);
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -98,9 +127,13 @@ public class UserRoute {
         logger.debug("DELETE /users/me/token " + request.headers("x-auth"));
         try {
             UserController.logout(request.headers("x-auth"));
-            return noContent(response);
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -110,14 +143,16 @@ public class UserRoute {
         try {
             User user = UserController.getUserById(request.params(":id"));
             if (user == null) {
-                return notFound(response);
+                throw new ClubOkException(USER_NOT_FOUND, "User with this id does not exist", SC_NOT_FOUND);
             }
-            return ok(response, user);
-        } catch (IllegalArgumentException iae) {
-            logger.debug("Incorrect Id format");
-            return notFound(response);
+
+            return response(response, SC_OK, user);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
         } catch (Exception e) {
-            return badRequest(response, e);
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -125,12 +160,13 @@ public class UserRoute {
         logger.debug("GET /users/" + request.params(":id") + "/subscriptions");
 
         try {
-            return ok(response, UserController.getSubscriptionsByUserId(request.params(":id")));
-        } catch (IllegalArgumentException e) {
-            return notFound(response);
-        } catch (Exception e) {
+            return response(response, SC_OK,  UserController.getSubscriptionsByUserId(request.params(":id")));
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return badRequest(response, e);
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -138,12 +174,13 @@ public class UserRoute {
         logger.debug("GET /users/" + request.params(":id") + "/tokens");
 
         try{
-            return ok(response, UserController.getTokensByUserId(request.params(":id")));
-        } catch (IllegalArgumentException e) {
-            return notFound(response);
-        } catch (Exception e) {
+            return response(response, SC_OK,  UserController.getTokensByUserId(request.params(":id")));
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return badRequest(response, e);
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 
@@ -152,10 +189,13 @@ public class UserRoute {
 
         try {
             UserController.deleteUserById(request.params(":id"));
-            return noContent(response);
-        } catch (Exception e) {
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return badRequest(response, e);
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
 

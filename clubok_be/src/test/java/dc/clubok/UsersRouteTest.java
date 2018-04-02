@@ -5,6 +5,7 @@ import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
 import dc.clubok.seed.Seed;
+import dc.clubok.utils.exceptions.ClubOkException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -40,7 +41,7 @@ public class UsersRouteTest {
     // POST /users
     @Test
     public void PostUsers_ValidData_CREATED()
-            throws IOException {
+            throws IOException, ClubOkException {
         String email = "testmail@example.com";
         String password = "testPass";
 
@@ -59,15 +60,14 @@ public class UsersRouteTest {
         User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 3, model.count(User.class));
-        assertTrue("user is not created",
-                userDB != null);
+        assertNotNull("user is not created", userDB);
         assertNotEquals("password is not hashed",
                 password, userDB.getPassword());
     }
 
     @Test
     public void PostUsers_DuplicateUser_BAD()
-            throws IOException {
+            throws IOException, ClubOkException {
         HttpUriRequest request = RequestBuilder.post(url + "/users")
                 .addHeader("Content-Type", "application/json")
                 .setEntity(new StringEntity(gson.toJson(
@@ -87,7 +87,7 @@ public class UsersRouteTest {
 
     @Test
     public void PostUsers_InvalidEmail_BAD()
-            throws IOException {
+            throws IOException, ClubOkException {
         String email = "invalidemail";
         String password = "testPass";
 
@@ -111,13 +111,12 @@ public class UsersRouteTest {
         User userDB = UserController.findByEmail(email);
         assertEquals("number of users is incorrect",
                 2, model.count(User.class));
-        assertTrue("User exists",
-                userDB == null);
+        assertNull("User exists", userDB);
     }
 
     @Test
     public void PostUsers_InvalidPassword_BAD()
-            throws IOException {
+            throws IOException, ClubOkException {
         String email = "someMail@example.com";
         String password = "123";
 
@@ -139,15 +138,14 @@ public class UsersRouteTest {
 
         // Assertions in DB
         User userDB = UserController.findByEmail(email);
-        assertTrue("User exists",
-                userDB == null);
+        assertNull("User exists", userDB);
         assertEquals("number of users is incorrect",
                 2, model.count(User.class));
     }
 
     @Test
     public void PostUsers_NoData_BAD()
-            throws IOException {
+            throws IOException, ClubOkException {
         HttpUriRequest request = RequestBuilder.post(url + "/users")
                 .addHeader("Content-Type", "application/json")
                 .setEntity(new StringEntity(gson.toJson(
@@ -195,14 +193,14 @@ public class UsersRouteTest {
     }
 
     @Test
-    public void GetUsersId_IncorrectId_NOTFOUND()
+    public void GetUsersId_IncorrectId_BAD()
             throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/users/123321")
                 .build();
         HttpResponse response = client.execute(request);
 
-        assertEquals("request does not return NOT FOUND",
-                404, response.getStatusLine().getStatusCode());
+        assertEquals("request does not return BAD REQUEST",
+                400, response.getStatusLine().getStatusCode());
     }
 
     // GET /users/me
@@ -218,8 +216,7 @@ public class UsersRouteTest {
                 200, response.getStatusLine().getStatusCode());
 
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertTrue("user is not returned",
-                userResponse != null);
+        assertNotNull("user is not returned", userResponse);
         assertEquals("user has incorrect id",
                 Seed.users.get(1).getId(), userResponse.getId());
     }
@@ -236,8 +233,7 @@ public class UsersRouteTest {
                 401, response.getStatusLine().getStatusCode());
 
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertTrue("user is returned",
-                userResponse == null);
+        assertNull("user is returned", userResponse);
     }
 
     @Test
@@ -251,14 +247,13 @@ public class UsersRouteTest {
                 401, response.getStatusLine().getStatusCode());
 
         User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertTrue("user is returned",
-                userResponse == null);
+        assertNull("user is returned", userResponse);
     }
 
     // POST /users/login
     @Test
     public void PostUsersLogin_ValidEmailAndPassword_OK()
-            throws IOException {
+            throws IOException, ClubOkException {
         HttpUriRequest request = RequestBuilder.post(url + "/users/login")
                 .addHeader("Content-Type", "application/json")
                 .setEntity(new StringEntity(gson.toJson(
@@ -275,8 +270,7 @@ public class UsersRouteTest {
 
         // Assertions in DB
         User userDB = model.findById(Seed.users.get(1).getId(), User.class);
-        assertTrue("user is not in DB",
-                userDB != null);
+        assertNotNull("user is not in DB", userDB);
         assertTrue("authentication token is not created",
                 userDB.getTokens().contains(new Token("auth", response.getFirstHeader("x-auth").getValue())));
 
@@ -284,7 +278,7 @@ public class UsersRouteTest {
 
     @Test
     public void PostUsersLogin_InvalidPassword_BAD()
-            throws IOException {
+            throws IOException, ClubOkException {
         HttpUriRequest request = RequestBuilder.post(url + "/users/login")
                 .setEntity(new StringEntity(gson.toJson(
                         new User(
@@ -306,7 +300,7 @@ public class UsersRouteTest {
     }
 
     @Test
-    public void PostUsersLogin_NonExistingEmail_NOTFOUND()
+    public void PostUsersLogin_NonExistingEmail_BAD()
             throws IOException {
         String email = "nonExistingMail@example.com";
         String password = "somePass";
@@ -330,7 +324,7 @@ public class UsersRouteTest {
 
     // DELETE /users/me/token
     @Test
-    public void DeleteUsersMeToken_ValidData_OK()
+    public void DeleteUsersMeToken_ValidData_NOCONTENT()
             throws IOException {
         HttpUriRequest request = RequestBuilder.delete(url + "/users/me/token")
                 .addHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
