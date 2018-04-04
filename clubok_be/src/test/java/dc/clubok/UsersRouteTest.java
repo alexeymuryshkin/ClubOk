@@ -46,6 +46,7 @@ public class UsersRouteTest {
     public void setDb() {
         mongo.getDb().drop();
         Seed.populateUsers();
+        Seed.populateClubs();
     }
     
     // GET /users

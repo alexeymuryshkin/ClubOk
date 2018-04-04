@@ -27,12 +27,8 @@ public @Data class Club
         subscribers = new HashSet<>();
     }
 
-    public Club(String name) {
-        this();
-        this.name = name;
-    }
-
     public Club(String name, String description) {
+        this();
         this.name = name;
         this.description = description;
     }
