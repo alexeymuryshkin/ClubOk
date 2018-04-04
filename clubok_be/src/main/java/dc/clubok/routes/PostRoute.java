@@ -70,67 +70,6 @@ public class PostRoute {
         }
     };
 
-    public static Route GetPostsIdComments = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/comments");
-
-        try {
-            return response(response, SC_CREATED, PostController.getCommentsByPostId(request.params(":id")));
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route GetPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/likes");
-
-        try {
-            return response(response, SC_OK, PostController.getLikesByPostId(request.params(":id")));
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route PostPostsIdComments = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/comments" + request.body());
-
-        try {
-            Comment comment = gson.fromJson(request.body(), Comment.class);
-            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
-            PostController.commentPost(request.params(":id"), comment);
-
-            return response(response, SC_OK, comment.getId().toHexString());
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route PostPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/likes");
-
-        try {
-            PostController.likePost(request.params(":id"), request.headers("x-auth"));
-            return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
     public static Route DeletePostsId = (Request request, Response response) -> {
         logger.debug("DELETE /posts/" + request.params(":id"));
 
@@ -162,6 +101,54 @@ public class PostRoute {
         }
     };
 
+    public static Route GetPostsIdComments = (Request request, Response response) -> {
+        logger.debug("GET /posts/" + request.params(":id") + "/comments");
+
+        try {
+            return response(response, SC_CREATED, PostController.getCommentsByPostId(request.params(":id")));
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
+    public static Route PostPostsIdComments = (Request request, Response response) -> {
+        logger.debug("POST /posts/" + request.params(":id") + "/comments" + request.body());
+
+        try {
+            Comment comment = gson.fromJson(request.body(), Comment.class);
+            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
+            PostController.commentPost(request.params(":id"), comment);
+
+            return response(response, SC_OK, comment.getId().toHexString());
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
+    public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
+        logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
+
+        try{
+            PostController.deleteComment(request.params(":id"), request.params(":cid"));
+
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
     public static Route PatchPostsIdCommentsId = (Request request, Response response) -> {
         logger.debug("PATCH /posts/" + request.params(":id") + "/comments/" + request.params(":cid") + " " + request.body());
 
@@ -181,12 +168,25 @@ public class PostRoute {
         }
     };
 
-    public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
+    public static Route GetPostsIdLikes = (Request request, Response response) -> {
+        logger.debug("GET /posts/" + request.params(":id") + "/likes");
 
-        try{
-            PostController.deleteComment(request.params(":id"), request.params(":cid"));
+        try {
+            return response(response, SC_OK, PostController.getLikesByPostId(request.params(":id")));
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
 
+    public static Route PostPostsIdLikes = (Request request, Response response) -> {
+        logger.debug("POST /posts/" + request.params(":id") + "/likes");
+
+        try {
+            PostController.likePost(request.params(":id"), request.headers("x-auth"));
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());

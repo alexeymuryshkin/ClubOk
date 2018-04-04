@@ -14,14 +14,15 @@ import java.util.Set;
 @Data
 public class Post
         extends Entity {
+    private @NotEmpty(message = "Club Id cannot be empty")
     String clubId;
+    private @NotEmpty (message = "User Id cannot be empty")
     String userId;
     private String type;
-    private @NotEmpty (message = "Title cannot be null")
+    private @NotEmpty (message = "Title cannot be empty")
     String title;
-    private @NotEmpty (message = "Body cannot be null")
+    private @NotEmpty (message = "Body cannot be empty")
     String body;
-    private int lastModified;
     private Set<String> likes;
     private List<Comment> comments;
 
@@ -29,7 +30,6 @@ public class Post
         setId(new ObjectId());
         likes = new HashSet<>();
         comments = new ArrayList<>();
-        lastModified = getId().getTimestamp();
     }
 
     public Post(String clubId, String type, String title, String body) {

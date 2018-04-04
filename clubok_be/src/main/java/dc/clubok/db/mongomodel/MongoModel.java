@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.currentDate;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
@@ -169,7 +171,7 @@ public class MongoModel implements Model {
         try {
             getCollection(type).updateOne(
                     eq("_id", entity.getId()),
-                    update
+                    combine(update, currentDate("lastModified"))
             );
         } catch (MongoException me) {
             throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
