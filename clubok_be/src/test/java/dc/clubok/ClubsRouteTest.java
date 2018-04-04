@@ -44,6 +44,10 @@ public class ClubsRouteTest {
         Seed.populateClubs();
     }
 
+//    TODO GET /clubs
+
+//    TODO GET /clubs/?parameters
+
     @Test
     public void PostClubs_ValidData_SUCCESS() throws IOException, ClubOkException {
         String name = "Test Club";
@@ -69,4 +73,21 @@ public class ClubsRouteTest {
         assertEquals("db entry should match returned id", id, clubDb.getId().toHexString());
     }
 
+//    TODO GET /clubs/:id
+
+//    TODO DELETE /clubs/:id
+
+//    TODO PATCH /clubs/:id
+
+//    TODO GET /clubs/:id/subscribers
+
+//    TODO DELETE /clubs/:id/subscribers/:id
+
+//    TODO GET /clubs/:id/moderators
+
+//    TODO DELETE /clubs/:id/moderators/:id
+
+//    TODO GET /clubs/:id/participants
+
+//    TODO DELETE /clubs/:id/participants/:id
 }

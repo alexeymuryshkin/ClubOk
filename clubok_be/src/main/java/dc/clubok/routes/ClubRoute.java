@@ -65,6 +65,37 @@ public class ClubRoute {
         }
     };
 
+    public static Route DeleteClubsId = (Request request, Response response) -> {
+        logger.debug("DELETE /clubs/" + request.params(":id"));
+
+        try {
+            ClubController.deleteClubById(request.params(":id"));
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
+    public static Route PatchClubsId = (Request request, Response response) -> {
+        logger.debug("PATCH /clubs/" + request.params(":id") + " " + request.body());
+
+        try {
+            Document update = Document.parse(request.body());
+            ClubController.editClub(request.params(":id"), update);
+            return response(response, SC_OK);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
     public static Route GetClubsIdSubscribers = (Request request, Response response) -> {
         logger.debug("GET /clubs/" + request.params(":id") + "/subscribers");
 
@@ -147,37 +178,6 @@ public class ClubRoute {
             ClubController.deleteParticipant(request.params(":id"), request.params(":uid"));
 
             return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route DeleteClubsId = (Request request, Response response) -> {
-        logger.debug("DELETE /clubs/" + request.params(":id"));
-
-        try {
-            ClubController.deleteClubById(request.params(":id"));
-            return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route PatchClubsId = (Request request, Response response) -> {
-        logger.debug("PATCH /clubs/" + request.params(":id") + " " + request.body());
-
-        try {
-            Document update = Document.parse(request.body());
-            ClubController.editClub(request.params(":id"), update);
-            return response(response, SC_OK);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());

@@ -50,8 +50,8 @@ public class PostController {
     }
 
     public static List<Post> getPosts(String params) throws ClubOkException {
-//        TODO
-        return null;
+//        TODO Add parameters
+        return model.findAll(Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {
