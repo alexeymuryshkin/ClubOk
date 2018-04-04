@@ -1,5 +1,7 @@
 package dc.clubok;
 
+import dc.clubok.db.controllers.ClubController;
+import dc.clubok.db.controllers.EventController;
 import dc.clubok.db.models.Post;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.eclipse.jetty.websocket.api.Session;
@@ -119,6 +121,14 @@ public class ClubOKService {
             });
 
             path("/events", () -> {
+                before("", (request, response) -> {
+                    if (notAuthenticated(request, response))
+                        throw halt(401);
+                });
+                before("/*", (request, response) -> {
+                    if (notAuthenticated(request, response))
+                        throw halt(401);
+                });
                 post("", JSON, PostEvents, gson::toJson);
                 get("", GetEvents, gson::toJson);
 

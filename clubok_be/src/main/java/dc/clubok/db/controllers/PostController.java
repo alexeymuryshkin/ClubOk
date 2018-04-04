@@ -51,7 +51,7 @@ public class PostController {
 
     public static List<Post> getPosts(String params) throws ClubOkException {
 //        TODO
-        return null;
+        return model.findAll(Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {
@@ -105,12 +105,10 @@ public class PostController {
     }
 
     public static void deleteComment(String postId, String commentId) throws ClubOkException {
-//        List<Comment> comment = post.getComments().stream().filter(comment1 -> comment1.getId().toHexString().equals(id)).collect(Collectors.toList());
-//        logger.debug(post.getComments().lastIndexOf());
-//        logger.debug(String.valueOf(comment.size()));
-//
-//
-//        model.update(post, pull("comments", comment.get(0)), Post.class);
+        Post post = PostController.getPostById(postId);
+        if (post == null){
+            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+        }
     }
 
     public static void deleteLike(String postId, String token) throws ClubOkException {
