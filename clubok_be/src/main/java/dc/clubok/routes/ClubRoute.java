@@ -3,13 +3,18 @@ package dc.clubok.routes;
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Club;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
@@ -37,6 +42,8 @@ public class ClubRoute {
         try {
             Club club = gson.fromJson(request.body(), Club.class);
             ClubController.createClub(club);
+            User user = UserController.getUserByToken(request.headers("x-auth"));
+            ClubController.addModerator(club.getId().toHexString(), user.getId().toHexString());
             return response(response, SC_CREATED, club.getId().toHexString());
         } catch (ClubOkException e) {
             logger.error(e.getMessage());

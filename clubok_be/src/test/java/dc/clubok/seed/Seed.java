@@ -36,8 +36,8 @@ public class Seed {
     }
 
     public static void populateClubs() {
-        Club club1 = new Club("Club Name 1");
-        Club club2 = new Club("Club Name 2");
+        Club club1 = new Club("Club Name 1", "some description");
+        Club club2 = new Club("Club Name 2", "some description");
         clubs = Arrays.asList(club1, club2);
 
         try {
