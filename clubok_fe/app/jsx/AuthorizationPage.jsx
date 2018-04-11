@@ -16,14 +16,14 @@ class AuthorizationPage extends Component{
         event.preventDefault();
         const data = new FormData(event.target);
         console.log(data.entries());
-        //ServerRequest.getInstance.signUp(data.get());
+        //ServerRequest.getInstance().signUp(data.get());
     }
 
     signIn(event) {
         event.preventDefault();
         const data = new FormData(event.target);
         console.log(data.entries());
-        //ServerRequest.getInstance.signIn();
+        //ServerRequest.getInstance().signIn();
     }
 
     render() {
@@ -37,7 +37,7 @@ class AuthorizationPage extends Component{
 
                 <div class="tab-content">
                     <div id="signup">
-                        <h1>Sign Up for Free</h1>
+                        <h1>Sign Up Form</h1>
 
                         <form onSubmit={this.signUp}>
 
