@@ -3,6 +3,7 @@ package dc.clubok.db.controllers;
 import dc.clubok.db.models.Club;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.util.List;
@@ -17,9 +18,8 @@ public class ClubController {
         model.saveOne(club, Club.class);
     }
 
-    public static List<Club> getClubs(String params) throws ClubOkException {
-//        TODO add params handling
-        return model.findAll(Club.class);
+    public static List<Club> getClubs(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
+        return model.findMany(size, page, orderBy, order, include, exclude, Club.class);
     }
 
     public static Club getClubById(String clubId) throws ClubOkException {

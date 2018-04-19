@@ -97,6 +97,7 @@ public class ClubsRouteTest {
     public void GetClubsId_CorrectId_SUCCESS()
             throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/clubs/" + Seed.clubs.get(1).getId().toHexString())
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
                 .build();
         HttpResponse response = client.execute(request);
 
@@ -114,6 +115,7 @@ public class ClubsRouteTest {
     public void GetClubsId_IncorrectId_NOTFOUND()
             throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/clubs/5a9d3051937f6d2ff45e7836")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
                 .build();
         HttpResponse response = client.execute(request);
 

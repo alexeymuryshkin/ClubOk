@@ -1,8 +1,10 @@
 package dc.clubok.db.mongomodel;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Sorts;
 import dc.clubok.ClubOKService;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.fields;
 import static com.mongodb.client.model.Updates.*;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -90,6 +93,31 @@ public class MongoModel implements Model {
         } catch (MongoException me) {
             throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public <T extends Entity> List<T> findMany(int size, int page, String orderBy, String order, Bson include, Bson exclude, Class<T> type) throws ClubOkException {
+        List<T> list = new ArrayList<>();
+        FindIterable<T> iterable = getCollection(type)
+                .find()
+                .skip((page - 1) * size)
+                .limit(size)
+                .projection(fields(include, exclude));
+
+        if (!orderBy.isEmpty()) {
+            Bson sort = order.equals("ascending") ? Sorts.ascending(orderBy): Sorts.descending(orderBy);
+            iterable.sort(sort);
+        }
+
+        try (MongoCursor<T> cursor = iterable.iterator()) {
+            while (cursor.hasNext()) {
+                list.add(cursor.next());
+            }
+        } catch (MongoException me) {
+            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+        }
+
+        return list;
     }
 
     @Override

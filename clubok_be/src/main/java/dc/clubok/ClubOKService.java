@@ -32,17 +32,17 @@ public class ClubOKService {
         webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
             before("/*", (request, response) -> {
-                String log_template = "Received API call: %s %s/%s\nHeaders:\n%sBody:\n%s";
+                String log_template = "Received API call: %s %s/%s\nHeaders:\n%s%s";
                 StringBuilder headers = new StringBuilder();
                 for (String header : request.headers()) {
                     headers.append("\t").append(header).append(": ").append(request.headers(header)).append("\n");
                 }
-                String body = request.body();
+                String body = request.body().isEmpty() ? "" : "Body:\n" + request.body();
 
                 logger.info(String.format(log_template,
                         request.requestMethod(),
                         request.uri(),
-                        request.queryString(),
+                        request.queryString() == null ? "" : request.queryString(),
                         headers.toString(),
                         body
                 ));

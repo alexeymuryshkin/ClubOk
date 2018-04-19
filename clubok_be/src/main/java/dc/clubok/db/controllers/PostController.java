@@ -6,6 +6,7 @@ import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,11 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class PostController {
     private static Logger logger = LoggerFactory.getLogger(PostController.class.getCanonicalName());
+
+
+    public static List<Post> getPosts(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
+        return model.findMany(size, page, orderBy, order, include, exclude, Post.class);
+    }
 
     public static void createPost(Post post, String userId) throws ClubOkException {
         post.setUserId(userId);
@@ -41,11 +47,6 @@ public class PostController {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
         model.addOneToSet(post, "likes", user.getId().toHexString(), Post.class);
-    }
-
-    public static List<Post> getPosts(String params) throws ClubOkException {
-//        TODO Add parameters
-        return model.findAll(Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {

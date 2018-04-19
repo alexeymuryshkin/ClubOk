@@ -9,6 +9,7 @@ import dc.clubok.db.models.User;
 import dc.clubok.utils.Crypt;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.io.UnsupportedEncodingException;
@@ -56,10 +57,13 @@ public class UserController {
         return token;
     }
 
-    public static List<User> getUsers(String params) throws ClubOkException {
-//        TODO Add usage of query params
-        return model.findAll(User.class);
+    public static List<User> getUsers(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
+        return model.findMany(size, page, orderBy, order, include, exclude, User.class);
     }
+
+//    public List<User> getLastCreatedUsers(int size, int page) {
+//
+//    }
 
     public static User getUserByToken(String token) throws ClubOkException {
         Algorithm algorithm;

@@ -6,12 +6,15 @@ import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import static com.mongodb.client.model.Projections.exclude;
+import static com.mongodb.client.model.Projections.include;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
@@ -20,10 +23,18 @@ public class PostRoute {
 
     public static Route GetPosts = (Request request, Response response) -> {
         try {
-            int page = Integer.parseInt(request.queryParamOrDefault("page", "1"));
-            logger.debug(String.valueOf(page));
+            int size = request.queryParams("size") == null ? 50 : Integer.parseInt(request.queryParams("size"));
+            int page = request.queryParams("page") == null ? 1 : Integer.parseInt(request.queryParams("page"));
+            String orderBy = request.queryParams("orderBy") == null ? "postedAt" : request.queryParams("orderBy");
+            String order = request.queryParams("order") == null ? "descending" : request.queryParams("order");
 
-            return response(response, SC_OK, PostController.getPosts(request.queryString()));
+            Bson include = include();
+            Bson exclude = exclude();
+
+            Document document = new Document("total", model.count(Post.class))
+                    .append("results", PostController.getPosts(size, page, orderBy, order, include, exclude));
+
+            return response(response, SC_OK, document);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
