@@ -49,6 +49,7 @@ class ServerRequest {
 
 	onSignUpResponse(jo) {
 		this.token = jo;
+        window.location.replace("http://localhost:3000/feed.html");
 	}
 
 	signIn(data) {
@@ -80,6 +81,7 @@ class ServerRequest {
 
 	onSignInResponse(jo) {
         this.token = jo;
+        window.location.replace("http://localhost:3000/feed.html");
 	}
 
     signOut() {
@@ -101,6 +103,7 @@ class ServerRequest {
 
     onSignOutSuccess() {
 		this.token = null;
+        window.location.replace("http://localhost:3000");
 	}
 }
 

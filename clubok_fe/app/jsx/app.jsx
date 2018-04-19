@@ -11,6 +11,7 @@ import Hello from './Hello.jsx';
 
 import '../less/app.less';
 import AuthorizationPage from "./AuthorizationPage";
+import FeedPage from "./FeedPage";
 
 class App extends Component {
     // constructor() {
@@ -28,6 +29,7 @@ class App extends Component {
                 {/*<Hello who="Anuar"/>*/}
                 {/*<AppBar width='100%'/>*/}
                 <AuthorizationPage />
+                <FeedPage />
                 {/*<div>*/}
                     {/*<SideBar float='left' overflow='hidden'/>*/}
                     {/*<MainView float='left' overflow='hidden'/>*/}
@@ -37,7 +39,7 @@ class App extends Component {
     }
 }
 
-ReactDOM.render(
-    <App/>,
-    document.getElementById('app')
-);
+// ReactDOM.render(
+//     <App/>,
+//     document.getElementById('app')
+// );

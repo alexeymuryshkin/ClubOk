@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import { Redirect } from 'react-router-dom';
 
 import '../less/AuthorizationPage.less';
 import ServerRequest from "./ServerRequest";
@@ -10,11 +11,21 @@ class AuthorizationPage extends Component{
 
     constructor(props) {
         super(props);
+        console.log('Hi, it is Authorization Page!)');
+        console.log(ServerRequest.getInstance().token);
+        this.renderRedirect = this.renderRedirect.bind(this);
+    }
+
+    renderRedirect () {
+        if (ServerRequest.getInstance().token) {
+            return <Redirect to="/feed.html"/>;
+        }
     }
 
     render() {
         return (
             <div>
+                {this.renderRedirect()}
                 <div className="topnav">
                     <button className="btn">ClubOK</button>
                     <input type="text" className="search" placeholder="Search"/>
@@ -44,14 +55,14 @@ class AuthorizationPage extends Component{
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
-// ReactDOM.render(
-//     <AuthorizationPage/>,
-//     document.getElementById('app')
-// );
+ReactDOM.render(
+    <AuthorizationPage/>,
+    document.getElementById('app')
+);
 
 export default AuthorizationPage
 

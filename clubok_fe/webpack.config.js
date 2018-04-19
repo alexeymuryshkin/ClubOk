@@ -8,9 +8,10 @@ const PATHS = {
 };
 module.exports = {
     context: path.join(__dirname, './app'),
-    entry: [
-        './jsx/app.jsx'
-    ],
+    entry: {
+        authorization: './jsx/AuthorizationPage.jsx',
+        feed: './jsx/FeedPage.jsx'
+    },
     module: {
         rules: [
             {
