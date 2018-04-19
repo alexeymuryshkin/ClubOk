@@ -1,6 +1,7 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 
-import '../less/AuthorizationPage.less'
+import '../less/AuthorizationPage.less';
 import ServerRequest from "./ServerRequest";
 import SignInComponent from "./Components/SignInComponent";
 import SignUpComp from "./Components/SignUpComp";
@@ -21,7 +22,7 @@ class AuthorizationPage extends Component{
 
 
                 <div className="row">
-                    <div className="column"> <!-- style="background-color:lightgreen;" -->
+                    <div className="column">
                         <div className="image">image?</div>
                     </div>
 
@@ -47,4 +48,10 @@ class AuthorizationPage extends Component{
     }
 }
 
+// ReactDOM.render(
+//     <AuthorizationPage/>,
+//     document.getElementById('app')
+// );
+
 export default AuthorizationPage
+

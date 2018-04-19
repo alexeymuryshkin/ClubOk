@@ -26,12 +26,12 @@ class App extends Component {
             <div className="App">
                 {/*<h1>Hello World!</h1>*/}
                 {/*<Hello who="Anuar"/>*/}
-                <AppBar width='100%'/>
+                {/*<AppBar width='100%'/>*/}
                 <AuthorizationPage />
-                <div>
+                {/*<div>*/}
                     {/*<SideBar float='left' overflow='hidden'/>*/}
                     {/*<MainView float='left' overflow='hidden'/>*/}
-                </div>
+                {/*</div>*/}
             </div>
         );
     }
