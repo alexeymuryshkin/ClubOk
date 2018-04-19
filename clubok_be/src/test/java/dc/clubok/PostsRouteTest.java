@@ -76,7 +76,6 @@ public class PostsRouteTest {
 //    TODO GET /posts/?parameters
 
     @Test public void PostPosts_CorrectData_SUCCESS() throws IOException, ClubOkException {
-        String title = "Meeting with Harisson Ford";
         String body = "Some text or anything else";
         String type = "meeting";
 
@@ -84,7 +83,6 @@ public class PostsRouteTest {
         post.setUserId(Seed.users.get(0).getId().toHexString());
         post.setClubId(Seed.clubs.get(1).getId().toHexString());
 
-        post.setTitle(title);
         post.setType(type);
         post.setBody(body);
 
@@ -110,7 +108,6 @@ public class PostsRouteTest {
     }
 
     @Test public void PostPosts_Unauthorized_UNAUTHORIZED() throws IOException {
-        String title = "Meeting with Harisson Ford";
         String body = "Some text or anything else";
         String type = "meeting";
 
@@ -118,7 +115,6 @@ public class PostsRouteTest {
         post.setUserId(Seed.users.get(0).getId().toHexString());
         post.setClubId(Seed.clubs.get(1).getId().toHexString());
 
-        post.setTitle(title);
         post.setType(type);
         post.setBody(body);
 

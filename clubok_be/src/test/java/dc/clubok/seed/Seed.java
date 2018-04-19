@@ -5,7 +5,6 @@ import dc.clubok.db.models.Club;
 import dc.clubok.db.models.Event;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
-import dc.clubok.db.mongomodel.MongoModel;
 
 import java.util.*;
 
@@ -49,9 +48,9 @@ public class Seed {
     }
 
     public static void populatePosts() {
-        Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Buffalo", "Hello everyone! Goodbye!");
+        Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Hello everyone! Goodbye!");
         post1.setUserId(users.get(0).getId().toHexString());
-        Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Title", "Body");
+        Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Body");
         post2.setUserId(users.get(1).getId().toHexString());
         posts = Arrays.asList(post1, post2);
 
@@ -66,17 +65,17 @@ public class Seed {
         populateClubs();
         Date s = new GregorianCalendar(2018, 11, 1).getTime();
         Event event1 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
-                new GregorianCalendar(2018, 11, 1).getTime());
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
         Event event2 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
-                new GregorianCalendar(2018, 11, 5).getTime());
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
         Event event3 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
-                new GregorianCalendar(2018, 11, 10).getTime());
-        Event event4 = new Event(clubs.get(0).getId().toHexString(), "title", "description",
-                new GregorianCalendar(2018, 11, 15).getTime());
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
+        Event event4 = new Event(clubs.get(0).getId().toHexString(), "name", "description",
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
         Event event5 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
-                new GregorianCalendar(2018, 11, 20).getTime());
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
         Event event6 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
-                new GregorianCalendar(2018, 11, 25).getTime());
+                (int) System.currentTimeMillis() / 1000, (int) System.currentTimeMillis() / 1000);
         events = Arrays.asList(event1, event2, event3, event4, event5, event6);
 
         try {

@@ -6,12 +6,15 @@ import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import static com.mongodb.client.model.Projections.exclude;
+import static com.mongodb.client.model.Projections.include;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
@@ -19,12 +22,19 @@ public class PostRoute {
     private static Logger logger = LoggerFactory.getLogger(PostRoute.class.getCanonicalName());
 
     public static Route GetPosts = (Request request, Response response) -> {
-        logger.debug("GET /posts " + request.queryString());
         try {
-            int page = Integer.parseInt(request.queryParamOrDefault("page", "1"));
-            logger.debug(String.valueOf(page));
+            int size = request.queryParams("size") == null ? 50 : Integer.parseInt(request.queryParams("size"));
+            int page = request.queryParams("page") == null ? 1 : Integer.parseInt(request.queryParams("page"));
+            String orderBy = request.queryParams("orderBy") == null ? "postedAt" : request.queryParams("orderBy");
+            String order = request.queryParams("order") == null ? "descending" : request.queryParams("order");
 
-            return response(response, SC_OK, PostController.getPosts(request.queryString()));
+            Bson include = include();
+            Bson exclude = exclude();
+
+            Document document = new Document("total", model.count(Post.class))
+                    .append("results", PostController.getPosts(size, page, orderBy, order, include, exclude));
+
+            return response(response, SC_OK, document);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
@@ -35,8 +45,6 @@ public class PostRoute {
     };
 
     public static Route PostPosts = (Request request, Response response) -> {
-        logger.debug("POST /posts " + request.body());
-
         try {
             Post post = gson.fromJson(request.body(), Post.class);
             PostController.createPost(post, UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
@@ -52,8 +60,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsId = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id"));
-
         try {
             Post post = PostController.getPostById(request.params(":id"));
             if (post == null) {
@@ -71,8 +77,6 @@ public class PostRoute {
     };
 
     public static Route DeletePostsId = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id"));
-
         try {
             PostController.deletePostById(request.params(":id"));
             return response(response, SC_NO_CONTENT);
@@ -86,8 +90,6 @@ public class PostRoute {
     };
 
     public static Route PatchPostsId = (Request request, Response response) -> {
-        logger.debug("PATCH /posts/" + request.params(":id") + " " + request.body());
-
         try {
             Document update = Document.parse(request.body());
             PostController.editPost(request.params(":id"), update);
@@ -102,8 +104,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsIdComments = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/comments");
-
         try {
             return response(response, SC_CREATED, PostController.getCommentsByPostId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -116,8 +116,6 @@ public class PostRoute {
     };
 
     public static Route PostPostsIdComments = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/comments" + request.body());
-
         try {
             Comment comment = gson.fromJson(request.body(), Comment.class);
             comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
@@ -134,8 +132,6 @@ public class PostRoute {
     };
 
     public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
-
         try{
             PostController.deleteComment(request.params(":id"), request.params(":cid"));
 
@@ -150,12 +146,8 @@ public class PostRoute {
     };
 
     public static Route PatchPostsIdCommentsId = (Request request, Response response) -> {
-        logger.debug("PATCH /posts/" + request.params(":id") + "/comments/" + request.params(":cid") + " " + request.body());
-
         try{
-            Comment update = gson.fromJson(request.body(), Comment.class);
-            update.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
-
+            Document update = Document.parse(request.body());
             PostController.editComment(request.params(":id"), request.params(":cid"), update);
 
             return response(response, SC_NO_CONTENT);
@@ -169,8 +161,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/likes");
-
         try {
             return response(response, SC_OK, PostController.getLikesByPostId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -183,8 +173,6 @@ public class PostRoute {
     };
 
     public static Route PostPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/likes");
-
         try {
             PostController.likePost(request.params(":id"), request.headers("x-auth"));
             return response(response, SC_NO_CONTENT);
@@ -198,10 +186,8 @@ public class PostRoute {
     };
 
     public static Route DeletePostsIdLikes = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id") + "/likes/" + request.headers("x-auth"));
-
         try{
-            PostController.deleteComment(request.params(":id"), request.headers("x-auth"));
+            PostController.deleteLike(request.params(":id"), request.headers("x-auth"));
 
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {

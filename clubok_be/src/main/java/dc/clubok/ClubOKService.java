@@ -1,8 +1,7 @@
 package dc.clubok;
 
-import dc.clubok.db.controllers.ClubController;
-import dc.clubok.db.controllers.EventController;
 import dc.clubok.db.models.Post;
+import dc.clubok.utils.Constants;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
@@ -32,23 +31,36 @@ public class ClubOKService {
 
         webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
+            before("/*", (request, response) -> {
+                String log_template = "Received API call: %s %s/%s\nHeaders:\n%s%s";
+                StringBuilder headers = new StringBuilder();
+                for (String header : request.headers()) {
+                    headers.append("\t").append(header).append(": ").append(request.headers(header)).append("\n");
+                }
+                String body = request.body().isEmpty() ? "" : "Body:\n" + request.body();
+
+                logger.info(String.format(log_template,
+                        request.requestMethod(),
+                        request.uri(),
+                        request.queryString() == null ? "" : request.queryString(),
+                        headers.toString(),
+                        body
+                ));
+            });
+            for (String r: Constants.protectedRoutes) {
+                before(r, (request, response) -> {
+                    if (notAuthenticated(request, response)) {
+                        throw halt(401);
+                    }
+                });
+            }
+
             path("/users", () -> {
                 get("", GetUsers, gson::toJson);
                 post("", JSON, PostUsers, gson::toJson);
                 post("/login", JSON, PostUsersLogin, gson::toJson);
 
                 path("/me", () -> {
-                    before("", (request, response) -> {
-                        if (notAuthenticated(request, response)) {
-                            throw halt(401);
-                        }
-                    });
-                    before("/*", (request, response) -> {
-                        if (notAuthenticated(request, response)) {
-                            throw halt(401);
-                        }
-                    });
-
                     get("", GetUsersMe, gson::toJson);
 
                     get("/subscriptions", GetUsersMeSubscriptions, gson::toJson);
@@ -69,10 +81,6 @@ public class ClubOKService {
             });
 
             path("/clubs", () -> {
-                before("", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
                 get("", GetClubs, gson::toJson);
                 post("", JSON, PostClubs, gson::toJson);
 
@@ -82,25 +90,20 @@ public class ClubOKService {
                     patch("", JSON, PatchClubsId, gson::toJson);
 
                     get("/subscribers", GetClubsIdSubscribers, gson::toJson);
+                    post("/subscribers", PostClubsIdSubscribers, gson::toJson);
                     delete("/subscribers/:uid", DeleteClubsIdSubscribersId, gson::toJson);
 
-                    get("/participants", GetClubsIdParticipants, gson::toJson);
-                    delete("/participants/:uid", DeleteClubsIdParticipantsId, gson::toJson);
+                    get("/members", GetClubsIdMembers, gson::toJson);
+                    post("/members", PostClubsIdMembers, gson::toJson);
+                    delete("/members/:uid", DeleteClubsIdMembersId, gson::toJson);
 
                     get("/moderators", GetClubsIdModerators, gson::toJson);
+                    post("/moderators", PostClubsIdModerators, gson::toJson);
                     delete("/moderators/:uid", DeleteClubsIdModeratorsId, gson::toJson);
                 });
             });
 
             path("/posts", () -> {
-                before("", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
-                before("/*", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
                 get("", GetPosts, gson::toJson);
                 post("", JSON, PostPosts, gson::toJson);
 
@@ -121,14 +124,6 @@ public class ClubOKService {
             });
 
             path("/events", () -> {
-                before("", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
-                before("/*", (request, response) -> {
-                    if (notAuthenticated(request, response))
-                        throw halt(401);
-                });
                 post("", JSON, PostEvents, gson::toJson);
                 get("", GetEvents, gson::toJson);
 
