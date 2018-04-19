@@ -17,13 +17,13 @@ public @Data class Club
     private String logoSrc;
     private String description;
     private Set<ObjectId> moderators;
-    private Set<ObjectId> participants;
+    private Set<ObjectId> members;
     private Set<ObjectId> subscribers;
 
     public Club() {
         setId(new ObjectId());
         moderators = new HashSet<>();
-        participants = new HashSet<>();
+        members = new HashSet<>();
         subscribers = new HashSet<>();
     }
 

@@ -18,25 +18,27 @@ public class Post
     String clubId;
     private @NotEmpty (message = "User Id cannot be empty")
     String userId;
+    private int postedAt;
     private String type;
-    private @NotEmpty (message = "Title cannot be empty")
-    String title;
     private @NotEmpty (message = "Body cannot be empty")
     String body;
+    private List<String> images;
+    private Event event;
     private Set<String> likes;
     private List<Comment> comments;
 
     public Post() {
         setId(new ObjectId());
+        images = new ArrayList<>();
         likes = new HashSet<>();
         comments = new ArrayList<>();
     }
 
-    public Post(String clubId, String type, String title, String body) {
+    public Post(String clubId, String type, String body) {
         this();
-        this.clubId = clubId;
-        this.type = type;
-        this.title = title;
-        this.body = body;
+        setClubId(clubId);
+        setPostedAt(getId().getTimestamp());
+        setType(type);
+        setBody(body);
     }
 }

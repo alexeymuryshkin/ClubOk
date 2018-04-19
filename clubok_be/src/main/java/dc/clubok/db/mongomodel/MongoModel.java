@@ -1,8 +1,10 @@
 package dc.clubok.db.mongomodel;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Sorts;
 import dc.clubok.ClubOKService;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
@@ -22,8 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.currentDate;
+import static com.mongodb.client.model.Projections.fields;
+import static com.mongodb.client.model.Updates.*;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 
@@ -94,6 +96,31 @@ public class MongoModel implements Model {
     }
 
     @Override
+    public <T extends Entity> List<T> findMany(int size, int page, String orderBy, String order, Bson include, Bson exclude, Class<T> type) throws ClubOkException {
+        List<T> list = new ArrayList<>();
+        FindIterable<T> iterable = getCollection(type)
+                .find()
+                .skip((page - 1) * size)
+                .limit(size)
+                .projection(fields(include, exclude));
+
+        if (!orderBy.isEmpty()) {
+            Bson sort = order.equals("ascending") ? Sorts.ascending(orderBy): Sorts.descending(orderBy);
+            iterable.sort(sort);
+        }
+
+        try (MongoCursor<T> cursor = iterable.iterator()) {
+            while (cursor.hasNext()) {
+                list.add(cursor.next());
+            }
+        } catch (MongoException me) {
+            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+        }
+
+        return list;
+    }
+
+    @Override
     public <T extends Entity> List<T> findAll(Class<T> type) throws ClubOkException {
         List<T> list = new ArrayList<>();
 
@@ -157,26 +184,72 @@ public class MongoModel implements Model {
 
     /* Updating entries in Database */
     @Override
-    public <T extends Entity> void update(Document query, Document command, Class<T> type) throws ClubOkException {
+    public <T extends Entity> void updateRaw(Bson query, Bson update, Class<T> type) throws ClubOkException {
         try {
-            getCollection(type).updateOne(query, command);
+            getCollection(type).updateOne(query, update);
         } catch (MongoException me) {
             throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
         }
-        logger.info("Entity [" + type.getSimpleName() + "] was updated");
     }
 
     @Override
     public <T extends Entity> void update(T entity, Bson update, Class<T> type) throws ClubOkException {
+        updateRaw(eq("_id", entity.getId()), update, type);
+    }
+
+    @Override
+    public <T extends Entity> void modify(T entity, Document update, Class<T> type) throws ClubOkException {
+        List<Bson> updates = new ArrayList<>();
+        update.forEach((k, v) -> {
+            updates.add(set(k, v));
+        });
+        update(entity, combine(updates), type);
+    }
+
+    @Override
+    public <T extends Entity, S> void addOneToArray(T entity, String fieldName, S value, Class<T> type) throws ClubOkException {
+        update(entity, push(fieldName, value), type);
+    }
+
+    @Override
+    public <T extends Entity, S> void addManyToArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException {
+        update(entity, pushEach(fieldName, values), type);
+    }
+
+    @Override
+    public <T extends Entity, S> void addOneToSet(T entity, String fieldName, S value, Class<T> type) throws ClubOkException {
+        update(entity, addToSet(fieldName, value), type);
+    }
+
+    @Override
+    public <T extends Entity, S> void addManyToSet(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException {
+        update(entity, addEachToSet(fieldName, values), type);
+    }
+
+    @Override
+    public <T extends Entity, S extends Entity> void modifyOneFromArray(T entity, String fieldName, S value, Document update, Class<T> type) throws ClubOkException {
+        Document query = new Document("_id", entity.getId()).append(fieldName + "._id", value.getId());
+        List<Bson> updates = new ArrayList<>();
+        update.forEach((k, v) -> {
+            updates.add(set(fieldName + ".$." + k, v));
+        });
+        updates.add(currentTimestamp("lastModified"));
+
         try {
-            getCollection(type).updateOne(
-                    eq("_id", entity.getId()),
-                    combine(update, currentDate("lastModified"))
-            );
+            updateRaw(query, combine(updates), type);
         } catch (MongoException me) {
             throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
         }
-        logger.info("Entity (" + entity.getId() + ") [" + entity.getClass().getSimpleName() + "] was updated");
+    }
+
+    @Override
+    public <T extends Entity, S> void removeOneFromArray(T entity, String fieldName, S value, Class<T> type) throws ClubOkException {
+        update(entity, pull(fieldName, value), type);
+    }
+
+    @Override
+    public <T extends Entity, S> void removeManyFromArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException {
+        update(entity, pullAll(fieldName, values), type);
     }
 
     /* Model Validation */
@@ -205,7 +278,6 @@ public class MongoModel implements Model {
         }
 
     }
-
 
 
 }
