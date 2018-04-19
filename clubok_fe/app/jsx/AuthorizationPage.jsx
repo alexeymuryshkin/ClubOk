@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import { Redirect } from 'react-router-dom';
+import {Redirect, Router} from 'react-router-dom';
 
 import '../less/AuthorizationPage.less';
 import ServerRequest from "./ServerRequest";

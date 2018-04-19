@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import { Redirect } from 'react-router-dom';
+import {Redirect, Router} from 'react-router-dom';
 
 //import '../less/FeedPage.less';
 import ServerRequest from "./ServerRequest";
@@ -11,7 +11,7 @@ class FeedPage extends Component{
         super(props);
         console.log('Hi, it is Feed Page!)');
         console.log(ServerRequest.getInstance().token);
-        this.renderRedirect = this.renderRedirect.bind(this)
+        this.renderRedirect = this.renderRedirect.bind(this);
     }
 
     renderRedirect () {
@@ -24,7 +24,7 @@ class FeedPage extends Component{
         return (
             <div>
                 {this.renderRedirect()}
-                Hello, Anuar!)
+                <div>Hello, Anuar!)</div>
             </div>
         );
     }
