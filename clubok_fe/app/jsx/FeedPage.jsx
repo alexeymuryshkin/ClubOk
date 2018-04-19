@@ -4,6 +4,7 @@ import {Redirect, Router} from 'react-router-dom';
 
 import '../less/feed.less';
 import ServerRequest from "./ServerRequest";
+import NavBar from "./Components/NavBar";
 
 class FeedPage extends Component{
 
@@ -13,7 +14,7 @@ class FeedPage extends Component{
         console.log(window.sessionStorage.getItem('token'));
         this.renderRedirect = this.renderRedirect.bind(this);
 
-        if (!window.sessionStorage.getItem('token')) {
+        if (window.sessionStorage.getItem('token') == null) {
             window.location.replace("http://localhost:3000/");
         }
     }
@@ -29,12 +30,12 @@ class FeedPage extends Component{
             <div>
                 {/*this.renderRedirect()*/}
                 <NavBar />
-                <div className="row">
+                {/*<div className="row">
                     <LeftNavBar />
                     <MainView />
                     <RightNavBar />
                 </div>
-                <Footer />
+                <Footer />*/}
             </div>
         );
     }

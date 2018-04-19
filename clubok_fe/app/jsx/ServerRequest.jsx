@@ -99,7 +99,7 @@ class ServerRequest {
         };
         serv_request.open('DELETE', 'api/users/me/token', true);
         serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
-        serv_request.send(JSON.stringify(attrs));
+        serv_request.send();
     }
 
     onSignOutSuccess() {

@@ -15,7 +15,7 @@ class AuthorizationPage extends Component{
         console.log(ServerRequest.getInstance().token);
         this.renderRedirect = this.renderRedirect.bind(this);
 
-        if (ServerRequest.getInstance().token) {
+        if (ServerRequest.getInstance().token != null) {
             window.location.replace("http://localhost:3000/feed.html");
         }
     }
