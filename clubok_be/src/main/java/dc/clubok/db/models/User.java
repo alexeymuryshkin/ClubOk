@@ -25,7 +25,7 @@ public class User
     private @NotNull String password;
     private String fname;
     private String lname;
-    private Set<ObjectId> subscriptions;
+    private Set<String> subscriptions;
     private List<Token> tokens;
 
     public User() {

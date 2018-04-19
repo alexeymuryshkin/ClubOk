@@ -4,25 +4,28 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 
-import java.util.Date;
+import javax.validation.constraints.NotEmpty;
 
 @EqualsAndHashCode(callSuper = true)
 public @Data class Event
         extends Entity {
-    private String ClubId;
-    private String title;
+    private @NotEmpty (message = "Club Id cannot be empty") String clubId;
+    private @NotEmpty String name;
     private String description;
-    private Date datetime;
+    private int start;
+    private int end;
+    private String location;
 
     public Event(){
         setId(new ObjectId());
     }
 
-    public Event(String id, String title, String description, Date datetime) {
+    public Event(String id, String name, String description, int start, int end) {
         this();
         setClubId(id);
-        setTitle(title);
+        setName(name);
         setDescription(description);
-        setDatetime(datetime);
+        setStart(start);
+        setEnd(end);
     }
 }

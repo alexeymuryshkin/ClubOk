@@ -93,7 +93,7 @@ p::after {
 
 .post-content {
   background-color: rgb(248,248,248);
-	width: auto;
+  width: auto;
   margin: auto;
   margin-bottom: 50px;
   border: 1px solid rgb(206,206,206);
@@ -130,12 +130,12 @@ p::after {
 }
 
 .post-image {
-	max-width: 100%;
+  max-width: 100%;
 }
 
 /*.user-detail {
-	margin: 10px;
-	text-align: left;
+  margin: 10px;
+  text-align: left;
 }
 */
 
@@ -166,14 +166,14 @@ p::after {
 }
 
 .post-description {
-	line-height: 24px;
-	margin: 10px;
-	text-align: left;
+  line-height: 24px;
+  margin: 10px;
+  text-align: left;
 }
 
 .post-comment {
-	margin: 10px;
-	text-align: left;
+  margin: 10px;
+  text-align: left;
 }
 
 .left-navbar ul {
