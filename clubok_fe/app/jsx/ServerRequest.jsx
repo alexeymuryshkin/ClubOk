@@ -12,6 +12,7 @@ class ServerRequest {
 
 	constructor() {
 		this.token = null;
+        window.sessionStorage.setItem('token', null);
 	}
 
 	// functions
@@ -48,7 +49,7 @@ class ServerRequest {
 	}
 
 	onSignUpResponse(jo) {
-		this.token = jo;
+        window.sessionStorage.setItem('token', jo);
         window.location.replace("http://localhost:3000/feed.html");
 	}
 
@@ -80,7 +81,7 @@ class ServerRequest {
 	}
 
 	onSignInResponse(jo) {
-        this.token = jo;
+        window.sessionStorage.setItem('token', jo);
         window.location.replace("http://localhost:3000/feed.html");
 	}
 
@@ -97,12 +98,12 @@ class ServerRequest {
             }
         };
         serv_request.open('DELETE', 'api/users/me/token', true);
-        serv_request.setRequestHeader("x-auth", this.token);
+        serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
         serv_request.send(JSON.stringify(attrs));
     }
 
     onSignOutSuccess() {
-		this.token = null;
+        window.sessionStorage.removeItem('token');
         window.location.replace("http://localhost:3000");
 	}
 }

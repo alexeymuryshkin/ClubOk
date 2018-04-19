@@ -10,16 +10,16 @@ class FeedPage extends Component{
     constructor(props) {
         super(props);
         console.log('Hi, it is Feed Page!)');
-        console.log(ServerRequest.getInstance().token);
+        console.log(window.sessionStorage.getItem('token'));
         this.renderRedirect = this.renderRedirect.bind(this);
 
-        if (!ServerRequest.getInstance().token) {
+        if (!window.sessionStorage.getItem('token')) {
             window.location.replace("http://localhost:3000/");
         }
     }
 
     renderRedirect () {
-        if (!ServerRequest.getInstance().token) {
+        if (!window.sessionStorage.getItem('token')) {
             return <Redirect to="/" />;
         }
     }
