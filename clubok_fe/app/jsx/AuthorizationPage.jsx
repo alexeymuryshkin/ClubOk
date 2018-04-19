@@ -14,6 +14,10 @@ class AuthorizationPage extends Component{
         console.log('Hi, it is Authorization Page!)');
         console.log(ServerRequest.getInstance().token);
         this.renderRedirect = this.renderRedirect.bind(this);
+
+        if (ServerRequest.getInstance().token) {
+            window.location.replace("http://localhost:3000/feed.html");
+        }
     }
 
     renderRedirect () {
@@ -25,7 +29,7 @@ class AuthorizationPage extends Component{
     render() {
         return (
             <div>
-                {this.renderRedirect()}
+                {/*this.renderRedirect()*/}
                 <div className="topnav">
                     <button className="btn">ClubOK</button>
                     <input type="text" className="search" placeholder="Search"/>

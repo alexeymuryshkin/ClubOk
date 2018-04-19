@@ -12,6 +12,10 @@ class FeedPage extends Component{
         console.log('Hi, it is Feed Page!)');
         console.log(ServerRequest.getInstance().token);
         this.renderRedirect = this.renderRedirect.bind(this);
+
+        if (!ServerRequest.getInstance().token) {
+            window.location.replace("http://localhost:3000/");
+        }
     }
 
     renderRedirect () {
@@ -23,7 +27,7 @@ class FeedPage extends Component{
     render() {
         return (
             <div>
-                {this.renderRedirect()}
+                {/*this.renderRedirect()*/}
                 <div>Hello, Anuar!)</div>
             </div>
         );
