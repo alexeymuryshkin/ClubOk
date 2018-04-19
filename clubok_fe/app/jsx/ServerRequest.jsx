@@ -15,13 +15,13 @@ class ServerRequest {
 	}
 
 	// functions
-	signUp(email, password, fname, lname) {
+	signUp(data) {
         console.log("New Sign Up request...");
 
-        let attr = {"email": email,
-			"password": password,
-			"fname": fname,
-			"lname": lname
+        let attr = {"email": data.email,
+			"password": data.password,
+			"fname": data.fname,
+			"lname": data.lname
 		};
 
         var serv_request = new XMLHttpRequest();
@@ -48,11 +48,11 @@ class ServerRequest {
 		this.token = jo.tokens[0].token;
 	}
 
-	signIn(email, password) {
+	signIn(data) {
         console.log("New Sign In request...");
 
-        let attr = {"email": email,
-            "password": password
+        let attr = {"email": data.email,
+            "password": data.password
         };
 
         var serv_request = new XMLHttpRequest();
