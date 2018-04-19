@@ -59,7 +59,7 @@ public class PostController {
     }
 
     public static List<Comment> getCommentsByPostId(String postId) throws ClubOkException {
-        Post post = model.findById(postId, Post.class);
+        Post post = getPostById(postId);
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
@@ -67,7 +67,7 @@ public class PostController {
     }
 
     public static Set<String> getLikesByPostId(String postId) throws ClubOkException {
-        Post post = model.findById(postId, Post.class);
+        Post post = getPostById(postId);
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
@@ -75,7 +75,7 @@ public class PostController {
     }
 
     public static void deletePostById(String postId) throws ClubOkException {
-        Post post = model.findById(postId, Post.class);
+        Post post = getPostById(postId);
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
@@ -83,11 +83,11 @@ public class PostController {
     }
 
     public static void editPost(String postId, Document update) throws ClubOkException {
-        Post post = model.findById(postId, Post.class);
+        Post post = getPostById(postId);
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
-        model.modify(getPostById(postId), update, Post.class);
+        model.modify(post, update, Post.class);
     }
 
     public static void editComment(String postId, String commentId, Document update) throws ClubOkException {

@@ -4,18 +4,15 @@ import dc.clubok.db.models.Club;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.mongodb.client.model.Updates.set;
+import static dc.clubok.utils.Constants.CLUB_NOT_FOUND;
 import static dc.clubok.utils.Constants.model;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class ClubController {
-    private static Logger logger = LoggerFactory.getLogger(ClubController.class.getCanonicalName());
-
     public static void createClub(Club club) throws ClubOkException {
         model.saveOne(club, Club.class);
     }
@@ -42,9 +39,7 @@ public class ClubController {
 
     public static void deleteSubscriber(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> subscribers = club.getSubscribers();
-        subscribers.remove(new ObjectId(userId));
-        model.update(club, set("subscribers", subscribers), Club.class);
+        model.removeOneFromArray(club, "subscribers", userId, Club.class);
     }
 
     public static Set<ObjectId> getModeratorsByClubId(String clubId) throws ClubOkException {
@@ -54,43 +49,47 @@ public class ClubController {
 
     public static void addModerator(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> moderators = club.getModerators();
-        moderators.add(new ObjectId(userId));
-        model.update(club, set("moderators", moderators), Club.class);
+
+        model.addOneToSet(club, "moderators", userId, Club.class);
     }
 
     public static void deleteModerator(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> moderators = club.getModerators();
-        moderators.remove(new ObjectId(userId));
-        model.update(club, set("moderators", moderators), Club.class);
+
+        model.removeOneFromArray(club, "moderators", userId, Club.class);
     }
 
-    public static Set<ObjectId> getParticipantsByClubId(String clubId) throws ClubOkException {
+    public static Set<ObjectId> getMembersByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        return club.getParticipants();
+        return club.getMembers();
     }
 
-    public static void addParticipant(String clubId, String userId) throws ClubOkException {
+    public static void addMember(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> participants = club.getParticipants();
-        participants.add(new ObjectId(userId));
-        model.update(club, set("participants", participants), Club.class);
+
+        model.addOneToSet(club, "members", userId, Club.class);
     }
 
     public static void deleteParticipant(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> participants = club.getParticipants();
-        participants.remove(new ObjectId(userId));
-        model.update(club, set("participants", participants), Club.class);
+
+        model.removeOneFromArray(club, "members", userId, Club.class);
     }
 
     public static void deleteClubById(String clubId) throws ClubOkException {
+        Club club = getClubById(clubId);
+        if (club == null) {
+            throw new ClubOkException(CLUB_NOT_FOUND, "Club does not exist", SC_NOT_FOUND);
+        }
         model.deleteById(clubId, Club.class);
     }
 
     public static void editClub(String clubId, Document update) throws ClubOkException {
-//        TODO
+        Club club = getClubById(clubId);
+        if (club == null) {
+            throw new ClubOkException(CLUB_NOT_FOUND, "Club does not exist", SC_NOT_FOUND);
+        }
+        model.modify(club, update, Club.class);
     }
 
     public static Club findByName(String name) throws ClubOkException {

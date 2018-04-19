@@ -19,8 +19,6 @@ public class UserRoute {
     private static Logger logger = LoggerFactory.getLogger(UserRoute.class.getCanonicalName());
 
     public static Route GetUsers = (Request request, Response response) -> {
-        logger.debug("GET /users " + request.queryString());
-        
         try {
             return response(response, SC_OK, UserController.getUsers(request.queryString()));
         } catch (ClubOkException e) {
@@ -33,8 +31,6 @@ public class UserRoute {
     };
 
     public static Route PostUsers = (Request request, Response response) -> {
-        logger.debug("POST /users " + request.body());
-
         try {
             User user = gson.fromJson(request.body(), User.class);
 
@@ -50,8 +46,6 @@ public class UserRoute {
     };
 
     public static Route PostUsersLogin = (Request request, Response response) -> {
-        logger.debug("POST /users/login " + request.body());
-
         try {
             User user = gson.fromJson(request.body(), User.class);
 
@@ -67,8 +61,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersMe = (Request request, Response response) -> {
-        logger.debug("GET /users/me " + request.headers("x-auth"));
-
         try {
             return response(response, SC_OK, getUserByToken(request.headers("x-auth")));
         } catch (ClubOkException e) {
@@ -82,8 +74,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersMeSubscriptions = (Request request, Response response) -> {
-        logger.debug("GET /users/me/subscriptions " + request.headers("x-auth"));
-
         try {
             return response(response, SC_OK, UserController.getSubscriptionsByToken(request.headers("x-auth")));
         } catch (ClubOkException e) {
@@ -96,8 +86,6 @@ public class UserRoute {
     };
 
     public static Route DeleteUsersMeSubscriptionsId = (Request request, Response response) -> {
-        logger.debug("DELETE /users/me/subscriptions/:id");
-
         try {
             UserController.deleteSubscription(request.headers("x-auth"), request.params(":id"));
             ClubController.deleteSubscriber(request.params("id"), request.headers("x-auth"));
@@ -112,8 +100,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersMeTokens = (Request request, Response response) -> {
-        logger.debug("GET /users/me/tokens " + request.headers("x-auth"));
-
         try {
             return response(response, SC_OK, UserController.getTokensByToken(request.headers("x-auth")));
         } catch (ClubOkException e) {
@@ -126,8 +112,6 @@ public class UserRoute {
     };
 
     public static Route DeleteUsersMeTokens = (Request request, Response response) -> {
-        logger.debug("DELETE /users/me/tokens " + request.headers("x-auth"));
-
         try {
             UserController.logoutAll(request.headers("x-auth"));
             return response(response, SC_NO_CONTENT);
@@ -141,7 +125,6 @@ public class UserRoute {
     };
 
     public static Route DeleteUsersMeToken = (Request request, Response response) -> {
-        logger.debug("DELETE /users/me/token " + request.headers("x-auth"));
         try {
             UserController.logout(request.headers("x-auth"));
             return response(response, SC_NO_CONTENT);
@@ -155,8 +138,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersId = (Request request, Response response) -> {
-        logger.debug("GET /users/" + request.params(":id"));
-
         try {
             User user = UserController.getUserById(request.params(":id"));
             if (user == null) {
@@ -174,8 +155,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersIdSubscriptions = (Request request, Response response) -> {
-        logger.debug("GET /users/" + request.params(":id") + "/subscriptions");
-
         try {
             return response(response, SC_OK,  UserController.getSubscriptionsByUserId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -188,8 +167,6 @@ public class UserRoute {
     };
 
     public static Route GetUsersIdTokens = (Request request, Response response) -> {
-        logger.debug("GET /users/" + request.params(":id") + "/tokens");
-
         try{
             return response(response, SC_OK,  UserController.getTokensByUserId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -202,8 +179,6 @@ public class UserRoute {
     };
 
     public static Route DeleteUsersId = (Request request, Response response) -> {
-        logger.debug("DELETE /users/" + request.params(":id"));
-
         try {
             UserController.deleteUserById(request.params(":id"));
             return response(response, SC_NO_CONTENT);
@@ -217,7 +192,6 @@ public class UserRoute {
     };
 
     public static boolean notAuthenticated(Request request, Response response) {
-        logger.debug("authenticate()");
         String token = request.headers("x-auth");
         try {
             return token == null || getUserByToken(token) == null;

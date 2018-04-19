@@ -19,7 +19,6 @@ public class PostRoute {
     private static Logger logger = LoggerFactory.getLogger(PostRoute.class.getCanonicalName());
 
     public static Route GetPosts = (Request request, Response response) -> {
-        logger.debug("GET /posts " + request.queryString());
         try {
             int page = Integer.parseInt(request.queryParamOrDefault("page", "1"));
             logger.debug(String.valueOf(page));
@@ -35,8 +34,6 @@ public class PostRoute {
     };
 
     public static Route PostPosts = (Request request, Response response) -> {
-        logger.debug("POST /posts " + request.body());
-
         try {
             Post post = gson.fromJson(request.body(), Post.class);
             PostController.createPost(post, UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
@@ -52,8 +49,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsId = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id"));
-
         try {
             Post post = PostController.getPostById(request.params(":id"));
             if (post == null) {
@@ -71,8 +66,6 @@ public class PostRoute {
     };
 
     public static Route DeletePostsId = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id"));
-
         try {
             PostController.deletePostById(request.params(":id"));
             return response(response, SC_NO_CONTENT);
@@ -86,8 +79,6 @@ public class PostRoute {
     };
 
     public static Route PatchPostsId = (Request request, Response response) -> {
-        logger.debug("PATCH /posts/" + request.params(":id") + " " + request.body());
-
         try {
             Document update = Document.parse(request.body());
             PostController.editPost(request.params(":id"), update);
@@ -102,8 +93,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsIdComments = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/comments");
-
         try {
             return response(response, SC_CREATED, PostController.getCommentsByPostId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -116,8 +105,6 @@ public class PostRoute {
     };
 
     public static Route PostPostsIdComments = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/comments" + request.body());
-
         try {
             Comment comment = gson.fromJson(request.body(), Comment.class);
             comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
@@ -134,8 +121,6 @@ public class PostRoute {
     };
 
     public static Route DeletePostsIdCommentId = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id") + "/comments/" + request.params(":cid"));
-
         try{
             PostController.deleteComment(request.params(":id"), request.params(":cid"));
 
@@ -150,8 +135,6 @@ public class PostRoute {
     };
 
     public static Route PatchPostsIdCommentsId = (Request request, Response response) -> {
-        logger.debug("PATCH /posts/" + request.params(":id") + "/comments/" + request.params(":cid") + " " + request.body());
-
         try{
             Document update = Document.parse(request.body());
             PostController.editComment(request.params(":id"), request.params(":cid"), update);
@@ -167,8 +150,6 @@ public class PostRoute {
     };
 
     public static Route GetPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("GET /posts/" + request.params(":id") + "/likes");
-
         try {
             return response(response, SC_OK, PostController.getLikesByPostId(request.params(":id")));
         } catch (ClubOkException e) {
@@ -181,8 +162,6 @@ public class PostRoute {
     };
 
     public static Route PostPostsIdLikes = (Request request, Response response) -> {
-        logger.debug("POST /posts/" + request.params(":id") + "/likes");
-
         try {
             PostController.likePost(request.params(":id"), request.headers("x-auth"));
             return response(response, SC_NO_CONTENT);
@@ -196,8 +175,6 @@ public class PostRoute {
     };
 
     public static Route DeletePostsIdLikes = (Request request, Response response) -> {
-        logger.debug("DELETE /posts/" + request.params(":id") + "/likes/" + request.headers("x-auth"));
-
         try{
             PostController.deleteLike(request.params(":id"), request.headers("x-auth"));
 

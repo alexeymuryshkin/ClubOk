@@ -32,7 +32,7 @@ public class ClubOKService {
         webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
             before("/*", (request, response) -> {
-                String log_template = "Received API call: %s %s\nHeaders:\n%sBody:\n%s";
+                String log_template = "Received API call: %s %s/%s\nHeaders:\n%sBody:\n%s";
                 StringBuilder headers = new StringBuilder();
                 for (String header : request.headers()) {
                     headers.append("\t").append(header).append(": ").append(request.headers(header)).append("\n");
@@ -42,6 +42,7 @@ public class ClubOKService {
                 logger.info(String.format(log_template,
                         request.requestMethod(),
                         request.uri(),
+                        request.queryString(),
                         headers.toString(),
                         body
                 ));
@@ -93,11 +94,11 @@ public class ClubOKService {
                     delete("/subscribers/:uid", DeleteClubsIdSubscribersId, gson::toJson);
 
                     get("/members", GetClubsIdMembers, gson::toJson);
-//                    post("/members", PostClubsIdMembers, gson::toJson);
-                    delete("/members/:uid", DeleteClubsIdParticipantsId, gson::toJson);
+                    post("/members", PostClubsIdMembers, gson::toJson);
+                    delete("/members/:uid", DeleteClubsIdMembersId, gson::toJson);
 
                     get("/moderators", GetClubsIdModerators, gson::toJson);
-//                    post("/moderators", PostClubsIdModerators, gson::toJson);
+                    post("/moderators", PostClubsIdModerators, gson::toJson);
                     delete("/moderators/:uid", DeleteClubsIdModeratorsId, gson::toJson);
                 });
             });

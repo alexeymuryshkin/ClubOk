@@ -10,8 +10,6 @@ import dc.clubok.utils.Crypt;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -19,13 +17,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static com.mongodb.client.model.Updates.set;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
 public class UserController {
-    private static Logger logger = LoggerFactory.getLogger(UserController.class.getCanonicalName());
-
     public static Token createUser(User user) throws ClubOkException {
         Token token;
         try {
@@ -56,7 +51,7 @@ public class UserController {
             throw new ClubOkException(LOGIN_ERROR, "Password is incorrect");
         }
 
-        model.update(user, set("tokens", user.getTokens()), User.class);
+        model.addOneToSet(user, "tokens", token, User.class);
 
         return token;
     }
@@ -67,8 +62,6 @@ public class UserController {
     }
 
     public static User getUserByToken(String token) throws ClubOkException {
-        logger.debug("getUserByToken()");
-
         Algorithm algorithm;
         try {
             algorithm = Algorithm.HMAC256(config.getProperties().getProperty("secret"));
@@ -91,13 +84,11 @@ public class UserController {
 
     public static void logout(String token) throws Exception {
         User user = getUserByToken(token);
-
         if (user == null) {
             throw new ClubOkException(LOGOUT_ERROR, "User was unauthorized or deleted", SC_BAD_REQUEST);
         }
-        user.getTokens().remove(new Token("auth", token));
-//            TODO Change to delete only one token without replacing the whole array
-        model.update(user, set("tokens", user.getTokens()), User.class);
+
+        model.removeOneFromArray(user, "tokens", new Token("auth", token), User.class);
     }
 
     public static void logoutAll(String token) throws ClubOkException {
@@ -109,8 +100,8 @@ public class UserController {
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
     }
 
-    public static Set<ObjectId> getSubscriptionsByUserId(String userId) throws ClubOkException {
-        Set<ObjectId> result;
+    public static Set<String> getSubscriptionsByUserId(String userId) throws ClubOkException {
+        Set<String> result;
         User user = model.findById(userId, User.class);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
@@ -121,12 +112,19 @@ public class UserController {
     }
 
     public static void addSubscription(String userId, String clubId) throws ClubOkException {
-
+        User user = getUserById(userId);
+        if (user == null) {
+            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+        }
+        model.addOneToSet(user, "subscriptions", clubId, User.class);
     }
 
     public static void deleteSubscription(String userId, String clubId) throws ClubOkException {
-//        TODO
-//        User user = getUserById(userId);
+        User user = getUserById(userId);
+        if (user == null) {
+            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+        }
+        model.removeOneFromArray(user, "subscriptions", clubId, User.class);
 
     }
 
@@ -145,8 +143,8 @@ public class UserController {
         model.deleteById(userId, User.class);
     }
 
-    public static Set<ObjectId> getSubscriptionsByToken(String token) throws ClubOkException {
-        Set<ObjectId> result;
+    public static Set<String> getSubscriptionsByToken(String token) throws ClubOkException {
+        Set<String> result;
         User user = getUserByToken(token);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
