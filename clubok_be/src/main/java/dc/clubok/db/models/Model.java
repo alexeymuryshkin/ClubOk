@@ -28,9 +28,26 @@ public interface Model {
 
     <T extends Entity> void deleteById(ObjectId id, Class<T> type) throws ClubOkException;
 
-    <T extends Entity> void update(Document query, Document command, Class<T> type) throws ClubOkException;
+    /* Updating entries in Database */
+    <T extends Entity> void updateRaw(Bson query, Bson update, Class<T> type) throws ClubOkException;
 
     <T extends Entity> void update(T entity, Bson update, Class<T> type) throws ClubOkException;
+
+    <T extends Entity> void modify(T entity, Document update, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void addOneToArray(T entity, String fieldName, S value, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void addManyToArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void addOneToSet(T entity, String fieldName, S value, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void addManyToSet(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S extends Entity> void modifyOneFromArray(T entity, String fieldName, S value, Document update, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void removeOneFromArray(T entity, String fieldName, S value, Class<T> type) throws ClubOkException;
+
+    <T extends Entity, S> void removeManyFromArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException;
 
     <T extends Entity> void validate(T entity) throws ClubOkException;
 

@@ -120,6 +120,10 @@ public class UserController {
         return result;
     }
 
+    public static void addSubscription(String userId, String clubId) throws ClubOkException {
+
+    }
+
     public static void deleteSubscription(String userId, String clubId) throws ClubOkException {
 //        TODO
 //        User user = getUserById(userId);

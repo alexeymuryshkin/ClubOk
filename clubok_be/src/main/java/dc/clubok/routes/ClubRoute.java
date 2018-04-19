@@ -113,6 +113,22 @@ public class ClubRoute {
         }
     };
 
+    public static Route PostClubsIdSubscribers = (Request request, Response response) -> {
+        try {
+            User user = UserController.getUserByToken(request.headers("x-auth"));
+
+            ClubController.addSubscriber(request.params("id"), user.getId().toHexString());
+            UserController.addSubscription(user.getId().toHexString(), request.params("id"));
+            return response(response, SC_NO_CONTENT);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
     public static Route DeleteClubsIdSubscribersId = (Request request, Response response) -> {
         logger.debug("DELETE /clubs/" + request.params(":id") + "/subscribers/" + request.params(":uid"));
 
@@ -160,7 +176,7 @@ public class ClubRoute {
         }
     };
 
-    public static Route GetClubsIdParticipants = (Request request, Response response) -> {
+    public static Route GetClubsIdMembers = (Request request, Response response) -> {
         logger.debug("GET /users/" + request.params(":id") + "/participants");
 
         try {

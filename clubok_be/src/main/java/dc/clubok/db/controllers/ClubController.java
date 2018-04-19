@@ -36,9 +36,8 @@ public class ClubController {
 
     public static void addSubscriber(String clubId, String userId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> subscribers = club.getSubscribers();
-        subscribers.add(new ObjectId(userId));
-        model.update(club, set("subscribers", subscribers), Club.class);
+
+        model.addOneToSet(club, "subscribers", userId, Club.class);
     }
 
     public static void deleteSubscriber(String clubId, String userId) throws ClubOkException {

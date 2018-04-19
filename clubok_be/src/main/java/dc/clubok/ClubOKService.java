@@ -89,12 +89,15 @@ public class ClubOKService {
                     patch("", JSON, PatchClubsId, gson::toJson);
 
                     get("/subscribers", GetClubsIdSubscribers, gson::toJson);
+                    post("/subscribers", PostClubsIdSubscribers, gson::toJson);
                     delete("/subscribers/:uid", DeleteClubsIdSubscribersId, gson::toJson);
 
-                    get("/participants", GetClubsIdParticipants, gson::toJson);
-                    delete("/participants/:uid", DeleteClubsIdParticipantsId, gson::toJson);
+                    get("/members", GetClubsIdMembers, gson::toJson);
+//                    post("/members", PostClubsIdMembers, gson::toJson);
+                    delete("/members/:uid", DeleteClubsIdParticipantsId, gson::toJson);
 
                     get("/moderators", GetClubsIdModerators, gson::toJson);
+//                    post("/moderators", PostClubsIdModerators, gson::toJson);
                     delete("/moderators/:uid", DeleteClubsIdModeratorsId, gson::toJson);
                 });
             });

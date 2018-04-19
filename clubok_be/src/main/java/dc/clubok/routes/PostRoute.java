@@ -153,9 +153,7 @@ public class PostRoute {
         logger.debug("PATCH /posts/" + request.params(":id") + "/comments/" + request.params(":cid") + " " + request.body());
 
         try{
-            Comment update = gson.fromJson(request.body(), Comment.class);
-            update.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
-
+            Document update = Document.parse(request.body());
             PostController.editComment(request.params(":id"), request.params(":cid"), update);
 
             return response(response, SC_NO_CONTENT);
@@ -201,7 +199,7 @@ public class PostRoute {
         logger.debug("DELETE /posts/" + request.params(":id") + "/likes/" + request.headers("x-auth"));
 
         try{
-            PostController.deleteComment(request.params(":id"), request.headers("x-auth"));
+            PostController.deleteLike(request.params(":id"), request.headers("x-auth"));
 
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
