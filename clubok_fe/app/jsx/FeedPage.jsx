@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Redirect, Router} from 'react-router-dom';
 
-//import '../less/FeedPage.less';
+import '../less/feed.less';
 import ServerRequest from "./ServerRequest";
 
 class FeedPage extends Component{
@@ -28,7 +28,13 @@ class FeedPage extends Component{
         return (
             <div>
                 {/*this.renderRedirect()*/}
-                <div>Hello, Anuar!)</div>
+                <NavBar />
+                <div className="row">
+                    <LeftNavBar />
+                    <MainView />
+                    <RightNavBar />
+                </div>
+                <Footer />
             </div>
         );
     }
