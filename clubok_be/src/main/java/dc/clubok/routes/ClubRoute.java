@@ -6,15 +6,11 @@ import dc.clubok.db.models.Club;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
