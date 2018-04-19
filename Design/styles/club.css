@@ -1,0 +1,92 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgb(249,206,50);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+.search {
+  width: 150px;
+  height: 25px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 10px;
+  margin-left: 100px;
+  border-radius: 5px;
+  border:1px solid #CCC;
+  margin-right: 15%;
+  margin-top: 5px;
+  /*margin-bottom: 10px;*/
+  position: absolute;
+  font-size: 15px;
+  display: inline;
+}
+
+.btn {
+    border: none;
+    background-color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    font-family: "Comic Sans MS"; 
+    color: white;
+    margin-left: 10%;
+    position: relative;
+    display: inline-block;
+    
+}
+
+.home-btn {
+    border-width: 2px;
+    border-color: black;
+    background-color: inherit;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Arial"; 
+    color: black;
+    margin-top: 10px;
+    margin-right:  50px;
+    float: right;
+    position: static;
+}
+
+.club-btn {
+    border-width: 2px;
+    border-color: black;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Arial"; 
+    color: black;
+    margin-top: 10px;
+    /*margin-left: 10%;*/
+    float: right;
+    position: static;
+}
+
+.profile-btn {
+    border-width: 2px;
+    border-color: black;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Arial"; 
+    color: black;
+    margin-top: 10px;
+    float: right;
+    position: static;
+}
+
+hr {
+  display: inline-block;
+}

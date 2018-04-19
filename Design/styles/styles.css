@@ -1,21 +1,106 @@
-body {
+.navbar {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgb(249,206,50);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
 }
 
+.search {
+  width: 150px;
+  height: 25px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 10px;
+  margin-left: 100px;
+  border-radius: 5px;
+  border:1px solid #CCC;
+  margin-right: 15%;
+  margin-top: 5px;
+  /*margin-bottom: 10px;*/
+  position: absolute;
+  font-size: 15px;
+  display: inline;
+}
+
+.btn {
+    border: none;
+    background-color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Comic Sans MS"; 
+    color: white;
+    margin-left: 10%;
+    position: relative;
+    display: inline-block;
+
+}
+
+.row button {
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.row {
+  padding-top: 37px;
+}
+
+.column {
+    float: left;
+    padding: 10px;
+    height: auto; /* Should be removed. Only for demonstration */
+}
+
+/* Left and right column */
+.column.side {
+    width: 30%;
+}
+
+/* Middle column */
+.column.middle {
+    width: 40%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Style the footer */
+.footer {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+}
 
 
 .post-content {
-    background-color: rgb(248,248,248);
-	width: 755px;
-    margin: auto;
-    margin-bottom: 50px;
-    border: 1px solid rgb(206,206,206);
-    text-align: center;
-    position: relative;
-    border-radius: 5px;
+  background-color: rgb(248,248,248);
+	width: auto;
+  margin: auto;
+  margin-bottom: 50px;
+  border: 1px solid rgb(206,206,206);
+  text-align: center;
+  position: relative;
+  border-radius: 5px;
 }
 
 .post-image {
-	width: 755px;
+	max-width: 100%;
 }
 
 .user-detail {
@@ -34,6 +119,55 @@ body {
 	text-align: left;
 }
 
-ul {
-	list-style: none;
+.left-navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+}
+
+.left-navbar li a {
+    display: block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color on hover */
+.left-navbar li a:hover {
+    background-color: rgb(249,206,50);
+    color: white;
+}
+
+.left-navbar {
+  float: right;
+}
+
+.right-navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+}
+
+.right-navbar li a {
+    display: block;
+    color: #000;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color on hover */
+.right-navbar li a:hover {
+    background-color: rgb(249,206,50);
+    color: white;
+}
+
+.right-navbar {
+  float: left;
+  position: fixed;
+  border-style: solid;
+  border-radius: 5px;
 }

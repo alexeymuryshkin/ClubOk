@@ -1,0 +1,170 @@
+.topnav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: rgb(249,206,50);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+.search {
+  width: 150px;
+  height: 25px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 10px;
+  margin-left: 100px;
+  border: 1px solid #CCC;
+  border-radius: 5px;
+  margin-right: 15%;
+  margin-top: 5px;
+  /*margin-bottom: 10px;*/
+  position: absolute;
+  font-size: 15px;
+  display: inline;
+}
+
+.row {
+  padding-top: 50px;
+}
+
+.btn {
+    border: none;
+    background-color: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: "Comic Sans MS"; 
+    color: white;
+    margin-left: 10%;
+    position: relative;
+    display: inline-block;
+
+}
+
+.row button {
+  width: 274px;
+  height: 29px;
+  cursor: pointer;
+  display: block;
+  border-radius: 5px;
+  border-width: 0px;
+  background-color: rgb(94,177,89);
+  color: white;
+  font-size: 15px;
+}
+
+* {
+    box-sizing: border-box;
+}
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    height: 500px; /* Should be removed. Only for demonstration */
+    margin-top: 100px; 
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+form {
+  padding: 10px; 
+  margin-left: 150px;
+  margin-bottom: 10px;
+  margin-right: 170px;
+  position: inherit;
+
+}
+
+#login {
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgb(227,228,232);
+  border-radius: 5px;
+  background-color: white;
+  margin-bottom: 50px;
+  position: absolute;
+}
+
+#register {
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgb(227,228,232);
+  border-radius: 5px;
+  background-color: white;
+  position: absolute;
+  margin-top: 180px; 
+}
+
+.reg-ques {
+  text-align: center;
+  font-family: Helvetica;
+  font-size: 20px;
+  margin-bottom: 0px;
+
+}
+
+.reg-ans {
+  text-align: center;
+  font-family: Helvetica;
+  color: rgb(101, 101, 101);
+  font-size: 12.5px;
+  padding: 5px 0px 21px;
+}
+
+.row input {
+  padding: 2px;
+  width: 270px;
+  height: 25px;
+  border:1px solid #CCC;
+  border-radius: 5px;
+  font-size: 15px;
+  margin-bottom: 15px;
+  display: block;
+  margin-right: 10px;
+}
+
+
+
+.image {
+  text-align: center;
+  background-color: white;
+  margin-left: auto;
+  position: relative;
+  height: 400px;
+  width: 500px;
+  position: relative;
+}
+
+.footer {
+  padding-left: 170px;
+  margin-bottom: 50px;
+
+}
+
+.footer ul {
+  display: block;
+}
+
+
+hr {
+  margin-top: 120px; 
+  width: 90%;
+
+}
+
