@@ -18,20 +18,19 @@ public class FeedWebSocketHandler {
     public void onConnect(Session user) throws Exception {
         String username = "User" + ClubOKService.nextUserNumber++;
         logger.debug(username + " connected");
-        ClubOKService.userUsernameMap.put(user, username);
+        ClubOKService.clients.put(user, username);
         ClubOKService.sendPosts(user);
     }
 
     @OnWebSocketClose
     public void onClose(Session user, int statusCode, String reason) {
-        String username = ClubOKService.userUsernameMap.get(user);
-        ClubOKService.userUsernameMap.remove(user);
-        ClubOKService.broadcastMessage(sender = "Server", msg = (username + " left the chat"));
+        String username = ClubOKService.clients.get(user);
+        ClubOKService.clients.remove(user);
         logger.debug(username + " disconnected");
     }
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
-        ClubOKService.broadcastMessage(sender = ClubOKService.userUsernameMap.get(user), msg = message);
     }
 }
+

@@ -1,4 +1,4 @@
-package dc.clubok.db;
+package dc.clubok.db.handlers;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;

@@ -1,4 +1,4 @@
-package dc.clubok.models;
+package dc.clubok.db.models;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -6,30 +6,30 @@ import org.bson.types.ObjectId;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Post
         extends Entity {
-    private @NotEmpty (message = "Club Id is not specified")
+    private @NotEmpty(message = "Club Id cannot be empty")
     String clubId;
-    private @NotEmpty (message = "User Id is not specified")
+    private @NotEmpty (message = "User Id cannot be empty")
     String userId;
     private String type;
-    private @NotEmpty (message = "Title cannot be null")
+    private @NotEmpty (message = "Title cannot be empty")
     String title;
-    private @NotEmpty (message = "Body cannot be null")
+    private @NotEmpty (message = "Body cannot be empty")
     String body;
-    private int lastModified;
-    private List<String> likes;
+    private Set<String> likes;
     private List<Comment> comments;
 
     public Post() {
         setId(new ObjectId());
-        likes = new ArrayList<>();
+        likes = new HashSet<>();
         comments = new ArrayList<>();
-        lastModified = getId().getTimestamp();
     }
 
     public Post(String clubId, String type, String title, String body) {

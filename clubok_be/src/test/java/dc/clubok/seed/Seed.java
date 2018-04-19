@@ -1,57 +1,86 @@
 package dc.clubok.seed;
 
-import dc.clubok.controllers.UserController;
-import dc.clubok.models.Club;
-import dc.clubok.models.Post;
-import dc.clubok.mongomodel.MongoModel;
-import dc.clubok.models.Token;
-import dc.clubok.models.User;
+import dc.clubok.db.controllers.UserController;
+import dc.clubok.db.models.Club;
+import dc.clubok.db.models.Event;
+import dc.clubok.db.models.Post;
+import dc.clubok.db.models.User;
+import dc.clubok.db.mongomodel.MongoModel;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static dc.clubok.utils.Constants.model;
 
 public class Seed {
     public static List<User> users;
     public static List<Club> clubs;
     public static List<Post> posts;
+    public static List<Event> events;
 
     public static void populateUsers() {
         User user1 = new User("userOneEmail@example.com", "userOnePass");
         User user2 = new User("userTwoEmail@example.com", "userTwoPass");
         users = Arrays.asList(user1, user2);
 
-        user1.setTokens(Collections.singletonList(new Token("auth", UserController.generateAuthToken(user1))));
-        user2.setTokens(Collections.singletonList(new Token("auth", UserController.generateAuthToken(user2))));
+        try {
+            user1.setTokens(Collections.singletonList(UserController.generateAuthToken(user1)));
+            user2.setTokens(Collections.singletonList(UserController.generateAuthToken(user2)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
-            new MongoModel().saveMany(users, User.class);
+            model.saveMany(users, User.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void populateClubs() {
-        Club club1 = new Club("Club Name 1");
-        Club club2 = new Club("Club Name 2");
+        Club club1 = new Club("Club Name 1", "some description");
+        Club club2 = new Club("Club Name 2", "some description");
         clubs = Arrays.asList(club1, club2);
 
         try {
-            new MongoModel().saveMany(clubs, Club.class);
+            model.saveMany(clubs, Club.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void populatePosts() {
-        populateUsers();
-        populateClubs();
         Post post1 = new Post(clubs.get(0).getId().toHexString(), "type", "Buffalo", "Hello everyone! Goodbye!");
+        post1.setUserId(users.get(0).getId().toHexString());
         Post post2 = new Post(clubs.get(0).getId().toHexString(), "Type", "Title", "Body");
+        post2.setUserId(users.get(1).getId().toHexString());
         posts = Arrays.asList(post1, post2);
 
         try {
-            new MongoModel().saveMany(posts, Post.class);
+            model.saveMany(posts, Post.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void populateEvents(){
+        populateClubs();
+        Date s = new GregorianCalendar(2018, 11, 1).getTime();
+        Event event1 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
+                new GregorianCalendar(2018, 11, 1).getTime());
+        Event event2 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
+                new GregorianCalendar(2018, 11, 5).getTime());
+        Event event3 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
+                new GregorianCalendar(2018, 11, 10).getTime());
+        Event event4 = new Event(clubs.get(0).getId().toHexString(), "title", "description",
+                new GregorianCalendar(2018, 11, 15).getTime());
+        Event event5 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
+                new GregorianCalendar(2018, 11, 20).getTime());
+        Event event6 = new Event(clubs.get(0).getId().toHexString(), "Party", "relax time",
+                new GregorianCalendar(2018, 11, 25).getTime());
+        events = Arrays.asList(event1, event2, event3, event4, event5, event6);
+
+        try {
+            model.saveMany(events, Event.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
