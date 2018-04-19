@@ -9,6 +9,8 @@ import spark.Response;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
+import java.util.Arrays;
+import java.util.List;
 
 public class Constants {
     public static final Config config = new Config();
@@ -22,6 +24,18 @@ public class Constants {
 
     public static final Gson gson = new Gson();
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+    /* Protected Routes */
+    public static final List<String> protectedRoutes = Arrays.asList(
+            "/users/me",
+            "/users/me/*",
+            "/clubs",
+            "/clubs/*",
+            "/posts",
+            "/posts/*",
+            "/events",
+            "/events/*"
+    );
 
     /* Error Codes */
     public static final int VALIDATION_ERROR = 101;

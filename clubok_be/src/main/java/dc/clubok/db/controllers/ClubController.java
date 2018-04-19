@@ -1,19 +1,17 @@
 package dc.clubok.db.controllers;
 
 import dc.clubok.db.models.Club;
-import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static dc.clubok.utils.Constants.model;
 import static com.mongodb.client.model.Updates.set;
+import static dc.clubok.utils.Constants.model;
 
 public class ClubController {
     private static Logger logger = LoggerFactory.getLogger(ClubController.class.getCanonicalName());
@@ -28,15 +26,12 @@ public class ClubController {
     }
 
     public static Club getClubById(String clubId) throws ClubOkException {
-        Club club = model.findById(clubId, Club.class);
-        return club;
+        return model.findById(clubId, Club.class);
     }
 
-    public static List<ObjectId> getSubscribersByClubId(String clubId) throws ClubOkException {
+    public static Set<ObjectId> getSubscribersByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> usersId = club.getSubscribers();
-        List<ObjectId> users = new ArrayList<>(usersId);
-        return users;
+        return club.getSubscribers();
     }
 
     public static void addSubscriber(String clubId, String userId) throws ClubOkException {
@@ -53,11 +48,9 @@ public class ClubController {
         model.update(club, set("subscribers", subscribers), Club.class);
     }
 
-    public static List<ObjectId> getModeratorsByClubId(String clubId) throws ClubOkException {
+    public static Set<ObjectId> getModeratorsByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> usersId = club.getModerators();
-        List<ObjectId> users = new ArrayList<>(usersId);
-        return users;
+        return club.getModerators();
     }
 
     public static void addModerator(String clubId, String userId) throws ClubOkException {
@@ -74,11 +67,9 @@ public class ClubController {
         model.update(club, set("moderators", moderators), Club.class);
     }
 
-    public static List<ObjectId> getParticipantsByClubId(String clubId) throws ClubOkException {
+    public static Set<ObjectId> getParticipantsByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
-        Set<ObjectId> usersId = club.getParticipants();
-        List<ObjectId> users = new ArrayList<>(usersId);
-        return users;
+        return club.getParticipants();
     }
 
     public static void addParticipant(String clubId, String userId) throws ClubOkException {
