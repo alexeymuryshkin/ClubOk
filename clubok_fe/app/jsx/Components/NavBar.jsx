@@ -5,15 +5,13 @@ import '../../less/feed.less';
 import ServerRequest from "../ServerRequest";
 
 class NavBar extends Component {
-    state = {};
-
-    handleItemClick = (e, { name }) => this.setState({ activeItem: name });
 
     constructor(props) {
         super(props);
         //this.state = {}
         this.onSearchChange = this.onSearchChange.bind(this);
         this.openMainPage = this.openMainPage.bind(this);
+        this.signOut = this.signOut.bind(this);
     }
 
     onSearchChange(e) {
@@ -22,7 +20,7 @@ class NavBar extends Component {
     }
 
     openMainPage() {
-        console.log("Opening of The Main Page");
+        console.log("Opening Main Page");
         window.location.replace("http://localhost:3000/");
     }
 
@@ -31,8 +29,6 @@ class NavBar extends Component {
     }
 
     render() {
-        const { activeItem } = this.state;
-
         return (
             <Menu size='large'>
                 <Container>
@@ -42,7 +38,7 @@ class NavBar extends Component {
                     </Menu.Item>
                     <Menu.Menu position='right'>
                         <Menu.Item>
-                            <Button negative='true' onClick={this.signOut()}>Log Out</Button>
+                            <Button negative='true' onClick={this.signOut}>Log Out</Button>
                         </Menu.Item>
                     </Menu.Menu>
                 </Container>
