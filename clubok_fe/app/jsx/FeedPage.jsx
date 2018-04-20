@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import {Redirect} from 'react-router-dom';
 import {Grid} from 'semantic-ui-react';
 
-import '../less/feed.less';
 import NavBar from "./Components/NavBar";
 import Post from "./Components/Post";
 import LeftNavBar from "./Components/LeftNavBar";
+import RightNavBar from "./Components/RightNavBar";
 
 class FeedPage extends Component{
 
@@ -32,7 +32,7 @@ class FeedPage extends Component{
             <div>
                 {/*this.renderRedirect()*/}
                 <NavBar />
-                <Grid container='true' textAlign='justified'>
+                <Grid container textAlign='justified'>
                     <Grid.Row>
                         <Grid.Column width='4'>
                             <LeftNavBar/>
@@ -40,15 +40,11 @@ class FeedPage extends Component{
                         <Grid.Column width='8'>
                             <Post/>
                         </Grid.Column>
-                        <Grid.Column width='4'/>
+                        <Grid.Column width='4'>
+                            <RightNavBar/>
+                        </Grid.Column>
                     </Grid.Row>
                 </Grid>
-                {/*<div className="row">
-                    <LeftNavBar />
-                    <MainView />
-                    <RightNavBar />
-                </div>
-                <Footer />*/}
             </div>
         );
     }
@@ -58,6 +54,4 @@ ReactDOM.render(
     <FeedPage/>,
     document.getElementById('feed')
 );
-
-export default FeedPage
 

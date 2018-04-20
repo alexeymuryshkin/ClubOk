@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Redirect, Router} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 
-import '../less/AuthorizationPage.less';
 import ServerRequest from "./ServerRequest";
 import SignInComponent from "./Components/SignInComponent";
 import SignUpComp from "./Components/SignUpComp";
+import NavBar from "./Components/NavBar";
+import {Grid, Image} from "semantic-ui-react";
 
 class AuthorizationPage extends Component{
 
@@ -29,24 +30,19 @@ class AuthorizationPage extends Component{
     render() {
         return (
             <div>
-                {/*this.renderRedirect()*/}
-                <div className="topnav">
-                    <button className="btn">ClubOK</button>
-                    <input type="text" className="search" placeholder="Search"/>
-                </div>
+                <NavBar/>
 
-
-                <div className="row">
-                    <div className="column">
-                        <div className="image">image?</div>
-                    </div>
-
-                    <div className="column">
-                        <SignInComponent/>
-                        <SignUpComp/>
-                    </div>
-
-                </div>
+                <Grid container>
+                    <Grid.Row>
+                        <Grid.Column width='10'>
+                            <Image src='images/logo.png' size='large' floated='left'/>
+                        </Grid.Column>
+                        <Grid.Column width='6'>
+                            <SignInComponent/>
+                            <SignUpComp/>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
 
                 <hr/>
                 <div className="footer">

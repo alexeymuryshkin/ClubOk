@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
-import '../../less/AuthorizationPage.less'
 import ServerRequest from "../ServerRequest";
+import {Button, Form, Segment} from "semantic-ui-react";
 
 class SignInComponent extends Component{
 
@@ -38,11 +38,13 @@ class SignInComponent extends Component{
 
     render() {
         return (
-            <form id='login' method='post' >
-                <input type="email" placeholder="Email" onChange={this.onEmailChange} required/>
-                <input type="password" placeholder="Password" onChange={this.onPasswordChange} required/>
-                <button type='button' onClick={this.signIn}>Login</button>
-            </form>
+            <Segment>
+                <Form>
+                    <Form.Input width='16' fluid type='email' label='Email' placeholder='example@email.com'/>
+                    <Form.Input fluid type='password' label='Password' placeholder='Password'/>
+                    <Button type='button' onClick={this.signIn}>Login</Button>
+                </Form>
+            </Segment>
         );
     }
 }

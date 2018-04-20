@@ -1,34 +1,14 @@
 import React, {Component} from 'react';
 import {Card, Comment, Form, Header, Icon, Image, Input} from 'semantic-ui-react';
 
-import '../../less/feed.less';
-import ServerRequest from "../ServerRequest";
-
 class Post extends Component {
     constructor(props) {
         super(props);
-        //this.state = {}
-        this.onSearchChange = this.onSearchChange.bind(this);
-        this.openMainPage = this.openMainPage.bind(this);
-    }
-
-    onSearchChange(e) {
-        let text = e.target.value;
-        console.log(text);
-    }
-
-    openMainPage() {
-        console.log("Opening of The Main Page");
-        window.location.replace("http://localhost:3000/");
-    }
-
-    signOut() {
-        ServerRequest.getInstance().signOut();
     }
 
     render() {
         return (
-            <Card fluid='true'>
+            <Card fluid>
                 <Card.Content>
                     <Header>
                         <Image src="logo/apple.jpg"/>
@@ -48,7 +28,7 @@ class Post extends Component {
                         and more recently with desktop publishing software like Aldus PageMaker including versions of
                         Lorem Ipsum.
                     </p>
-                    <Image fluid='true' src='images/paris.jpg'/>
+                    <Image fluid src='images/paris.jpg'/>
                 </Card.Content>
                 <Card.Content>
                     <span className="right floated">
@@ -76,8 +56,8 @@ class Post extends Component {
                     </Comment.Group>
                 </Card.Content>
                 <Card.Content>
-                    <Form reply='true'>
-                        <Input transparent='true' icon='pencil alternate' iconPosition='left' fluid='true' placeholder='Enter your comment...'/>
+                    <Form reply>
+                        <Input transparent icon='pencil alternate' iconPosition='left' fluid placeholder='Enter your comment...'/>
                     </Form>
                 </Card.Content>
             </Card>

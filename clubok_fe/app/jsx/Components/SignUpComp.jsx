@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
-import '../../less/AuthorizationPage.less';
 import ServerRequest from "../ServerRequest";
+import {Button, Form, Header, Segment} from "semantic-ui-react";
 
 class SignUpComp extends Component{
 
@@ -64,16 +64,18 @@ class SignUpComp extends Component{
 
     render() {
         return (
-            <form id='register' method='post' >
-                <h2 className="reg-ques">Junk mail annoys you?</h2>
-                <div className="reg-ans">Just, sign up!</div>
-                <input type="text" placeholder="First Name" onChange={this.onFNameChange} required/>
-                <input type="text" placeholder="Last Name" onChange={this.onLNameChange} required/>
-                <input type="email" placeholder="Email" onChange={this.onEmailChange} required/>
-                <input type="password" placeholder="Password" onChange={this.onPasswordChange} required/>
-                <input type="password" placeholder="Re Password" onChange={this.onRePasswordChange} required/>
-                <button type='button' onClick={this.signUp}>Register</button>
-            </form>
+            <Segment>
+                <Form>
+                    <Header as='h2' textAlign='center'>Junk mail annoys you?</Header>
+                    <Header as='h2' textAlign='center'>Just sign up!</Header>
+                    <Form.Input fluid type='text' label='First Name' placeholder='First Name' onChange={this.onFNameChange}/>
+                    <Form.Input fluid type='text' label='Last Name' placeholder='Last Name' onChange={this.onLNameChange}/>
+                    <Form.Input fluid type='email' label='Email' placeholder='Email' onChange={this.onEmailChange}/>
+                    <Form.Input fluid type='password' label='Password' placeholder='Password' onChange={this.onPasswordChange}/>
+                    <Form.Input fluid type='password' label='Confirm Password' placeholder='Repeat password' onChange={this.onRePasswordChange}/>
+                    <Button type='button' onClick={this.signUp}>Register</Button>
+                </Form>
+            </Segment>
         );
     }
 }

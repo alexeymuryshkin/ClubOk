@@ -11,8 +11,6 @@ class ServerRequest {
     }
 
 	constructor() {
-		this.token = null;
-        window.sessionStorage.setItem('token', null);
 	}
 
 	// functions
