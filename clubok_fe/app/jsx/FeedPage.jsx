@@ -6,6 +6,7 @@ import {Grid} from 'semantic-ui-react';
 import '../less/feed.less';
 import NavBar from "./Components/NavBar";
 import Post from "./Components/Post";
+import LeftNavBar from "./Components/LeftNavBar";
 
 class FeedPage extends Component{
 
@@ -33,7 +34,9 @@ class FeedPage extends Component{
                 <NavBar />
                 <Grid container='true' textAlign='justified'>
                     <Grid.Row>
-                        <Grid.Column width='4'/>
+                        <Grid.Column width='4'>
+                            <LeftNavBar/>
+                        </Grid.Column>
                         <Grid.Column width='8'>
                             <Post/>
                         </Grid.Column>
