@@ -13,16 +13,16 @@ class AuthorizationPage extends Component{
     constructor(props) {
         super(props);
         console.log('Hi, it is Authorization Page!)');
-        console.log(ServerRequest.getInstance().token);
+        console.log(window.sessionStorage.getItem('token'));
         this.renderRedirect = this.renderRedirect.bind(this);
 
-        if (ServerRequest.getInstance().token != null) {
+        if (window.sessionStorage.getItem('token') != null) {
             window.location.replace("http://localhost:3000/feed.html");
         }
     }
 
     renderRedirect () {
-        if (ServerRequest.getInstance().token) {
+        if (window.sessionStorage.getItem('token') != null) {
             return <Redirect to="/feed.html"/>;
         }
     }

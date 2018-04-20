@@ -4,11 +4,13 @@ import {Button, Container, Image, Menu} from 'semantic-ui-react';
 import ServerRequest from "../ServerRequest";
 
 class NavBar extends Component {
+
     constructor(props) {
         super(props);
         //this.state = {}
         this.onSearchChange = this.onSearchChange.bind(this);
         this.openMainPage = this.openMainPage.bind(this);
+        this.signOut = this.signOut.bind(this);
     }
 
     onSearchChange(e) {
@@ -17,7 +19,7 @@ class NavBar extends Component {
     }
 
     openMainPage() {
-        console.log("Opening of The Main Page");
+        console.log("Opening Main Page");
         window.location.replace("http://localhost:3000/");
     }
 
