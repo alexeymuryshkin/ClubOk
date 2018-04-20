@@ -14,7 +14,7 @@ class FeedPage extends Component{
         console.log(window.sessionStorage.getItem('token'));
         this.renderRedirect = this.renderRedirect.bind(this);
 
-        if (window.sessionStorage.getItem('token') == null) {
+        if (!window.sessionStorage.getItem('token')) {
             window.location.replace("http://localhost:3000/");
         }
     }
