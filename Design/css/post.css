@@ -1,0 +1,22 @@
+.post {
+    background-color: #ccc;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.post > .header {
+
+}
+
+.post > .header > a {
+    display: inline-block;
+}
+
+.post > .header > .info {
+    display: inline-block;
+}
+
+.round.small.avatar > img {
+    height: 50px;
+    border-radius: 100px;
+}

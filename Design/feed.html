@@ -1,150 +1,186 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Feed</title>
-		<link rel="stylesheet" href="styles/styles.css"/>
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+<head>
+    <title>Feed</title>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <!--<link rel="stylesheet" href="styles/styles.css"/>-->
+    <link rel="stylesheet" href="css/post.css">
+    <!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css"-->
+    <!--integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">-->
 
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-	</head>
-	
-	<body style="background-color: rgb(237,238,240)">
-		<div class="navbar">
-			<button class="btn">ClubOK</button>
-			<input type="text" class="search" placeholder="Search">
-		</div>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+</head>
 
-		<div class="row">
-			<div class="column side"  style="background-color:#aaa;">
-		 		<div class="left-navbar">
-		 			<ul>
-					  <li><a href="#home">Home</a></li>
-					  <li><a href="#news">News</a></li>
-					  <li><a href="#contact">Contact</a></li>
-					  <li><a href="#about">About</a></li>
-					</ul>
-		 		</div>
-		  	</div>
-		  
-		  	<div class="column middle" style="background-color:#bbb;">
-		  	
-		  		<div class="post-content">
-					<!-- <img src="images/nomad.jpg" class="post-image"> -->
-					<div class="post-container">
-						<div class="post-header">
-							<a class="small-avatar" href="#apple">
-						        <img src="logo/apple.jpg" class="post_img">
-						    </a>
-							<div class="post_header_info">
-						        <h5 class="post_author">
-						        	<a class="author" href="/manutdruofficial">Apple</a> 
-						        	<p class="post-date">date</p>
-								</h5>
-						       
-							</div>
-						</div>
-						
-						<!-- <hr> -->
+<body style="background-color: rgb(237,238,240)">
+<div class="navbar">
+    <button class="btn">ClubOK</button>
+    <input type="text" class="search" placeholder="Search">
+</div>
 
-						<div class="post-detail">
-							<div class="post-text">
-								<p>
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-								</p>
-							</div> 
-							<img src="images/london.jpg" class="post-image">
-					
-							
-						</div>
-						<!-- <hr> -->
-						
-						<div class="post-footer">
-							<div class="reply-button">
-								<!-- <button class="like">like it</button> -->
-								<button class="like"><i class="fas fa-heart"></i></button>
-							</div>
-							<hr>	
-							<div class="reply-list">
-								<div class="reply" id="01">
-									<h5>max<h5>
-									<p>alisa > siri</p>
-								</div>
-								<hr>
-								<div class="reply" id="02">
-									<h5>jobs<h5>
-									<p>NO!</p>
-								</div>
-								<hr>
-								<input type="text" class="comment" placeholder="your comment">
-							</div>
-						</div>
-					</div>
-				</div>
+<div class="container" style="margin-top: 37px">
+    <div class="row">
+        <div class="three columns">
+            <div class="left-navbar">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">News</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="seven columns">
+            <div class="post">
+                <div class="header">
+                    <a href="" class="round small avatar">
+                        <img src="logo/apple.jpg" alt="">
+                    </a>
+                    <div class="info">
+                        <a href="">Apple</a>
+                        <p>33 minutes ago</p>
+                    </div>
 
+                </div>
+                <div class="body">
 
+                </div>
+                <div class="footer">
 
-			
-				<div class="post-content">
-					<img src="images/paris.jpg" class="post-image">
-					<div class="post-container">
-						<div class="post-detail">
-							<div class="user-detail">
-								<h5>Nomad</h5>
-							</div> <hr></hr>
-							<div class="post-description">
-								<p>
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-								</p>
-							</div> <hr></hr>
-							<div class="post-comment">
-								<p>Great!</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				
-				<div class="post-content">
-					<img src="images/london.jpg" class="post-image">
-					<div class="post-container">
-						<div class="post-detail">
-							<div class="user-detail">
-								<h5>Nomad</h5>
-							</div> <hr></hr>
-							<div class="post-description">
-								<p>
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
-								</p>
-							</div> <hr></hr>
-							<div class="post-comment">
-								<p>London is red</p>
-							</div>
-						</div>
-					</div>
-				</div>
+                </div>
 
-			</div>
-		
-			<div class="column side" style="background-color:#ccc;">
-				<div class="right-navbar">
-		 			<ul>
-					  <li><a href="#home">Home</a></li>
-					  <li><a href="#news">News</a></li>
-					  <li><a href="#contact">Contact</a></li>
-					  <li><a href="#about">About</a></li>
-					</ul>
-		 		</div>
-		  	</div>
-		  
-			</div>
-		</div>
+            </div>
+            <!--<div class="post-content">-->
+            <!--&lt;!&ndash; <img src="images/nomad.jpg" class="post-image"> &ndash;&gt;-->
+            <!--<div class="post-container">-->
+            <!--<div class="post-header">-->
+            <!--<a class="small-avatar" href="#">-->
+            <!--<img src="logo/apple.jpg" class="post_img">-->
+            <!--</a>-->
+            <!--<div class="post_header_info">-->
+            <!--<h5 class="post_author">-->
+            <!--<a class="author" href="/manutdruofficial">Apple</a>-->
+            <!--<p class="post-date">date</p>-->
+            <!--</h5>-->
+            <!--</div>-->
+            <!--</div>-->
 
-		<div class="footer">
-				<p>Footer</p>
-		</div>
+            <!--&lt;!&ndash; <hr> &ndash;&gt;-->
+
+            <!--<div class="post-detail">-->
+            <!--<div class="post-text">-->
+            <!--<p>-->
+            <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor-->
+            <!--incididunt ut-->
+            <!--labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation-->
+            <!--ullamco-->
+            <!--laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit-->
+            <!--in-->
+            <!--voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat-->
+            <!--cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.-->
+            <!--</p>-->
+            <!--</div>-->
+            <!--<img src="images/london.jpg" class="post-image">-->
 
 
+            <!--</div>-->
+            <!--&lt;!&ndash; <hr> &ndash;&gt;-->
 
-	</body>
+            <!--<div class="post-footer">-->
+            <!--<div class="reply-button">-->
+            <!--&lt;!&ndash; <button class="like">like it</button> &ndash;&gt;-->
+            <!--<button class="like"><i class="fas fa-heart"></i></button>-->
+            <!--</div>-->
+            <!--<hr>-->
+            <!--<div class="reply-list">-->
+            <!--<div class="reply" id="01">-->
+            <!--<h5>max-->
+            <!--<h5>-->
+            <!--<p>alisa > siri</p>-->
+            <!--</div>-->
+            <!--<hr>-->
+            <!--<div class="reply" id="02">-->
+            <!--<h5>jobs-->
+            <!--<h5>-->
+            <!--<p>NO!</p>-->
+            <!--</div>-->
+            <!--<hr>-->
+            <!--<input type="text" class="comment" placeholder="your comment">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div class="post-content">-->
+            <!--<img src="images/paris.jpg" class="post-image">-->
+            <!--<div class="post-container">-->
+            <!--<div class="post-detail">-->
+            <!--<div class="user-detail">-->
+            <!--<h5>Nomad</h5>-->
+            <!--</div>-->
+            <!--<hr></hr>-->
+            <!--<div class="post-description">-->
+            <!--<p>-->
+            <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor-->
+            <!--incididunt ut-->
+            <!--labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation-->
+            <!--ullamco-->
+            <!--laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit-->
+            <!--in-->
+            <!--voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat-->
+            <!--cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.-->
+            <!--</p>-->
+            <!--</div>-->
+            <!--<hr></hr>-->
+            <!--<div class="post-comment">-->
+            <!--<p>Great!</p>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
 
+            <!--<div class="post-content">-->
+            <!--<img src="images/london.jpg" class="post-image">-->
+            <!--<div class="post-container">-->
+            <!--<div class="post-detail">-->
+            <!--<div class="user-detail">-->
+            <!--<h5>Nomad</h5>-->
+            <!--</div>-->
+            <!--<hr></hr>-->
+            <!--<div class="post-description">-->
+            <!--<p>-->
+            <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor-->
+            <!--incididunt ut-->
+            <!--labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation-->
+            <!--ullamco-->
+            <!--laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit-->
+            <!--in-->
+            <!--voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat-->
+            <!--cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.-->
+            <!--</p>-->
+            <!--</div>-->
+            <!--<hr></hr>-->
+            <!--<div class="post-comment">-->
+            <!--<p>London is red</p>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+        </div>
+    </div>
+    <div class="two columns">
+        <div class="right-navbar">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Footer</p>
+    </div>
+</div>
+
+
+</body>
 </html>
-</hmtl>
