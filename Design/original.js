@@ -11,6 +11,10 @@ $(document).ready(function () {
 		source: content
 	})
 	;
+
+
+	$('#example15').calendar();
+
 })
 
 
