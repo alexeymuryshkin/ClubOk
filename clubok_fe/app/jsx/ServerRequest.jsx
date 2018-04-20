@@ -170,12 +170,18 @@ class ServerRequest {
     getPosts(data) {
         console.log("New Get Posts request...");
 
-        let attrs = {
-            size: data.size,
-            page: data.page,
-            orderBy: data.orderBy,
-            order: data.order
-        };
+        // let attrs = {
+        //     size: data.size,
+        //     page: data.page,
+        //     orderBy: data.orderBy,
+        //     order: data.order
+        // };
+
+        let attrs = '';
+        if (data.size) attrs += (attrs ? '&' : '') + 'size=' + data.size;
+        if (data.page) attrs += (attrs ? '&' : '') + 'page=' + data.page;
+        if (data.orderBy) attrs += (attrs ? '&' : '') + 'orderBy=' + data.orderBy;
+        if (data.order) attrs += (attrs ? '&' : '') + 'order=' + data.order;
 
         let myClass = this;
 
@@ -191,13 +197,81 @@ class ServerRequest {
                 myClass.onGetPostsResponse(jo);
             }
         };
-        serv_request.open('GET', 'api/posts', true);
+        serv_request.open('GET', 'api/posts' + (attrs ? '?' : '') + attrs, true);
         //serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
-        serv_request.send(JSON.stringify(attrs));
+        serv_request.send(null);
     }
 
     onGetPostsResponse(jo) {
         
+    }
+
+    postPosts(data) {
+        console.log("New Post Posts request...");
+
+        let attrs = {
+            clubId: data.clubId,
+            userId: data.userId,
+            postedAt: data.postedAt,
+            type: data.type,
+            body: data.body,
+            images: data.images,
+            event: data.event,
+            likes: data.likes,
+            comments: data.comments
+        };
+
+        let myClass = this;
+
+        let serv_request = new XMLHttpRequest();
+        serv_request.onreadystatechange = function() {
+            if (serv_request.readyState == 4 && serv_request.status == 200) {
+                console.log("Success!");
+                console.log(serv_request.responseText);
+                //document.getElementById(id).value = '';
+
+                let jo = serv_request.responseText;
+                //let jo = JSON.parse(serv_request.responseText);
+                //let jo = serv_request.getResponseHeader("x-auth");
+                myClass.onPostPostsResponse(jo);
+            }
+        };
+        serv_request.open('POST', 'api/posts', true);
+        serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
+        serv_request.send(JSON.stringify(attrs));
+    }
+
+    onPostPostsResponse(jo) {
+
+    }
+
+    getPostsId(data) {
+        console.log("New Get Posts Id request...");
+
+        let attrs = {};
+
+        let myClass = this;
+
+        let serv_request = new XMLHttpRequest();
+        serv_request.onreadystatechange = function() {
+            if (serv_request.readyState == 4 && serv_request.status == 200) {
+                console.log("Success!");
+                console.log(serv_request.responseText);
+                //document.getElementById(id).value = '';
+
+                let jo = serv_request.responseText;
+                //let jo = JSON.parse(serv_request.responseText);
+                //let jo = serv_request.getResponseHeader("x-auth");
+                myClass.onGetPostIdResponse(jo);
+            }
+        };
+        serv_request.open('POST', 'api/posts/' + data.postId, true);
+        serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
+        serv_request.send(null);
+    }
+
+    onGetPostIdResponse(jo) {
+
     }
 }
 
