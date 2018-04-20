@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Redirect, Router} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
+import {Grid} from 'semantic-ui-react';
 
 import '../less/feed.less';
-import ServerRequest from "./ServerRequest";
 import NavBar from "./Components/NavBar";
+import Post from "./Components/Post";
 
 class FeedPage extends Component{
 
@@ -30,6 +31,15 @@ class FeedPage extends Component{
             <div>
                 {/*this.renderRedirect()*/}
                 <NavBar />
+                <Grid container='true' textAlign='justified'>
+                    <Grid.Row>
+                        <Grid.Column width='4'/>
+                        <Grid.Column width='8'>
+                            <Post/>
+                        </Grid.Column>
+                        <Grid.Column width='4'/>
+                    </Grid.Row>
+                </Grid>
                 {/*<div className="row">
                     <LeftNavBar />
                     <MainView />

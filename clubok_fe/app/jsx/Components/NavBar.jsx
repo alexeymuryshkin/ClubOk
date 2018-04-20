@@ -1,9 +1,14 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import {Button, Container, Image, Menu} from 'semantic-ui-react';
 
 import '../../less/feed.less';
 import ServerRequest from "../ServerRequest";
 
 class NavBar extends Component {
+    state = {};
+
+    handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+
     constructor(props) {
         super(props);
         //this.state = {}
@@ -26,13 +31,23 @@ class NavBar extends Component {
     }
 
     render() {
+        const { activeItem } = this.state;
+
         return (
-            <div className="navbar">
-                <button className="btn" onClick={this.openMainPage}>ClubOK</button>
-                <input type="text" className="search" onChange={this.onSearchChange} placeholder="Search" />
-                <button style={{float: "right"}} onClick={this.signOut}>Sign Out</button>
-            </div>
-        );
+            <Menu size='large'>
+                <Container>
+                    <Menu.Item header>
+                        <Image src='assets/images/logo.png'/>
+                        ClubOk
+                    </Menu.Item>
+                    <Menu.Menu position='right'>
+                        <Menu.Item>
+                            <Button negative='true' onClick={this.signOut()}>Log Out</Button>
+                        </Menu.Item>
+                    </Menu.Menu>
+                </Container>
+            </Menu>
+        )
     }
 }
 
