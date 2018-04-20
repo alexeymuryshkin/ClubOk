@@ -109,12 +109,17 @@ class ServerRequest {
 	getUsers(data) {
         console.log("New Get Users request...");
 
-        let attrs = {
-            size: data.size,
-            page: data.page,
-            orderBy: data.orderBy,
-            order: data.order
-        };
+        // let attrs = {
+        //     size: data.size,
+        //     page: data.page,
+        //     orderBy: data.orderBy,
+        //     order: data.order
+        // };
+        let attrs = '';
+        if (data.size) attrs += (attrs ? '&' : '') + 'size=' + data.size;
+        if (data.page) attrs += (attrs ? '&' : '') + 'page=' + data.page;
+        if (data.orderBy) attrs += (attrs ? '&' : '') + 'orderBy=' + data.orderBy;
+        if (data.order) attrs += (attrs ? '&' : '') + 'order=' + data.order;
 
         let myClass = this;
 
@@ -130,9 +135,9 @@ class ServerRequest {
                 myClass.onGetUsersResponse(jo);
             }
         };
-        serv_request.open('GET', 'api/users', true);
+        serv_request.open('GET', 'api/users' + (attrs ? '?' : '') + attrs, true);
         //serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
-        serv_request.send(JSON.stringify(attrs));
+        serv_request.send(null);
     }
 
     onGetUsersResponse(jo) {
@@ -160,7 +165,7 @@ class ServerRequest {
         };
         serv_request.open('GET', 'api/users/me', true);
         serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
-        serv_request.send(JSON.stringify(attrs));
+        serv_request.send(null);
     }
 
     onGetUsersMeResponse(jo) {
@@ -265,8 +270,8 @@ class ServerRequest {
                 myClass.onGetPostIdResponse(jo);
             }
         };
-        serv_request.open('POST', 'api/posts/' + data.postId, true);
-        serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
+        serv_request.open('GET', 'api/posts/' + data.postId, true);
+        //serv_request.setRequestHeader("x-auth", window.sessionStorage.getItem('token'));
         serv_request.send(null);
     }
 
