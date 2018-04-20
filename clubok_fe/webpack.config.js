@@ -15,7 +15,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.less$/,
+                test: /\.(css|less)$/,
                 use: ExtractTextPlugin.extract(['css-loader', 'less-loader'])
             },
             {
@@ -26,6 +26,9 @@ module.exports = {
         ]
     },
     resolve: {
+        alias: {
+            'semantic-ui': path.join(__dirname, "node_modules", "semantic-ui-css", "semantic.js"),
+        },
         extensions: ['*', '.js', '.jsx']
     },
     output: {
