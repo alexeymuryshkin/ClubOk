@@ -1,16 +1,8 @@
 package dc.clubok;
 
-import dc.clubok.db.models.Post;
 import dc.clubok.utils.Constants;
-import dc.clubok.utils.exceptions.ClubOkException;
-import org.eclipse.jetty.websocket.api.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static dc.clubok.routes.ClubRoute.*;
 import static dc.clubok.routes.EventRoute.*;
@@ -21,15 +13,15 @@ import static spark.Spark.*;
 
 public class ClubOKService {
     private static Logger logger = LoggerFactory.getLogger(ClubOKService.class.getCanonicalName());
-    public static Map<Session, String> clients = new ConcurrentHashMap<>();
-    public static int nextUserNumber = 1;
+//    public static Map<Session, String> clients = new ConcurrentHashMap<>();
+//    public static int nextUserNumber = 1;
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
         staticFiles.location("/public");
         logger.info("Server started at port " + config.getProperties().getProperty("port"));
 
-        webSocket("/feed", FeedWebSocketHandler.class);
+//        webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
             before("/*", (request, response) -> {
                 String log_template = "Received API call: %s %s/%s\nHeaders:\n%s%s";
@@ -139,27 +131,27 @@ public class ClubOKService {
         init();
     }
 
-    public static void broadcastPost(Post post) {
-        clients.keySet().stream().filter(Session::isOpen).forEach(session -> {
-            try {
-                session.getRemote().sendString(gson.toJson(Collections.singletonList(post)));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public static void sendPost(Post post) {
-
-    }
-
-    public static void sendPosts(Session user) {
-        try {
-            user.getRemote().sendString(gson.toJson(model.findAll(Post.class)));
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        } catch (ClubOkException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void broadcastPost(Post post) {
+//        clients.keySet().stream().filter(Session::isOpen).forEach(session -> {
+//            try {
+//                session.getRemote().sendString(gson.toJson(Collections.singletonList(post)));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+//
+//    public static void sendPost(Post post) {
+//
+//    }
+//
+//    public static void sendPosts(Session user) {
+//        try {
+//            user.getRemote().sendString(gson.toJson(model.findAll(Post.class)));
+//        } catch (IOException e) {
+//            logger.error(e.getMessage());
+//        } catch (ClubOkException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

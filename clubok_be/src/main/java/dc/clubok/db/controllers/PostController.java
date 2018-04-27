@@ -1,6 +1,5 @@
 package dc.clubok.db.controllers;
 
-import dc.clubok.ClubOKService;
 import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
@@ -29,7 +28,7 @@ public class PostController {
     public static void createPost(Post post, String userId) throws ClubOkException {
         post.setUserId(userId);
         model.saveOne(post, Post.class);
-        ClubOKService.broadcastPost(post);
+//        ClubOKService.broadcastPost(post);
     }
 
     public static void commentPost(String postId, Comment comment) throws ClubOkException {

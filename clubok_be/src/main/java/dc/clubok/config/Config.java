@@ -1,14 +1,19 @@
 package dc.clubok.config;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class Config {
     private static Properties properties;
 
     public Config() {
-        String env = (System.getenv("JAVA_ENV") != null) ? System.getenv("JAVA_ENV") : "development";
+        Map<String, String> envVars = new ProcessBuilder().environment();
+        String env = (envVars.get("JAVA_ENV") != null) ? envVars.get("JAVA_ENV") : "development";
         properties = new Properties();
+
 
         InputStream input;
         try {
@@ -22,9 +27,9 @@ public class Config {
                     properties.load(input);
                     break;
                 default:
-                    properties.setProperty("port", System.getenv("PORT"));
-                    properties.setProperty("mongodb_uri", System.getenv("MONGODB_URI"));
-                    properties.setProperty("secret", System.getenv("SECRET"));
+                    properties.setProperty("port", envVars.get("PORT"));
+                    properties.setProperty("mongodb_uri", envVars.get("MONGODB_URI"));
+                    properties.setProperty("secret", envVars.get("JWT_SECRET"));
                     break;
             }
         } catch (IOException e) {
