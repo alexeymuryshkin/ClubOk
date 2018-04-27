@@ -44,7 +44,8 @@
                         <fileset>
                             <directory>../clubok_be/src/main/resources/public/</directory>
                             <excludes>
-                                <exclude>index.html</exclude>
+                                <exclude>*.html</exclude>
+                                <exclude>images/</exclude>
                             </excludes>
                             <followSymlinks>false</followSymlinks>
                         </fileset>

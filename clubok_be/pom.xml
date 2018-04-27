@@ -14,6 +14,7 @@
 
     <build>
         <finalName>clubok-1.0</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,7 +81,6 @@
                 </executions>
                 <configuration>
                     <descriptorRefs>
-                        <!-- This tells Maven to include all dependencies -->
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>

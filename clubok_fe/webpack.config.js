@@ -38,5 +38,9 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin("/[name].css")
-    ]
+    ],
+    devServer: {
+        contentBase: "../clubok_be/src/main/resources/public",
+        hot: true
+    },
 };

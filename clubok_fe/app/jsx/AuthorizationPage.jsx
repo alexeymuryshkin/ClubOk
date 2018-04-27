@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Redirect} from 'react-router-dom';
-
-import ServerRequest from "./ServerRequest";
 import SignInComponent from "./Components/SignInComponent";
 import SignUpComp from "./Components/SignUpComp";
 import NavBar from "./Components/NavBar";
@@ -63,6 +61,3 @@ ReactDOM.render(
     <AuthorizationPage/>,
     document.getElementById('app')
 );
-
-export default AuthorizationPage
-
