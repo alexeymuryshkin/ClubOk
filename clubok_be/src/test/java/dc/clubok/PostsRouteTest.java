@@ -1,8 +1,8 @@
 package dc.clubok;
 
 import com.google.gson.reflect.TypeToken;
-import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.post.Post;
+import dc.clubok.db.models.user.User;
 import dc.clubok.seed.Seed;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.apache.http.HttpResponse;

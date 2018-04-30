@@ -1,5 +1,6 @@
-package dc.clubok.db.models;
+package dc.clubok.db.models.user;
 
+import dc.clubok.db.models.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -30,6 +31,7 @@ public class User
     private String fname;
     private String lname;
     private Set<String> subscriptions;
+    private Set<String> membership;
     private List<Token> tokens;
 
     public User() {

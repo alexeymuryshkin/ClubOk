@@ -1,7 +1,7 @@
 package dc.clubok.routes;
 
 import dc.clubok.db.controllers.EventController;
-import dc.clubok.db.models.Event;
+import dc.clubok.db.models.event.Event;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;

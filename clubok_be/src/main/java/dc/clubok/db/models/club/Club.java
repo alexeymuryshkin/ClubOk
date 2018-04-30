@@ -1,5 +1,6 @@
-package dc.clubok.db.models;
+package dc.clubok.db.models.club;
 
+import dc.clubok.db.models.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 public @Data class Club
-        extends Entity{
+        extends Entity {
     @NotNull @NotEmpty
     private String name;
     private String logoSrc;

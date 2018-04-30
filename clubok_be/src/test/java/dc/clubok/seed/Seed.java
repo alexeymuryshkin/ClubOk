@@ -1,10 +1,10 @@
 package dc.clubok.seed;
 
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.Club;
-import dc.clubok.db.models.Event;
-import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.club.Club;
+import dc.clubok.db.models.event.Event;
+import dc.clubok.db.models.post.Post;
+import dc.clubok.db.models.user.User;
 
 import java.util.*;
 

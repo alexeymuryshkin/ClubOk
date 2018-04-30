@@ -1,8 +1,8 @@
 package dc.clubok.db.controllers;
 
-import dc.clubok.db.models.Comment;
-import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.post.Comment;
+import dc.clubok.db.models.post.Post;
+import dc.clubok.db.models.user.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;

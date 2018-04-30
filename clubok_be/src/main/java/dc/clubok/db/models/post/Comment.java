@@ -1,12 +1,13 @@
-package dc.clubok.db.models;
+package dc.clubok.db.models.post;
 
+import dc.clubok.db.models.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
 
 @EqualsAndHashCode(callSuper = true)
 public @Data class Comment
-        extends Entity{
+        extends Entity {
     private String userId;
     private String text;
 

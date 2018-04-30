@@ -1,7 +1,7 @@
 package dc.clubok;
 
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.user.User;
 import dc.clubok.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

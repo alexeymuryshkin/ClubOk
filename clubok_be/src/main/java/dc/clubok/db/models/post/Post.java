@@ -1,5 +1,7 @@
-package dc.clubok.db.models;
+package dc.clubok.db.models.post;
 
+import dc.clubok.db.models.Entity;
+import dc.clubok.db.models.event.Event;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;

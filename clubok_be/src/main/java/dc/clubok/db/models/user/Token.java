@@ -1,4 +1,4 @@
-package dc.clubok.db.models;
+package dc.clubok.db.models.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

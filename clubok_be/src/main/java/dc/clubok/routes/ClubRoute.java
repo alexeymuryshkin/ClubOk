@@ -2,8 +2,8 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.Club;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.club.Club;
+import dc.clubok.db.models.user.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;

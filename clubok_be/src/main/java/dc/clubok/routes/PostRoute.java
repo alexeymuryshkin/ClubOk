@@ -2,8 +2,8 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.Comment;
-import dc.clubok.db.models.Post;
+import dc.clubok.db.models.post.Comment;
+import dc.clubok.db.models.post.Post;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;

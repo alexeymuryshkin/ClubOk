@@ -9,7 +9,7 @@ import dc.clubok.ClubOKService;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
 import dc.clubok.db.models.Model;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.user.User;
 import dc.clubok.utils.Crypt;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
