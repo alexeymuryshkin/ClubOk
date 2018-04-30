@@ -34,8 +34,14 @@ public class Constants {
             "/posts",
             "/posts/*",
             "/events",
-            "/events/*"
+            "/events/*",
+            "/administration/*"
     );
+
+    /* Permission Levels */
+    public static final int PL_GUEST = 0;
+    public static final int PL_REGULAR = 1;
+    public static final int PL_ADMINISTRATOR = 5;
 
     /* Error Codes */
     public static final int VALIDATION_ERROR = 101;

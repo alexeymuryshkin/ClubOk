@@ -1,6 +1,5 @@
 package dc.clubok.routes;
 
-import com.auth0.jwt.exceptions.SignatureVerificationException;
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.User;
@@ -9,6 +8,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -206,15 +206,16 @@ public class UserRoute {
         }
     };
 
-    public static boolean notAuthenticated(Request request, Response response) {
+    public static Filter Authenticate = (Request request, Response response) -> {
         String token = request.headers("x-auth");
         try {
-            return token == null || getUserByToken(token) == null;
-        } catch (SignatureVerificationException e) {
-            return true;
-        } catch (Exception e) {
+            getUserByToken(token);
+        } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            return true;
+            response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
-    }
+    };
 }

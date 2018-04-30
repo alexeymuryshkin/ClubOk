@@ -1,5 +1,7 @@
 package dc.clubok;
 
+import dc.clubok.db.controllers.UserController;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,12 +42,9 @@ public class ClubOKService {
                 ));
             });
             for (String r: Constants.protectedRoutes) {
-                before(r, (request, response) -> {
-                    if (notAuthenticated(request, response)) {
-                        throw halt(401);
-                    }
-                });
+                before(r, Authenticate);
             }
+
 
             path("/users", () -> {
                 get("", GetUsers, gson::toJson);
@@ -64,11 +63,7 @@ public class ClubOKService {
                 });
                 path("/:id", () -> {
                     get("", GetUsersId, gson::toJson);
-                    delete("", DeleteUsersId, gson::toJson);
-
                     get("/subscriptions", GetUsersIdSubscriptions, gson::toJson);
-
-                    get("/tokens", GetUsersIdTokens, gson::toJson);
                 });
             });
 
@@ -125,6 +120,29 @@ public class ClubOKService {
             });
 
             path("/search", () -> {
+
+            });
+
+            path("/administration", () -> {
+                before("/*", (request, response) -> {
+                    User user = UserController.getUserByToken(request.headers("x-auth"));
+                    if (user.getPermissonLevel() < PL_ADMINISTRATOR) {
+                        halt(401);
+                    }
+                });
+
+                path("/users", () -> {
+                    path("/:id", () -> {
+                        delete("", DeleteUsersId, gson::toJson);
+                        get("/tokens", GetUsersIdTokens, gson::toJson);
+//                        delete("/tokens");
+//                        delete("/token");
+
+//                        delete("/subscriptions/:id");
+                    });
+                });
+
+
 
             });
         });

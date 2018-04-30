@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static dc.clubok.utils.Constants.PL_REGULAR;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class User
@@ -23,6 +25,8 @@ public class User
     @NotNull(message = "Password is not specified")
     @Size(min = 6, max = 16, message = "Password length should be between 6 and 16")
     private @NotNull String password;
+    private String imageSrc;
+    private int permissonLevel;
     private String fname;
     private String lname;
     private Set<String> subscriptions;
@@ -32,6 +36,7 @@ public class User
         setId(new ObjectId());
         tokens = new ArrayList<>();
         subscriptions = new HashSet<>();
+        permissonLevel = PL_REGULAR;
     }
 
     public User(String email, String password) {

@@ -3,6 +3,7 @@ package dc.clubok.db.controllers;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
@@ -66,20 +67,23 @@ public class UserController {
 //    }
 
     public static User getUserByToken(String token) throws ClubOkException {
-        Algorithm algorithm;
         try {
+            Algorithm algorithm;
             algorithm = Algorithm.HMAC256(config.getProperties().getProperty("secret"));
+
+
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT jwt = verifier.verify(token);
+
+            String id = jwt.getClaim("id").asString();
+            return model.findOne(new Document("_id", new ObjectId(id))
+                            .append("tokens", new Token("auth", token)),
+                    User.class);
         } catch (UnsupportedEncodingException e) {
-            throw new ClubOkException(DB_QUERY_ERROR, "Incorrect authentication token");
+            throw new ClubOkException(DB_QUERY_ERROR, "Incorrect authentication token", SC_UNAUTHORIZED);
+        } catch (SignatureVerificationException sve) {
+            throw new ClubOkException(DB_QUERY_ERROR, "Token Verification Failed", SC_UNAUTHORIZED);
         }
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT jwt = verifier.verify(token);
-
-        String id = jwt.getClaim("id").asString();
-
-        return model.findOne(new Document("_id", new ObjectId(id))
-                        .append("tokens", new Token("auth", token)),
-                User.class);
     }
 
     public static User getUserById(String userId) throws ClubOkException {
