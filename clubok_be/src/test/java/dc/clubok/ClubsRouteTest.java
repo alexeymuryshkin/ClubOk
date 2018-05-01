@@ -2,7 +2,7 @@ package dc.clubok;
 
 import com.google.gson.reflect.TypeToken;
 import dc.clubok.db.controllers.ClubController;
-import dc.clubok.db.models.club.Club;
+import dc.clubok.db.models.Club;
 import dc.clubok.seed.Seed;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.apache.http.HttpResponse;

@@ -2,8 +2,9 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.post.Comment;
-import dc.clubok.db.models.post.Post;
+import dc.clubok.db.models.Comment;
+import dc.clubok.db.models.Post;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -47,7 +48,8 @@ public class PostRoute {
     public static Route PostPosts = (Request request, Response response) -> {
         try {
             Post post = gson.fromJson(request.body(), Post.class);
-            PostController.createPost(post, UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
+            User user = UserController.getUserByToken(request.headers("x-auth"));
+            PostController.createPost(post, user);
 
             return response(response, SC_CREATED, post.getId().toHexString());
         } catch (ClubOkException e) {
@@ -61,7 +63,7 @@ public class PostRoute {
 
     public static Route GetPostsId = (Request request, Response response) -> {
         try {
-            Post post = PostController.getPostById(request.params(":id"));
+                Post post = PostController.getPostById(request.params(":id"));
             if (post == null) {
                 throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
             }
@@ -118,7 +120,7 @@ public class PostRoute {
     public static Route PostPostsIdComments = (Request request, Response response) -> {
         try {
             Comment comment = gson.fromJson(request.body(), Comment.class);
-            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
+            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId());
             PostController.commentPost(request.params(":id"), comment);
 
             return response(response, SC_OK, comment.getId().toHexString());

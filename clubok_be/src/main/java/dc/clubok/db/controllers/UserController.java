@@ -5,8 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import dc.clubok.db.models.user.Token;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.Token;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.Crypt;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
@@ -108,8 +108,8 @@ public class UserController {
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
     }
 
-    public static Set<String> getSubscriptionsByUserId(String userId) throws ClubOkException {
-        Set<String> result;
+    public static Set<ObjectId> getSubscriptionsByUserId(String userId) throws ClubOkException {
+        Set<ObjectId> result;
         User user = model.findById(userId, User.class);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
@@ -151,8 +151,8 @@ public class UserController {
         model.deleteById(userId, User.class);
     }
 
-    public static Set<String> getSubscriptionsByToken(String token) throws ClubOkException {
-        Set<String> result;
+    public static Set<ObjectId> getSubscriptionsByToken(String token) throws ClubOkException {
+        Set<ObjectId> result;
         User user = getUserByToken(token);
         if (user == null) {
             throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);

@@ -9,7 +9,7 @@ import dc.clubok.ClubOKService;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
 import dc.clubok.db.models.Model;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.Crypt;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
@@ -139,7 +139,7 @@ public class MongoModel implements Model {
         try {
             return findById(new ObjectId(id), type);
         } catch (IllegalArgumentException iae) {
-            throw new ClubOkException(INCORRECT_USER_ID, "ID format is invalid");
+            throw new ClubOkException(ILLEGAL_ID, "ID format is invalid");
         }
     }
 
@@ -150,7 +150,7 @@ public class MongoModel implements Model {
         } catch (MongoException me) {
             throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
         } catch (IllegalArgumentException iae) {
-            throw new ClubOkException(INCORRECT_USER_ID, "ID format is invalid");
+            throw new ClubOkException(ILLEGAL_ID, "ID format is invalid");
         }
     }
 

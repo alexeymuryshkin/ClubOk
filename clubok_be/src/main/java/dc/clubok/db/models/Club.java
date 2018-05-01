@@ -1,6 +1,5 @@
-package dc.clubok.db.models.club;
+package dc.clubok.db.models;
 
-import dc.clubok.db.models.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -15,15 +14,16 @@ public @Data class Club
         extends Entity {
     @NotNull @NotEmpty
     private String name;
-    private String logoSrc;
+    private String imageSrc;
     private String description;
-    private Set<ObjectId> moderators;
-    private Set<ObjectId> members;
+
+    private Set<Event> events;
+    private Set<Membership> members;
     private Set<ObjectId> subscribers;
 
     public Club() {
         setId(new ObjectId());
-        moderators = new HashSet<>();
+        events = new HashSet<>();
         members = new HashSet<>();
         subscribers = new HashSet<>();
     }

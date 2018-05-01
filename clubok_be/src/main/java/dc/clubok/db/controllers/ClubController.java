@@ -1,6 +1,7 @@
 package dc.clubok.db.controllers;
 
-import dc.clubok.db.models.club.Club;
+import dc.clubok.db.models.Club;
+import dc.clubok.db.models.Membership;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -42,24 +43,7 @@ public class ClubController {
         model.removeOneFromArray(club, "subscribers", userId, Club.class);
     }
 
-    public static Set<ObjectId> getModeratorsByClubId(String clubId) throws ClubOkException {
-        Club club = model.findById(clubId, Club.class);
-        return club.getModerators();
-    }
-
-    public static void addModerator(String clubId, String userId) throws ClubOkException {
-        Club club = model.findById(clubId, Club.class);
-
-        model.addOneToSet(club, "moderators", userId, Club.class);
-    }
-
-    public static void deleteModerator(String clubId, String userId) throws ClubOkException {
-        Club club = model.findById(clubId, Club.class);
-
-        model.removeOneFromArray(club, "moderators", userId, Club.class);
-    }
-
-    public static Set<ObjectId> getMembersByClubId(String clubId) throws ClubOkException {
+    public static Set<Membership> getMembersByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
         return club.getMembers();
     }

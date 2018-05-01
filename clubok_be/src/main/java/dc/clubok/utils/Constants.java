@@ -54,8 +54,9 @@ public class Constants {
     public static final int USER_NOT_FOUND = 105;
     public static final int POST_NOT_FOUND = 105;
     public static final int CLUB_NOT_FOUND = 105;
-    public static final int INCORRECT_USER_ID = 105105105;
+    public static final int ILLEGAL_ID = 105105105;
     public static final int LOGOUT_ERROR = 105105105;
+    public static final int TOKEN_ERROR = 105;
 
 
     /* Http Responses */

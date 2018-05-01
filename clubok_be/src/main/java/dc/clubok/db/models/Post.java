@@ -1,7 +1,5 @@
-package dc.clubok.db.models.post;
+package dc.clubok.db.models;
 
-import dc.clubok.db.models.Entity;
-import dc.clubok.db.models.event.Event;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.bson.types.ObjectId;
@@ -16,18 +14,18 @@ import java.util.Set;
 @Data
 public class Post
         extends Entity {
-    private @NotEmpty(message = "Club Id cannot be empty")
-    String clubId;
-    private @NotEmpty (message = "User Id cannot be empty")
-    String userId;
+    private ObjectId clubId;
+    private ObjectId userId;
     private int postedAt;
     private String type;
     private @NotEmpty (message = "Body cannot be empty")
     String body;
-    private List<String> images;
+
     private Event event;
-    private Set<String> likes;
+
+    private Set<ObjectId> likes;
     private List<Comment> comments;
+    private List<String> images;
 
     public Post() {
         setId(new ObjectId());
@@ -36,7 +34,7 @@ public class Post
         comments = new ArrayList<>();
     }
 
-    public Post(String clubId, String type, String body) {
+    public Post(ObjectId clubId, String type, String body) {
         this();
         setClubId(clubId);
         setPostedAt(getId().getTimestamp());

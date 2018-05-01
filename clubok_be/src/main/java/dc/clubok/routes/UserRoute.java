@@ -2,7 +2,7 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -18,6 +18,7 @@ import static com.mongodb.client.model.Projections.include;
 import static dc.clubok.db.controllers.UserController.getUserByToken;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
+import static spark.Spark.halt;
 
 public class UserRoute {
     private static Logger logger = LoggerFactory.getLogger(UserRoute.class.getCanonicalName());
@@ -100,10 +101,25 @@ public class UserRoute {
         }
     };
 
+    public static Route PostUsersMeSubscriptions = (Request request, Response response) -> {
+        try {
+            User user = getUserByToken(request.headers("x-auth"));
+            UserController.addSubscription(user.getId().toHexString(), request.params(":id"));
+            return response(response, SC_OK);
+        } catch (ClubOkException e) {
+            logger.error(e.getMessage());
+            return response(response, e.getStatusCode(), e.getError());
+        } catch (Exception e) {
+            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
+            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+        }
+    };
+
     public static Route DeleteUsersMeSubscriptionsId = (Request request, Response response) -> {
         try {
-            UserController.deleteSubscription(request.headers("x-auth"), request.params(":id"));
-            ClubController.deleteSubscriber(request.params("id"), request.headers("x-auth"));
+            User user = UserController.getUserByToken(request.headers("x-auth"));
+            UserController.deleteSubscription(user.getId().toHexString(), request.params(":id"));
+            ClubController.deleteSubscriber(request.params("id"), user.getId().toHexString());
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
@@ -155,10 +171,10 @@ public class UserRoute {
     public static Route GetUsersId = (Request request, Response response) -> {
         try {
             User user = UserController.getUserById(request.params(":id"));
+
             if (user == null) {
                 throw new ClubOkException(USER_NOT_FOUND, "User with this id does not exist", SC_NOT_FOUND);
             }
-
             return response(response, SC_OK, user);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
@@ -171,7 +187,7 @@ public class UserRoute {
 
     public static Route GetUsersIdSubscriptions = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK,  UserController.getSubscriptionsByUserId(request.params(":id")));
+            return response(response, SC_OK, UserController.getSubscriptionsByUserId(request.params(":id")));
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
@@ -182,8 +198,8 @@ public class UserRoute {
     };
 
     public static Route GetUsersIdTokens = (Request request, Response response) -> {
-        try{
-            return response(response, SC_OK,  UserController.getTokensByUserId(request.params(":id")));
+        try {
+            return response(response, SC_OK, UserController.getTokensByUserId(request.params(":id")));
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
@@ -209,13 +225,18 @@ public class UserRoute {
     public static Filter Authenticate = (Request request, Response response) -> {
         String token = request.headers("x-auth");
         try {
-            getUserByToken(token);
+            if (token != null) {
+                getUserByToken(token);
+            } else {
+                throw new ClubOkException(TOKEN_ERROR, "Authentication token is not provided", SC_UNAUTHORIZED);
+            }
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
-            response(response, e.getStatusCode(), e.getError());
+            halt(SC_UNAUTHORIZED, gson.toJson(e.getError()));
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
             response(response, SC_INTERNAL_SERVER_ERROR, e);
+            halt(SC_INTERNAL_SERVER_ERROR, gson.toJson(e));
         }
     };
 }

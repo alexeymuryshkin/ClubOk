@@ -1,7 +1,7 @@
 package dc.clubok;
 
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +55,7 @@ public class ClubOKService {
                     get("", GetUsersMe, gson::toJson);
 
                     get("/subscriptions", GetUsersMeSubscriptions, gson::toJson);
+                    post("/subscriptions/:id", PostUsersMeSubscriptions, gson::toJson);
                     delete("/subscriptions/:id", DeleteUsersMeSubscriptionsId, gson::toJson);
 
                     get("/tokens", GetUsersMeTokens, gson::toJson);
@@ -83,10 +84,6 @@ public class ClubOKService {
                     get("/members", GetClubsIdMembers, gson::toJson);
                     post("/members", PostClubsIdMembers, gson::toJson);
                     delete("/members/:uid", DeleteClubsIdMembersId, gson::toJson);
-
-                    get("/moderators", GetClubsIdModerators, gson::toJson);
-                    post("/moderators", PostClubsIdModerators, gson::toJson);
-                    delete("/moderators/:uid", DeleteClubsIdModeratorsId, gson::toJson);
                 });
             });
 

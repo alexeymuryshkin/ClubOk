@@ -1,11 +1,12 @@
 package dc.clubok.db.controllers;
 
-import dc.clubok.db.models.post.Comment;
-import dc.clubok.db.models.post.Post;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.Comment;
+import dc.clubok.db.models.Post;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,8 @@ public class PostController {
         return model.findMany(size, page, orderBy, order, include, exclude, Post.class);
     }
 
-    public static void createPost(Post post, String userId) throws ClubOkException {
-        post.setUserId(userId);
+    public static void createPost(Post post, User user) throws ClubOkException {
+        post.setUserId(user.getId());
         model.saveOne(post, Post.class);
 //        ClubOKService.broadcastPost(post);
     }
@@ -45,7 +46,7 @@ public class PostController {
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
         }
-        model.addOneToSet(post, "likes", user.getId().toHexString(), Post.class);
+        model.addOneToSet(post, "likes", user.getId(), Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {
@@ -66,7 +67,7 @@ public class PostController {
         return post.getComments();
     }
 
-    public static Set<String> getLikesByPostId(String postId) throws ClubOkException {
+    public static Set<ObjectId> getLikesByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
             throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
@@ -118,6 +119,6 @@ public class PostController {
         }
         User user = UserController.getUserByToken(token);
 
-        model.removeOneFromArray(post, "likes", user.getId().toHexString(), Post.class);
+        model.removeOneFromArray(post, "likes", user.getId(), Post.class);
     }
 }

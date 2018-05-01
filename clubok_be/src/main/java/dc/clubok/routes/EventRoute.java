@@ -1,7 +1,7 @@
 package dc.clubok.routes;
 
 import dc.clubok.db.controllers.EventController;
-import dc.clubok.db.models.event.Event;
+import dc.clubok.db.models.Event;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -40,7 +40,6 @@ public class EventRoute {
             return response(response, SC_INTERNAL_SERVER_ERROR, e);
         }
     };
-
 
     public static Route PostEvents = (Request request, Response response) -> {
         logger.debug("POST /events " + request.body());

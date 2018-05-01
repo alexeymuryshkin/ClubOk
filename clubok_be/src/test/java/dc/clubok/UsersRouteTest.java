@@ -1,9 +1,8 @@
 package dc.clubok;
 
-import com.google.gson.reflect.TypeToken;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.user.Token;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.Token;
+import dc.clubok.db.models.User;
 import dc.clubok.seed.Seed;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.apache.http.HttpResponse;
@@ -21,7 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
@@ -58,9 +56,8 @@ public class UsersRouteTest {
         // Assertions in response
         assertTrue("should return success code",
                 HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
-        
-        List<User> usersResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), new TypeToken<List<User>>(){}.getType());
-        assertEquals("should return correct number of users",2, usersResponse.size());
+
+//        TODO Add test for results
     }
 
 //    TODO GET /users/?parameters
@@ -222,9 +219,6 @@ public class UsersRouteTest {
         HttpResponse response = client.execute(request);
 
         assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
-
-        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertNull("should not return user", userResponse);
     }
 
     @Test
@@ -234,9 +228,6 @@ public class UsersRouteTest {
         HttpResponse response = client.execute(request);
 
         assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
-
-        User userResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), User.class);
-        assertNull("should not return user", userResponse);
     }
 
     // TODO GET /users/me/subscriptions

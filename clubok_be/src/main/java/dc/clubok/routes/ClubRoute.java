@@ -2,8 +2,8 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.club.Club;
-import dc.clubok.db.models.user.User;
+import dc.clubok.db.models.Club;
+import dc.clubok.db.models.User;
 import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -48,8 +48,6 @@ public class ClubRoute {
         try {
             Club club = gson.fromJson(request.body(), Club.class);
             ClubController.createClub(club);
-            User user = UserController.getUserByToken(request.headers("x-auth"));
-            ClubController.addModerator(club.getId().toHexString(), user.getId().toHexString());
             return response(response, SC_CREATED, club.getId().toHexString());
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
@@ -106,7 +104,7 @@ public class ClubRoute {
 
     public static Route GetClubsIdSubscribers = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK, ClubController.getSubscribersByClubId(request.params("id")));
+            return response(response, SC_OK, ClubController.getSubscribersByClubId(request.params(":id")));
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
@@ -119,9 +117,8 @@ public class ClubRoute {
     public static Route PostClubsIdSubscribers = (Request request, Response response) -> {
         try {
             User user = UserController.getUserByToken(request.headers("x-auth"));
-
-            ClubController.addSubscriber(request.params("id"), user.getId().toHexString());
-            UserController.addSubscription(user.getId().toHexString(), request.params("id"));
+            ClubController.addSubscriber(request.params(":id"), user.getId().toHexString());
+            UserController.addSubscription(user.getId().toHexString(), request.params(":id"));
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
@@ -147,50 +144,9 @@ public class ClubRoute {
         }
     };
 
-    public static Route GetClubsIdModerators = (Request request, Response response) -> {
-        try {
-            return response(response, SC_OK, ClubController.getModeratorsByClubId(request.params("id")));
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route PostClubsIdModerators = (Request request, Response response) -> {
-        try {
-            User user = UserController.getUserByToken(request.headers("x-auth"));
-
-            ClubController.addModerator(request.params("id"), user.getId().toHexString());
-            return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route DeleteClubsIdModeratorsId = (Request request, Response response) -> {
-        try {
-            ClubController.deleteModerator(request.params(":id"), request.params(":uid"));
-
-            return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
     public static Route GetClubsIdMembers = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK, ClubController.getMembersByClubId(request.params("id")));
+            return response(response, SC_OK, ClubController.getMembersByClubId(request.params(":id")));
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
             return response(response, e.getStatusCode(), e.getError());
@@ -203,8 +159,8 @@ public class ClubRoute {
     public static Route PostClubsIdMembers = (Request request, Response response) -> {
         try {
             User user = UserController.getUserByToken(request.headers("x-auth"));
+            ClubController.addMember(request.params(":id"), user.getId().toHexString());
 
-            ClubController.addMember(request.params("id"), user.getId().toHexString());
             return response(response, SC_NO_CONTENT);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());
