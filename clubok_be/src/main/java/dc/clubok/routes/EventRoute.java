@@ -2,7 +2,7 @@ package dc.clubok.routes;
 
 import dc.clubok.db.controllers.EventController;
 import dc.clubok.db.models.Event;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -29,79 +29,81 @@ public class EventRoute {
             Bson include = include();
             Bson exclude = exclude();
 
-            Document document = new Document("total", model.count(Event.class))
+            Document result = new Document("total", model.count(Event.class))
                     .append("results", EventController.getEvents(size, page, orderBy, order, include, exclude));
-            return response(response, SC_OK, document);
+
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route PostEvents = (Request request, Response response) -> {
-        logger.debug("POST /events " + request.body());
-
         try {
             Event event = gson.fromJson(request.body(), Event.class);
             EventController.createEvent(event);
-            return response(response, SC_CREATED);
+
+            Document result = new Document("event_id", event.getId().toHexString());
+
+            return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route GetEventsId = (Request request, Response response) -> {
-        logger.debug("GET /events/" + request.params(":id"));
-
         try {
             Event event = EventController.getEventById(request.params(":id"));
             if (event == null) {
-                return response(response, SC_NOT_FOUND);
+                Document details = new Document("details", "Such event does not exist");
+                throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
             }
 
-            return response(response, SC_OK, event);
+            Document result = new Document("result", event);
+
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route DeleteEventsId = (Request request, Response response) -> {
-        logger.debug("DELETE /events/" + request.params(":id"));
         try {
             EventController.deleteEventById(request.params(":id"));
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_DELETE);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route PatchEventsId = (Request request, Response response) -> {
-        logger.debug("PATCH /events/" + request.params(":id") + " " + request.body());
         try {
-            Event event = gson.fromJson(request.body(), Event.class);
-            EventController.editEventById(request.params(":id"), event);
-            return response(response, SC_NO_CONTENT);
+            Document update = Document.parse(request.body());
+            EventController.editEventById(request.params(":id"), update);
+
+            return response(response, SC_NO_CONTENT, SUCCESS_EDIT);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 }

@@ -5,6 +5,7 @@ import dc.clubok.config.Config;
 import dc.clubok.db.handlers.MongoHandle;
 import dc.clubok.db.models.Model;
 import dc.clubok.db.mongomodel.MongoModel;
+import org.bson.Document;
 import spark.Response;
 
 import javax.validation.Validation;
@@ -43,30 +44,40 @@ public class Constants {
     public static final int PL_REGULAR = 1;
     public static final int PL_ADMINISTRATOR = 5;
 
-    /* Error Codes */
-    public static final int VALIDATION_ERROR = 101;
+    /* ClubOk Responses */
+    /* Success Responses */
+    public static final ClubOkResponse SUCCESS_CREATE = new ClubOkSuccessResponse(1, "Entity successfully created");
+    public static final ClubOkResponse SUCCESS_QUERY = new ClubOkSuccessResponse(2, "Query is successful");
+    public static final ClubOkResponse SUCCESS_EDIT = new ClubOkSuccessResponse(3, "Entity successfully editted");
+    public static final ClubOkResponse SUCCESS_DELETE = new ClubOkSuccessResponse(4, "Entity successfully deleted");
+    public static final ClubOkResponse SUCCESS_REGISTRATION = new ClubOkSuccessResponse(5, "Registration successful");
+    public static final ClubOkResponse SUCCESS_LOGIN = new ClubOkSuccessResponse(6, "Login successful");
+    public static final ClubOkResponse SUCCESS_LOGOUT = new ClubOkSuccessResponse(7, "Logout successful");
+    public static final ClubOkResponse SUCCESS_SUBSCRIPTION = new ClubOkSuccessResponse(8, "Subscribing successful");
+    public static final ClubOkResponse SUCCESS_UNSUBSCRIPTION = new ClubOkSuccessResponse(9, "Unsubscribing successful");
+    public static final ClubOkResponse SUCCESS_MEMBERSHIP = new ClubOkSuccessResponse(10, "Adding new member successful");
+    public static final ClubOkResponse SUCCESS_UNMEMBERSHIP = new ClubOkSuccessResponse(11, "Deleting a member successful");
 
-    public static final int DB_SAVE_ERROR = 102;
-    public static final int DB_ERROR = 102;
-    public static final int DB_QUERY_ERROR = 103;
-    public static final int DB_UPDATE_ERROR = 104;
-    public static final int LOGIN_ERROR = 105;
-    public static final int USER_NOT_FOUND = 105;
-    public static final int POST_NOT_FOUND = 105;
-    public static final int CLUB_NOT_FOUND = 105;
-    public static final int ILLEGAL_ID = 105105105;
-    public static final int LOGOUT_ERROR = 105105105;
+    /* Error Responses */
+    public static final ClubOkResponse ERROR_SERVER_UNKNOWN = new ClubOkErrorResponse(50, "Unknown Server Error. See details");
+    public static final ClubOkResponse ERROR_VALIDATION = new ClubOkErrorResponse(51, "Validation error");
+    public static final ClubOkResponse ERROR_CREATE =  new ClubOkErrorResponse(52, "Couldn't create entity");
+    public static final ClubOkResponse ERROR_QUERY = new ClubOkErrorResponse(53, "Query error");
+    public static final ClubOkResponse ERROR_DB = new ClubOkErrorResponse(54, "Error accessing database");
+    public static final ClubOkResponse ERROR_ILLEGAL_ID = new ClubOkErrorResponse(55, "Invalid ID format");
+    public static final ClubOkResponse ERROR_LOGIN = new ClubOkErrorResponse(56, "Couldn't login");
+    public static final ClubOkResponse ERROR_LOGOUT = new ClubOkErrorResponse(57, "Couldn't logout");
     public static final int TOKEN_ERROR = 105;
 
 
     /* Http Responses */
-    public static Object response(Response response, int statusCode, Object o) {
+    public static Object response(Response response, int statusCode, ClubOkResponse clubOkResponse, Document results) {
         response.status(statusCode);
         response.type(JSON);
-        return o;
+        return results.append("response", clubOkResponse);
     }
 
-    public static Object response(Response response, int statusCode) {
-        return response(response, statusCode, "");
+    public static Object response(Response response, int statusCode, ClubOkResponse clubOkResponse) {
+        return response(response, statusCode, clubOkResponse, new Document());
     }
 }

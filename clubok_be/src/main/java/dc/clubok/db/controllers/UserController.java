@@ -7,8 +7,8 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
+import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.Crypt;
-import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -28,7 +28,8 @@ public class UserController {
         try {
             token = generateAuthToken(user);
         } catch (UnsupportedEncodingException e) {
-            throw new ClubOkException(DB_SAVE_ERROR, "Couldn't generate authentication token", SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", "Couldn't generate authentication token");
+            throw new ClubOkException(ERROR_CREATE, details, SC_INTERNAL_SERVER_ERROR);
         }
 
         model.saveOne(user, User.class);
@@ -40,17 +41,20 @@ public class UserController {
         Token token;
 
         if (user == null) {
-            throw new ClubOkException(LOGIN_ERROR, "User with this email does not exist");
+            Document details = new Document("details", "User with this email does not exist");
+            throw new ClubOkException(ERROR_LOGIN, details);
         }
 
         if (Crypt.compare(password.toCharArray(), user.getPassword())) {
             try {
                 token = generateAuthToken(user);
             } catch (UnsupportedEncodingException e) {
-                throw new ClubOkException(LOGIN_ERROR, "Couldn't generate authentication token", SC_INTERNAL_SERVER_ERROR);
+                Document details = new Document("details", "Couldn't generate authentication token");
+                throw new ClubOkException(ERROR_LOGIN, details, SC_INTERNAL_SERVER_ERROR);
             }
         } else {
-            throw new ClubOkException(LOGIN_ERROR, "Password is incorrect");
+            Document details = new Document("details", "Password is incorrect");
+            throw new ClubOkException(ERROR_LOGIN, details);
         }
 
         model.addOneToSet(user, "tokens", token, User.class);
@@ -80,9 +84,11 @@ public class UserController {
                             .append("tokens", new Token("auth", token)),
                     User.class);
         } catch (UnsupportedEncodingException e) {
-            throw new ClubOkException(DB_QUERY_ERROR, "Incorrect authentication token", SC_UNAUTHORIZED);
+            Document details = new Document("details", "Incorrect authentication token");
+            throw new ClubOkException(ERROR_QUERY, details, SC_UNAUTHORIZED);
         } catch (SignatureVerificationException sve) {
-            throw new ClubOkException(DB_QUERY_ERROR, "Token Verification Failed", SC_UNAUTHORIZED);
+            Document details = new Document("details", "Token Verification Failed");
+            throw new ClubOkException(ERROR_QUERY, details, SC_UNAUTHORIZED);
         }
     }
 
@@ -92,17 +98,16 @@ public class UserController {
 
     public static void logout(String token) throws Exception {
         User user = getUserByToken(token);
-        if (user == null) {
-            throw new ClubOkException(LOGOUT_ERROR, "User was unauthorized or deleted", SC_BAD_REQUEST);
+        if (user != null) {
+            model.removeOneFromArray(user, "tokens", new Token("auth", token), User.class);
         }
-
-        model.removeOneFromArray(user, "tokens", new Token("auth", token), User.class);
     }
 
     public static void logoutAll(String token) throws ClubOkException {
         User user = getUserByToken(token);
         if (user == null) {
-            throw new ClubOkException(LOGOUT_ERROR, "User was unauthorized or deleted", SC_BAD_REQUEST);
+            Document details = new Document("details", "User was unauthorized or deleted");
+            throw new ClubOkException(ERROR_LOGOUT, details);
         }
 //        TODO Write tests
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
@@ -112,7 +117,8 @@ public class UserController {
         Set<ObjectId> result;
         User user = model.findById(userId, User.class);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         result = user.getSubscriptions();
 
@@ -122,7 +128,8 @@ public class UserController {
     public static void addSubscription(String userId, String clubId) throws ClubOkException {
         User user = getUserById(userId);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.addOneToSet(user, "subscriptions", clubId, User.class);
     }
@@ -130,7 +137,8 @@ public class UserController {
     public static void deleteSubscription(String userId, String clubId) throws ClubOkException {
         User user = getUserById(userId);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.removeOneFromArray(user, "subscriptions", clubId, User.class);
 
@@ -140,7 +148,8 @@ public class UserController {
         List<Token> result;
         User user = model.findById(userId, User.class);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         result = user.getTokens();
 
@@ -148,6 +157,11 @@ public class UserController {
     }
 
     public static void deleteUserById(String userId) throws ClubOkException {
+        User user = model.findById(userId, User.class);
+        if (user == null) {
+            Document details = new Document("details", "Such user does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
+        }
         model.deleteById(userId, User.class);
     }
 
@@ -155,7 +169,8 @@ public class UserController {
         Set<ObjectId> result;
         User user = getUserByToken(token);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist or logged out");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         result = user.getSubscriptions();
 
@@ -166,7 +181,8 @@ public class UserController {
         List<Token> result;
         User user = getUserByToken(token);
         if (user == null) {
-            throw new ClubOkException(USER_NOT_FOUND, "User does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such user does not exist or logged out");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         result = user.getTokens();
 

@@ -5,7 +5,7 @@ import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -32,16 +32,16 @@ public class PostRoute {
             Bson include = include();
             Bson exclude = exclude();
 
-            Document document = new Document("total", model.count(Post.class))
+            Document result = new Document("total", model.count(Post.class))
                     .append("results", PostController.getPosts(size, page, orderBy, order, include, exclude));
 
-            return response(response, SC_OK, document);
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -51,13 +51,15 @@ public class PostRoute {
             User user = UserController.getUserByToken(request.headers("x-auth"));
             PostController.createPost(post, user);
 
-            return response(response, SC_CREATED, post.getId().toHexString());
+            Document result = new Document("post_id", post.getId().toHexString());
+
+            return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -65,29 +67,32 @@ public class PostRoute {
         try {
                 Post post = PostController.getPostById(request.params(":id"));
             if (post == null) {
-                throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+                Document details = new Document("details", "Such post does not exist");
+                throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
             }
 
-            return response(response, SC_OK, post);
+            Document result = new Document("result", post);
+
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route DeletePostsId = (Request request, Response response) -> {
         try {
             PostController.deletePostById(request.params(":id"));
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_DELETE);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -95,25 +100,26 @@ public class PostRoute {
         try {
             Document update = Document.parse(request.body());
             PostController.editPost(request.params(":id"), update);
-            return response(response, SC_OK);
+            return response(response, SC_OK, SUCCESS_EDIT);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route GetPostsIdComments = (Request request, Response response) -> {
         try {
-            return response(response, SC_CREATED, PostController.getCommentsByPostId(request.params(":id")));
+            Document result = new Document("results", PostController.getCommentsByPostId(request.params(":id")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -123,13 +129,15 @@ public class PostRoute {
             comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId());
             PostController.commentPost(request.params(":id"), comment);
 
-            return response(response, SC_OK, comment.getId().toHexString());
+            Document result = new Document("comment_id", comment.getId().toHexString());
+
+            return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -137,13 +145,13 @@ public class PostRoute {
         try{
             PostController.deleteComment(request.params(":id"), request.params(":cid"));
 
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_DELETE);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -152,38 +160,39 @@ public class PostRoute {
             Document update = Document.parse(request.body());
             PostController.editComment(request.params(":id"), request.params(":cid"), update);
 
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_EDIT);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route GetPostsIdLikes = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK, PostController.getLikesByPostId(request.params(":id")));
+            Document result = new Document("results", PostController.getLikesByPostId(request.params(":id")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route PostPostsIdLikes = (Request request, Response response) -> {
         try {
             PostController.likePost(request.params(":id"), request.headers("x-auth"));
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_CREATED, SUCCESS_CREATE);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -191,13 +200,13 @@ public class PostRoute {
         try{
             PostController.deleteLike(request.params(":id"), request.headers("x-auth"));
 
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_DELETE);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 }

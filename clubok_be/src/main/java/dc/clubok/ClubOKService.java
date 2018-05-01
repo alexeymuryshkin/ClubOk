@@ -6,6 +6,7 @@ import dc.clubok.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static dc.clubok.routes.AdministrationRoute.*;
 import static dc.clubok.routes.ClubRoute.*;
 import static dc.clubok.routes.EventRoute.*;
 import static dc.clubok.routes.PostRoute.*;
@@ -45,7 +46,6 @@ public class ClubOKService {
                 before(r, Authenticate);
             }
 
-
             path("/users", () -> {
                 get("", GetUsers, gson::toJson);
                 post("", JSON, PostUsers, gson::toJson);
@@ -70,16 +70,13 @@ public class ClubOKService {
 
             path("/clubs", () -> {
                 get("", GetClubs, gson::toJson);
-                post("", JSON, PostClubs, gson::toJson);
 
                 path("/:id", () -> {
                     get("", GetClubsId, gson::toJson);
-                    delete("", DeleteClubsId, gson::toJson);
                     patch("", JSON, PatchClubsId, gson::toJson);
 
                     get("/subscribers", GetClubsIdSubscribers, gson::toJson);
                     post("/subscribers", PostClubsIdSubscribers, gson::toJson);
-                    delete("/subscribers/:uid", DeleteClubsIdSubscribersId, gson::toJson);
 
                     get("/members", GetClubsIdMembers, gson::toJson);
                     post("/members", PostClubsIdMembers, gson::toJson);
@@ -129,14 +126,18 @@ public class ClubOKService {
                 });
 
                 path("/users", () -> {
-                    path("/:id", () -> {
-                        delete("", DeleteUsersId, gson::toJson);
-                        get("/tokens", GetUsersIdTokens, gson::toJson);
-//                        delete("/tokens");
-//                        delete("/token");
+                    delete("/:id", DeleteAdministrationUsersId, gson::toJson);
+                    get("/:id/tokens", GetAdministrationUsersIdTokens, gson::toJson);
+//                        delete("/:id/tokens");
+//                        delete("/:id/token");
 
-//                        delete("/subscriptions/:id");
-                    });
+//                        delete("/:id/subscriptions/:cid");
+                });
+
+                path("/clubs", () -> {
+                    post("", JSON, PostAdministrationClubs, gson::toJson);
+                    delete("/:id", DeleteAdministrationClubsId, gson::toJson);
+                    delete("/:id/subscribers/:uid", DeleteAdministrationClubsIdSubscribersId, gson::toJson);
                 });
 
 

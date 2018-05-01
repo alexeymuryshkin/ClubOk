@@ -4,7 +4,7 @@ import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Club;
 import dc.clubok.db.models.User;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.slf4j.Logger;
@@ -31,30 +31,16 @@ public class ClubRoute {
             Bson include = include();
             Bson exclude = exclude();
 
-            Document document = new Document("total", model.count(Club.class))
+            Document result = new Document("total", model.count(Club.class))
                     .append("results", ClubController.getClubs(size, page, orderBy, order, include, exclude));
 
-            return response(response, SC_OK, document);
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route PostClubs = (Request request, Response response) -> {
-        try {
-            Club club = gson.fromJson(request.body(), Club.class);
-            ClubController.createClub(club);
-            return response(response, SC_CREATED, club.getId().toHexString());
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -62,29 +48,19 @@ public class ClubRoute {
         try {
             Club club = ClubController.getClubById(request.params(":id"));
             if (club == null) {
-                throw new ClubOkException(CLUB_NOT_FOUND, "Club does not exist", SC_NOT_FOUND);
+                Document details = new Document("details", "Such club does not exist");
+                throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
             }
 
-            return response(response, SC_OK, club);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
+            Document result = new Document("result", club);
 
-    public static Route DeleteClubsId = (Request request, Response response) -> {
-        try {
-            ClubController.deleteClubById(request.params(":id"));
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -92,67 +68,56 @@ public class ClubRoute {
         try {
             Document update = Document.parse(request.body());
             ClubController.editClub(request.params(":id"), update);
-            return response(response, SC_OK);
+            return response(response, SC_NO_CONTENT, SUCCESS_EDIT);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route GetClubsIdSubscribers = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK, ClubController.getSubscribersByClubId(request.params(":id")));
+            Document result = new Document("results", ClubController.getSubscribersByClubId(request.params(":id")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route PostClubsIdSubscribers = (Request request, Response response) -> {
         try {
             User user = UserController.getUserByToken(request.headers("x-auth"));
+
             ClubController.addSubscriber(request.params(":id"), user.getId().toHexString());
             UserController.addSubscription(user.getId().toHexString(), request.params(":id"));
-            return response(response, SC_NO_CONTENT);
+
+            return response(response, SC_NO_CONTENT, SUCCESS_SUBSCRIPTION);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
-        }
-    };
-
-    public static Route DeleteClubsIdSubscribersId = (Request request, Response response) -> {
-        try {
-            UserController.deleteSubscription(request.params(":uid"), request.params(":id"));
-            ClubController.deleteSubscriber(request.params(":id"), request.params(":uid"));
-
-            return response(response, SC_NO_CONTENT);
-        } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
-        } catch (Exception e) {
-            logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route GetClubsIdMembers = (Request request, Response response) -> {
         try {
-            return response(response, SC_OK, ClubController.getMembersByClubId(request.params(":id")));
+            Document result = new Document("results", ClubController.getMembersByClubId(request.params(":id")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
@@ -161,27 +126,27 @@ public class ClubRoute {
             User user = UserController.getUserByToken(request.headers("x-auth"));
             ClubController.addMember(request.params(":id"), user.getId().toHexString());
 
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_MEMBERSHIP);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 
     public static Route DeleteClubsIdMembersId = (Request request, Response response) -> {
         try {
-            ClubController.deleteParticipant(request.params(":id"), request.params(":uid"));
+            ClubController.deleteMember(request.params(":id"), request.params(":uid"));
 
-            return response(response, SC_NO_CONTENT);
+            return response(response, SC_NO_CONTENT, SUCCESS_UNMEMBERSHIP);
         } catch (ClubOkException e) {
-            logger.error(e.getMessage());
-            return response(response, e.getStatusCode(), e.getError());
+            logger.error(e.getResponse().getMessage());
+            return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
-            return response(response, SC_INTERNAL_SERVER_ERROR, e);
+            return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }
     };
 }

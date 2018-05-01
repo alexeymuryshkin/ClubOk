@@ -3,7 +3,7 @@ package dc.clubok.db.controllers;
 import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static dc.clubok.utils.Constants.POST_NOT_FOUND;
+import static dc.clubok.utils.Constants.ERROR_QUERY;
 import static dc.clubok.utils.Constants.model;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
@@ -35,7 +35,8 @@ public class PostController {
     public static void commentPost(String postId, Comment comment) throws ClubOkException {
         Post post = PostController.getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.addOneToArray(post, "comments", comment, Post.class);
     }
@@ -44,7 +45,8 @@ public class PostController {
         User user = UserController.getUserByToken(token);
         Post post = PostController.getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.addOneToSet(post, "likes", user.getId(), Post.class);
     }
@@ -62,7 +64,8 @@ public class PostController {
     public static List<Comment> getCommentsByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         return post.getComments();
     }
@@ -70,7 +73,8 @@ public class PostController {
     public static Set<ObjectId> getLikesByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         return post.getLikes();
     }
@@ -78,7 +82,8 @@ public class PostController {
     public static void deletePostById(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.deleteById(postId, Post.class);
     }
@@ -86,7 +91,8 @@ public class PostController {
     public static void editPost(String postId, Document update) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         model.modify(post, update, Post.class);
     }
@@ -94,7 +100,8 @@ public class PostController {
     public static void editComment(String postId, String commentId, Document update) throws ClubOkException {
         Post post = PostController.getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         Comment comment = getCommentByCommentId(post, commentId);
 
@@ -105,7 +112,8 @@ public class PostController {
     public static void deleteComment(String postId, String commentId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         Comment comment = getCommentByCommentId(post, commentId);
 
@@ -115,7 +123,8 @@ public class PostController {
     public static void deleteLike(String postId, String token) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
-            throw new ClubOkException(POST_NOT_FOUND, "Post does not exist", SC_NOT_FOUND);
+            Document details = new Document("details", "Such post does not exist");
+            throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
         User user = UserController.getUserByToken(token);
 

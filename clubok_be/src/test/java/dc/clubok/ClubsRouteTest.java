@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.models.Club;
 import dc.clubok.seed.Seed;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -69,7 +69,7 @@ public class ClubsRouteTest {
         assertEquals("club name is not same",
                 name, model.findById(clubId, Club.class).getName());
 
-        Club clubDB = ClubController.findByName(name);
+        Club clubDB = ClubController.getClubByName(name);
 
         assertEquals("number of clubs is incorrect",
                 3, model.count(Club.class));

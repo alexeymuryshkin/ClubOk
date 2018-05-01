@@ -10,8 +10,8 @@ import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
 import dc.clubok.db.models.Model;
 import dc.clubok.db.models.User;
+import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.Crypt;
-import dc.clubok.utils.exceptions.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -51,7 +51,8 @@ public class MongoModel implements Model {
         try {
             collection.insertOne(entity);
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
         logger.info("Entity [" + entity.getClass().getSimpleName() + "] was created");
     }
@@ -69,7 +70,8 @@ public class MongoModel implements Model {
         try {
             collection.insertMany(entities);
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
 
         logger.info("Entities [" + entities.get(0).getClass().getSimpleName() + "] were created");
@@ -81,7 +83,8 @@ public class MongoModel implements Model {
         try {
             return getCollection(type).count();
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -91,7 +94,8 @@ public class MongoModel implements Model {
         try {
             return getCollection(type).find(document).first();
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -105,7 +109,7 @@ public class MongoModel implements Model {
                 .projection(fields(include, exclude));
 
         if (!orderBy.isEmpty()) {
-            Bson sort = order.equals("ascending") ? Sorts.ascending(orderBy): Sorts.descending(orderBy);
+            Bson sort = order.equals("ascending") ? Sorts.ascending(orderBy) : Sorts.descending(orderBy);
             iterable.sort(sort);
         }
 
@@ -114,7 +118,8 @@ public class MongoModel implements Model {
                 list.add(cursor.next());
             }
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
 
         return list;
@@ -129,7 +134,8 @@ public class MongoModel implements Model {
                 list.add(cursor.next());
             }
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
         return list;
     }
@@ -139,7 +145,7 @@ public class MongoModel implements Model {
         try {
             return findById(new ObjectId(id), type);
         } catch (IllegalArgumentException iae) {
-            throw new ClubOkException(ILLEGAL_ID, "ID format is invalid");
+            throw new ClubOkException(ERROR_ILLEGAL_ID);
         }
     }
 
@@ -148,9 +154,10 @@ public class MongoModel implements Model {
         try {
             return getCollection(type).find(eq(id)).first();
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         } catch (IllegalArgumentException iae) {
-            throw new ClubOkException(ILLEGAL_ID, "ID format is invalid");
+            throw new ClubOkException(ERROR_ILLEGAL_ID);
         }
     }
 
@@ -159,7 +166,8 @@ public class MongoModel implements Model {
         try {
             return getCollection(type).find(eq(fieldName, value)).first();
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -169,7 +177,8 @@ public class MongoModel implements Model {
         try {
             getCollection(type).deleteOne(eq(id));
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -178,7 +187,8 @@ public class MongoModel implements Model {
         try {
             getCollection(type).deleteOne(eq(id));
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -188,7 +198,8 @@ public class MongoModel implements Model {
         try {
             getCollection(type).updateOne(query, update);
         } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -230,16 +241,10 @@ public class MongoModel implements Model {
     public <T extends Entity, S extends Entity> void modifyOneFromArray(T entity, String fieldName, S value, Document update, Class<T> type) throws ClubOkException {
         Document query = new Document("_id", entity.getId()).append(fieldName + "._id", value.getId());
         List<Bson> updates = new ArrayList<>();
-        update.forEach((k, v) -> {
-            updates.add(set(fieldName + ".$." + k, v));
-        });
+        update.forEach((k, v) -> updates.add(set(fieldName + ".$." + k, v)));
         updates.add(currentTimestamp("lastModified"));
 
-        try {
-            updateRaw(query, combine(updates), type);
-        } catch (MongoException me) {
-            throw new ClubOkException(DB_ERROR, me.getMessage(), SC_INTERNAL_SERVER_ERROR);
-        }
+        updateRaw(query, combine(updates), type);
     }
 
     @Override
@@ -258,25 +263,24 @@ public class MongoModel implements Model {
         logger.debug("Validating [" + entity.getClass().getSimpleName() + "]");
         Set<ConstraintViolation<Entity>> violations = validator.validate(entity);
 
-        String message = "";
-
-        for (ConstraintViolation<Entity> violation : violations) {
-            message += "Validation Error [" + entity.getClass().getSimpleName() + "] - " +
-                    "Property: " + violation.getPropertyPath() +
-                    "Value: " + violation.getInvalidValue() +
-                    "Message: " + violation.getMessage() + "\n";
-            logger.error(message);
-        }
-
-        if (violations.size() != 0)
-            throw new ClubOkException(VALIDATION_ERROR, message);
+        List<String> violationsList = new ArrayList<>();
 
         if (entity instanceof User && UserController.findByEmail(((User) entity).getEmail()) != null) {
-            message += "Validation Error: User with email " + ((User) entity).getEmail() + " already exists";
-            logger.error(message);
-            throw new ClubOkException(VALIDATION_ERROR, message);
+            Document details = new Document("details", "Validation Error [User] with email " + ((User) entity).getEmail() + " already exists");
+            throw new ClubOkException(ERROR_VALIDATION, details);
         }
 
+        for (ConstraintViolation<Entity> violation : violations) {
+            violationsList.add("Validation Error [" + entity.getClass().getSimpleName() + "] - " +
+                    "Property: " + violation.getPropertyPath() +
+                    "Value: " + violation.getInvalidValue() +
+                    "Message: " + violation.getMessage());
+        }
+
+        Document details = new Document("details", violationsList);
+
+        if (violations.size() != 0)
+            throw new ClubOkException(ERROR_VALIDATION, details);
     }
 
 

@@ -4,7 +4,7 @@ import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
 import dc.clubok.seed.Seed;
-import dc.clubok.utils.exceptions.ClubOkException;
+import dc.clubok.utils.ClubOkException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
