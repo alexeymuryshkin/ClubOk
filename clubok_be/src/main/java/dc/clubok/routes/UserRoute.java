@@ -40,7 +40,6 @@ public class UserRoute {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
             return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }

@@ -6,16 +6,16 @@ import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
-import static com.mongodb.client.model.Projections.exclude;
-import static com.mongodb.client.model.Projections.include;
+import java.util.List;
+
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
@@ -24,16 +24,11 @@ public class PostRoute {
 
     public static Route GetPosts = (Request request, Response response) -> {
         try {
-            int size = request.queryParams("size") == null ? 50 : Integer.parseInt(request.queryParams("size"));
-            int page = request.queryParams("page") == null ? 1 : Integer.parseInt(request.queryParams("page"));
-            String orderBy = request.queryParams("orderBy") == null ? "postedAt" : request.queryParams("orderBy");
-            String order = request.queryParams("order") == null ? "descending" : request.queryParams("order");
+            SearchParams params = new SearchParams(request.queryMap().toMap());
+            List<Post> posts = PostController.getPosts(params);
 
-            Bson include = include();
-            Bson exclude = exclude();
-
-            Document result = new Document("total", model.count(Post.class))
-                    .append("results", PostController.getPosts(size, page, orderBy, order, include, exclude));
+            Document result = new Document("total", posts.size())
+                    .append("results", posts);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
@@ -126,7 +121,7 @@ public class PostRoute {
     public static Route PostPostsIdComments = (Request request, Response response) -> {
         try {
             Comment comment = gson.fromJson(request.body(), Comment.class);
-            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId());
+            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
             PostController.commentPost(request.params(":id"), comment);
 
             Document result = new Document("comment_id", comment.getId().toHexString());

@@ -22,6 +22,13 @@ public class Constants {
     /* Mongo */
     public static final MongoHandle mongo = new MongoHandle();
     public static final Model model = new MongoModel();
+    public static final List<String> acceptableOperators = Arrays.asList(
+            "gte",
+            "lte",
+            "gt",
+            "lt",
+            "ne"
+    );
 
     public static final Gson gson = new Gson();
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

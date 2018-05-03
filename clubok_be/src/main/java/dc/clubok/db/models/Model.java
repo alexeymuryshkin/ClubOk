@@ -17,8 +17,6 @@ public interface Model {
 
     <T extends Entity> T findOne(Document document, Class<T> type) throws ClubOkException;
 
-    <T extends Entity> List<T> findMany(int size, int page, String orderBy, String order, Bson include, Bson exclude, Class<T> type) throws ClubOkException;
-
     <T extends Entity> List<T> findByParams(SearchParams params, Class<T> type) throws ClubOkException;
 
     <T extends Entity> List<T> findAll(Class<T> type) throws ClubOkException;

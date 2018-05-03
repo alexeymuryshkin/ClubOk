@@ -7,7 +7,7 @@ import org.bson.Document;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 
 @Getter @Setter
-public class ClubOkException extends Exception {
+public class ClubOkException extends RuntimeException {
     private ClubOkResponse response;
     private int statusCode;
     private Document details;

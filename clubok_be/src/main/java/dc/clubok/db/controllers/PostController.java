@@ -4,9 +4,8 @@ import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import java.util.List;
 import java.util.Set;
@@ -17,12 +16,13 @@ import static dc.clubok.utils.Constants.model;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class PostController {
-    public static List<Post> getPosts(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
-        return model.findMany(size, page, orderBy, order, include, exclude, Post.class);
+    public static List<Post> getPosts(SearchParams params) throws ClubOkException {
+        return model.findByParams(params, Post.class);
     }
 
     public static void createPost(Post post, User user) throws ClubOkException {
-        post.setUserId(user.getId());
+        post.setUserId(user.getId().toHexString());
+        post.setPostedAt(post.getId().getTimestamp());
         model.saveOne(post, Post.class);
 //        ClubOKService.broadcastPost(post);
     }
@@ -65,7 +65,7 @@ public class PostController {
         return post.getComments();
     }
 
-    public static Set<ObjectId> getLikesByPostId(String postId) throws ClubOkException {
+    public static Set<String> getLikesByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
             Document details = new Document("details", "Such post does not exist");

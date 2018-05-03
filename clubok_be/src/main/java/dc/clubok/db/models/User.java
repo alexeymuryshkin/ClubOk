@@ -29,7 +29,7 @@ public class User extends Entity {
     private String fname;
     private String lname;
 
-    private Set<ObjectId> subscriptions;
+    private Set<String> subscriptions;
     private Set<Membership> membership;
     private List<Token> tokens;
 

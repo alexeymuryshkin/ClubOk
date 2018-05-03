@@ -109,8 +109,8 @@ public class UserController {
         model.update(user, new Document("tokens", new ArrayList<>()), User.class);
     }
 
-    public static Set<ObjectId> getSubscriptionsByUserId(String userId) throws ClubOkException {
-        Set<ObjectId> result;
+    public static Set<String> getSubscriptionsByUserId(String userId) throws ClubOkException {
+        Set<String> result;
         User user = model.findById(userId, User.class);
         if (user == null) {
             Document details = new Document("details", "Such user does not exist");
@@ -161,8 +161,8 @@ public class UserController {
         model.deleteById(userId, User.class);
     }
 
-    public static Set<ObjectId> getSubscriptionsByToken(String token) throws ClubOkException {
-        Set<ObjectId> result;
+    public static Set<String> getSubscriptionsByToken(String token) throws ClubOkException {
+        Set<String> result;
         User user = getUserByToken(token);
         if (user == null) {
             Document details = new Document("details", "Such user does not exist or logged out");

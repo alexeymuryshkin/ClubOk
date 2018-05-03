@@ -14,8 +14,8 @@ import java.util.Set;
 @Data
 public class Post
         extends Entity {
-    private ObjectId clubId;
-    private ObjectId userId;
+    private String clubId;
+    private String userId;
     private int postedAt;
     private String type;
     private @NotEmpty (message = "Body cannot be empty")
@@ -23,7 +23,7 @@ public class Post
 
     private Event event;
 
-    private Set<ObjectId> likes;
+    private Set<String> likes;
     private List<Comment> comments;
     private List<String> images;
 
@@ -34,7 +34,7 @@ public class Post
         comments = new ArrayList<>();
     }
 
-    public Post(ObjectId clubId, String type, String body) {
+    public Post(String clubId, String type, String body) {
         this();
         setClubId(clubId);
         setPostedAt(getId().getTimestamp());

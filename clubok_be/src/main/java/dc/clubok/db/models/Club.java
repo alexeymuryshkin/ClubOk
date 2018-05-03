@@ -19,7 +19,7 @@ public @Data class Club
 
     private Set<Event> events;
     private Set<Membership> members;
-    private Set<ObjectId> subscribers;
+    private Set<String> subscribers;
 
     public Club() {
         setId(new ObjectId());

@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 @EqualsAndHashCode(callSuper = true)
 public @Data class Comment
         extends Entity {
-    private ObjectId userId;
+    private String userId;
     private String text;
 
     public Comment() {

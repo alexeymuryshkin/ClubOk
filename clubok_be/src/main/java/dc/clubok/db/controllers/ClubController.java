@@ -3,9 +3,8 @@ package dc.clubok.db.controllers;
 import dc.clubok.db.models.Club;
 import dc.clubok.db.models.Membership;
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import java.util.List;
 import java.util.Set;
@@ -19,8 +18,8 @@ public class ClubController {
         model.saveOne(club, Club.class);
     }
 
-    public static List<Club> getClubs(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
-        return model.findMany(size, page, orderBy, order, include, exclude, Club.class);
+    public static List<Club> getClubs(SearchParams params) throws ClubOkException {
+        return model.findByParams(params, Club.class);
     }
 
     public static Club getClubById(String clubId) throws ClubOkException {
@@ -31,7 +30,7 @@ public class ClubController {
         return model.findByField("name", name, Club.class);
     }
 
-    public static Set<ObjectId> getSubscribersByClubId(String clubId) throws ClubOkException {
+    public static Set<String> getSubscribersByClubId(String clubId) throws ClubOkException {
         Club club = model.findById(clubId, Club.class);
         if (club == null) {
             Document details = new Document("details", "Such club does not exist");

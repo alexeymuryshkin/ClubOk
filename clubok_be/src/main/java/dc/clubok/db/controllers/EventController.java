@@ -2,8 +2,8 @@ package dc.clubok.db.controllers;
 
 import dc.clubok.db.models.Event;
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.util.List;
 
@@ -16,8 +16,8 @@ public class EventController {
         model.saveOne(event, Event.class);
     }
 
-    public static List<Event> getEvents(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
-        return model.findMany(size, page, orderBy, order, include, exclude, Event.class);
+    public static List<Event> getEvents(SearchParams params) throws ClubOkException {
+        return model.findByParams(params, Event.class);
     }
 
     public static Event getEventById(String eventId) throws ClubOkException {
