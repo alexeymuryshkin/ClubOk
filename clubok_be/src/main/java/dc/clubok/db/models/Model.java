@@ -1,6 +1,7 @@
 package dc.clubok.db.models;
 
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -17,6 +18,8 @@ public interface Model {
     <T extends Entity> T findOne(Document document, Class<T> type) throws ClubOkException;
 
     <T extends Entity> List<T> findMany(int size, int page, String orderBy, String order, Bson include, Bson exclude, Class<T> type) throws ClubOkException;
+
+    <T extends Entity> List<T> findByParams(SearchParams params, Class<T> type) throws ClubOkException;
 
     <T extends Entity> List<T> findAll(Class<T> type) throws ClubOkException;
 

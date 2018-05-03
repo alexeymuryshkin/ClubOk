@@ -7,8 +7,6 @@ import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Set;
@@ -19,9 +17,6 @@ import static dc.clubok.utils.Constants.model;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class PostController {
-    private static Logger logger = LoggerFactory.getLogger(PostController.class.getCanonicalName());
-
-
     public static List<Post> getPosts(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
         return model.findMany(size, page, orderBy, order, include, exclude, Post.class);
     }

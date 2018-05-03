@@ -25,7 +25,7 @@ public class User extends Entity {
     private @NotNull String password;
 
     private String imageSrc;
-    private int permissonLevel;
+    private int permissionLevel;
     private String fname;
     private String lname;
 
@@ -38,7 +38,7 @@ public class User extends Entity {
         tokens = new ArrayList<>();
         subscriptions = new HashSet<>();
         membership = new HashSet<>();
-        permissonLevel = PL_REGULAR;
+        permissionLevel = PL_REGULAR;
     }
 
     public User(String email, String password) {

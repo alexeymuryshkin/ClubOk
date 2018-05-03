@@ -4,8 +4,8 @@ import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Filter;
@@ -13,8 +13,10 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.List;
+
 import static com.mongodb.client.model.Projections.exclude;
-import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Projections.fields;
 import static dc.clubok.db.controllers.UserController.getUserByToken;
 import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
@@ -25,22 +27,20 @@ public class UserRoute {
 
     public static Route GetUsers = (Request request, Response response) -> {
         try {
-            int size = request.queryParams("size") == null ? 50 : Integer.parseInt(request.queryParams("size"));
-            int page = request.queryParams("page") == null ? 1 : Integer.parseInt(request.queryParams("page"));
-            String orderBy = request.queryParams("orderBy") == null ? "" : request.queryParams("orderBy");
-            String order = request.queryParams("order") == null ? "ascending" : request.queryParams("order");
+            SearchParams params = new SearchParams(request.queryMap().toMap());
+            params.setProjection(fields(exclude("password", "tokens", "subscriptions")));
 
-            Bson include = include();
-            Bson exclude = exclude("password", "tokens", "subscriptions");
+            List<User> users = UserController.getUsers(params);
 
-            Document result = new Document("total", model.count(User.class))
-                    .append("results", UserController.getUsers(size, page, orderBy, order, include, exclude));
+            Document result = new Document("total", users.size())
+                    .append("results", users);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
             return response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
         }

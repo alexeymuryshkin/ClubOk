@@ -120,7 +120,7 @@ public class ClubOKService {
             path("/administration", () -> {
                 before("/*", (request, response) -> {
                     User user = UserController.getUserByToken(request.headers("x-auth"));
-                    if (user.getPermissonLevel() < PL_ADMINISTRATOR) {
+                    if (user.getPermissionLevel() < PL_ADMINISTRATOR) {
                         halt(401);
                     }
                 });

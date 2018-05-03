@@ -9,8 +9,8 @@ import dc.clubok.db.models.Token;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.Crypt;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.io.UnsupportedEncodingException;
@@ -62,13 +62,9 @@ public class UserController {
         return token;
     }
 
-    public static List<User> getUsers(int size, int page, String orderBy, String order, Bson include, Bson exclude) throws ClubOkException {
-        return model.findMany(size, page, orderBy, order, include, exclude, User.class);
+    public static List<User> getUsers(SearchParams params) throws ClubOkException {
+        return model.findByParams(params, User.class);
     }
-
-//    public List<User> getLastCreatedUsers(int size, int page) {
-//
-//    }
 
     public static User getUserByToken(String token) throws ClubOkException {
         try {
@@ -204,5 +200,7 @@ public class UserController {
     public static User findByEmail(String email) throws ClubOkException {
         return model.findByField("email", email, User.class);
     }
+
+
 
 }

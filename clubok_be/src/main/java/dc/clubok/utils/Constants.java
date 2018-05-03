@@ -67,6 +67,7 @@ public class Constants {
     public static final ClubOkResponse ERROR_ILLEGAL_ID = new ClubOkErrorResponse(55, "Invalid ID format");
     public static final ClubOkResponse ERROR_LOGIN = new ClubOkErrorResponse(56, "Couldn't login");
     public static final ClubOkResponse ERROR_LOGOUT = new ClubOkErrorResponse(57, "Couldn't logout");
+    public static final ClubOkResponse ERROR_QUERY_PARAMS = new ClubOkErrorResponse(58, "Incorrect query parameters");
     public static final int TOKEN_ERROR = 105;
 
 

@@ -4,8 +4,6 @@ import dc.clubok.db.models.Event;
 import dc.clubok.utils.ClubOkException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -14,9 +12,6 @@ import static dc.clubok.utils.Constants.model;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class EventController {
-
-    private static Logger logger = LoggerFactory.getLogger(EventController.class.getCanonicalName());
-
     public static void createEvent(Event event) throws ClubOkException {
         model.saveOne(event, Event.class);
     }

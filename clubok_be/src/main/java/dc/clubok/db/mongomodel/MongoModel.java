@@ -12,6 +12,7 @@ import dc.clubok.db.models.Model;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.Crypt;
+import dc.clubok.utils.SearchParams;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -126,6 +127,31 @@ public class MongoModel implements Model {
     }
 
     @Override
+    public <T extends Entity> List<T> findByParams(SearchParams params, Class<T> type) throws ClubOkException {
+        List<T> result = new ArrayList<>();
+
+        FindIterable<T> iterable = getCollection(type)
+                .find(params.getFields())
+                .limit(params.getSize())
+                .skip((params.getPage() - 1) * params.getSize());
+
+        if (params.getProjection() != null) iterable.projection(params.getProjection());
+        if (params.getSort() != null) iterable.sort(params.getSort());
+
+
+        try (MongoCursor<T> cursor = iterable.iterator()) {
+            while (cursor.hasNext()) {
+                result.add(cursor.next());
+            }
+        } catch (MongoException me) {
+            Document details = new Document("details", me.getMessage());
+            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+        }
+
+        return result;
+    }
+
+    @Override
     public <T extends Entity> List<T> findAll(Class<T> type) throws ClubOkException {
         List<T> list = new ArrayList<>();
 
@@ -211,9 +237,7 @@ public class MongoModel implements Model {
     @Override
     public <T extends Entity> void modify(T entity, Document update, Class<T> type) throws ClubOkException {
         List<Bson> updates = new ArrayList<>();
-        update.forEach((k, v) -> {
-            updates.add(set(k, v));
-        });
+        update.forEach((k, v) -> updates.add(set(k, v)));
         update(entity, combine(updates), type);
     }
 
