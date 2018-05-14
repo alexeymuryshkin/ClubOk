@@ -26,7 +26,7 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.junit.Assert.*;
 import static spark.Spark.stop;
 
-public class ClubsRouteTest {
+public class ClubRouteTest {
     private final HttpClient client = HttpClients.createDefault();
     private final String url = "http://localhost:3000/api";
 

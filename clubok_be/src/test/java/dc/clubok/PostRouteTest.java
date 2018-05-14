@@ -27,7 +27,7 @@ import static org.apache.http.HttpStatus.*;
 import static org.junit.Assert.*;
 import static spark.Spark.stop;
 
-public class PostsRouteTest {
+public class PostRouteTest {
     private final HttpClient client = HttpClients.createDefault();
     private final String url = "http://localhost:3000/api";
 
@@ -80,8 +80,8 @@ public class PostsRouteTest {
         String type = "meeting";
 
         Post post = new Post();
-        post.setUserId(Seed.users.get(0).getId());
-        post.setClubId(Seed.clubs.get(1).getId());
+        post.setUserId(Seed.users.get(0).getId().toHexString());
+        post.setClubId(Seed.clubs.get(1).getId().toHexString());
 
         post.setType(type);
         post.setBody(body);
@@ -112,8 +112,8 @@ public class PostsRouteTest {
         String type = "meeting";
 
         Post post = new Post();
-        post.setUserId(Seed.users.get(0).getId());
-        post.setClubId(Seed.clubs.get(1).getId());
+        post.setUserId(Seed.users.get(0).getId().toHexString());
+        post.setClubId(Seed.clubs.get(1).getId().toHexString());
 
         post.setType(type);
         post.setBody(body);
@@ -134,8 +134,8 @@ public class PostsRouteTest {
         String type = "meeting";
 
         Post post = new Post();
-        post.setUserId(Seed.users.get(1).getId());
-        post.setClubId(Seed.clubs.get(1).getId());
+        post.setUserId(Seed.users.get(1).getId().toHexString());
+        post.setClubId(Seed.clubs.get(1).getId().toHexString());
 
         post.setType(type);
         post.setBody(body);

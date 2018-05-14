@@ -75,6 +75,7 @@ public class Constants {
     public static final ClubOkResponse ERROR_LOGIN = new ClubOkErrorResponse(56, "Couldn't login");
     public static final ClubOkResponse ERROR_LOGOUT = new ClubOkErrorResponse(57, "Couldn't logout");
     public static final ClubOkResponse ERROR_QUERY_PARAMS = new ClubOkErrorResponse(58, "Incorrect query parameters");
+    public static final ClubOkResponse ERROR_UNAUTHORIZED_REQUEST = new ClubOkErrorResponse(59, "You are not authorized to call this method");
     public static final int TOKEN_ERROR = 105;
 
 

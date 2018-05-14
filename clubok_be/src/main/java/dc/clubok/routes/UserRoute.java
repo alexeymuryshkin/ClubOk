@@ -47,12 +47,17 @@ public class UserRoute {
 
     public static Route PostUsers = (Request request, Response response) -> {
         try {
-            User user = gson.fromJson(request.body(), User.class);
-            response.header("x-auth", UserController.createUser(user).getToken());
+            if (request.headers("x-auth") == null) {
+                User user = gson.fromJson(request.body(), User.class);
+                response.header("x-auth", UserController.createUser(user).getToken());
 
-            Document result = new Document("user_id", user.getId().toHexString());
+                Document result = new Document("user_id", user.getId().toHexString());
 
-            return response(response, SC_CREATED, SUCCESS_REGISTRATION, result);
+                return response(response, SC_CREATED, SUCCESS_REGISTRATION, result);
+            } else {
+                Document details = new Document("details", "Regular users cannot create new users. Please logout for new signup");
+                throw new ClubOkException(ERROR_UNAUTHORIZED_REQUEST, details);
+            }
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
@@ -64,10 +69,15 @@ public class UserRoute {
 
     public static Route PostUsersLogin = (Request request, Response response) -> {
         try {
-            User user = gson.fromJson(request.body(), User.class);
-            response.header("x-auth", UserController.loginUser(user.getEmail(), user.getPassword()).getToken());
+            if (request.headers("x-auth") == null) {
+                User user = gson.fromJson(request.body(), User.class);
+                response.header("x-auth", UserController.loginUser(user.getEmail(), user.getPassword()).getToken());
 
-            return response(response, SC_NO_CONTENT, SUCCESS_LOGIN);
+                return response(response, SC_NO_CONTENT, SUCCESS_LOGIN);
+            } else {
+                Document details = new Document("details", "You have already logged in");
+                throw new ClubOkException(ERROR_UNAUTHORIZED_REQUEST, details);
+            }
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
@@ -215,7 +225,7 @@ public class UserRoute {
             }
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
-            halt(e.getStatusCode(), gson.toJson(e.getResponse()));
+            halt(e.getStatusCode());
         } catch (Exception e) {
             logger.error(e.getClass().getSimpleName() + " " + e.getMessage());
             response(response, SC_INTERNAL_SERVER_ERROR, ERROR_SERVER_UNKNOWN, new Document("details", e.getMessage()));
