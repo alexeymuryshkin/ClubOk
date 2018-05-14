@@ -8,7 +8,7 @@ import Post from "./Components/Post";
 import LeftNavBar from "./Components/LeftNavBar";
 import RightNavBar from "./Components/RightNavBar";
 
-class FeedPage extends Component{
+class Feed extends Component{
 
     constructor(props) {
         super(props);
@@ -51,7 +51,7 @@ class FeedPage extends Component{
 }
 
 ReactDOM.render(
-    <FeedPage/>,
+    <Feed/>,
     document.getElementById('feed')
 );
 

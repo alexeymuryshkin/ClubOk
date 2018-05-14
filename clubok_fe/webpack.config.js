@@ -9,14 +9,18 @@ const PATHS = {
 module.exports = {
     context: path.join(__dirname, './app'),
     entry: {
-        authorization: './jsx/AuthorizationPage.jsx',
-        feed: './jsx/FeedPage.jsx'
+        authorization: './jsx/Authorization.jsx',
+        feed: './jsx/Feed.jsx'
     },
     module: {
         rules: [
             {
-                test: /\.(css|less)$/,
-                use: ExtractTextPlugin.extract(['css-loader', 'less-loader'])
+                test: /\.scss$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'sass-loader'
+                ]
             },
             {
                 test: /\.(js|jsx)$/,
