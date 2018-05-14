@@ -26,3 +26,10 @@ There are several ways to run the server, using IDE, or using compiled `.jar` fi
 
 #### Using JAR file
 - `java -jar clubok_be/target/clubok_be-1.0-SNAPSHOT.jar`
+
+### Project Team:
+- Anuar Otynshin
+- Alexey Muryshkin
+- Rustam Shumenov
+- Madiyar Aitzhanov
+- Aibek Ziyashev
