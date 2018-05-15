@@ -1,0 +1,252 @@
+@import 'variables';
+@import 'mixins';
+@import 'fontello';
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700');
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+  background: $color_bg;
+}
+
+main {
+  padding-top: 3.5rem;
+}
+
+a {
+  text-decoration: none;
+}
+
+.grid {
+  @include display-flex();
+  flex-direction: column;
+  flex-wrap: nowrap;
+
+  .row {
+    @include display-flex();
+    flex-direction: row;
+
+    .col {
+      &.two {
+        width: calc(100%/6);
+      }
+
+      &.three {
+        width: calc(100%/4);
+      }
+
+      &.six {
+        width: calc(100%/2);
+      }
+
+      &.eight {
+        width: calc(100%*2/3);
+      }
+
+      &.twelve {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.container {
+  margin: auto;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-areas: "feed";
+
+  @media (min-width: 40rem) {
+    width: 80%;
+    grid-template-columns: 20% 60% 20%;
+    grid-template-areas: "left-sidebar feed right-sidebar";
+  }
+}
+
+.navbar {
+  margin: 0;
+  position: fixed;
+  @include display-flex();
+  width: 100vw;
+  padding: 0 1rem;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  z-index: 100;
+
+  background: $color_primary;
+
+  &.container {
+    @media (min-width: 40rem) {
+      padding: 0 10%;
+    }
+  }
+
+  .navbar__divider {
+    margin: 0 0.5rem;
+  }
+
+  .navbar__left {
+    @include display-flex();
+    align-items: center;
+    margin-right: 1rem;
+  }
+
+  .navbar__right {
+    @include display-flex();
+    align-items: center;
+    justify-content: right;
+    margin-left: 1rem;
+  }
+
+  .navbar__brand {
+    flex-shrink: 0;
+    height: 2.5rem;
+
+    img {
+      height: 2.5rem;
+    }
+  }
+
+  .navbar__search {
+    padding: 0.5rem 0;
+    position: relative;
+    @include display-flex();
+    align-items: center;
+
+    input {
+      background: $color_dark;
+      color: $color_light;
+      font: inherit;
+      border: none;
+      border-radius: 1.5rem;
+      padding: 0.5rem 2.5rem 0.5rem 1rem;
+      width: 100%;
+      height: 2.5rem;
+
+      &:focus {
+        color: $color_dark;
+        outline: none;
+        background: $color_light;
+      }
+
+      &::placeholder {
+        color: $color_primary;
+      }
+    }
+
+    .icon-search {
+      position: absolute;
+      right: 0;
+      padding: 0 1rem 0.1rem 1rem;
+      color: $color_primary;
+    }
+  }
+
+  .navbar__profile {
+    @include display-flex();
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0.5rem 0;
+    color: white;
+    cursor: pointer;
+
+    &:hover,
+    &:active {
+      background: $color_dark;
+
+      .navbar__profile-items {
+        display: block;
+      }
+    }
+
+    p {
+      display: none;
+      margin: 0;
+      padding: 0 0.5rem;
+      font-weight: bold;
+
+      @media (min-width: 40rem) {
+        display: block;
+      }
+    }
+
+    .navbar__profile-items {
+      display: none;
+      list-style: none;
+      position: absolute;
+      background: $color_dark;
+      color: white;
+      top: 2.5rem;
+      width: 10rem;
+      padding: 0;
+      box-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.2);
+      transition: background-color 200ms ease-out;
+
+      .navbar__profile-item {
+        padding: 0.5rem;
+
+        &:hover {
+          background: $color_light;
+        }
+      }
+
+      .navbar__profile-item--danger {
+        @extend .navbar__profile-item;
+        background: $color_danger;
+        font-weight: bold;
+
+        &:hover {
+          color: $color_danger;
+        }
+      }
+    }
+  }
+}
+
+.avatar-container {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0.5rem;
+  box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.2);
+
+  &.xs {
+    height: 2.5rem;
+    width: 2.5rem;
+
+    img {
+      width: 2.5rem;
+    }
+  }
+
+  &.s {
+    height: 3rem;
+    width: 3rem;
+
+    img {
+      width: 3rem;
+    }
+  }
+
+  &.round {
+    border-radius: 50%;
+  }
+
+  &.no-margin {
+    margin: 0;
+  }
+
+  img {
+    position: absolute;
+  }
+}

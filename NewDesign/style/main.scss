@@ -1,0 +1,127 @@
+@import 'shared';
+
+#left-sidebar {
+  grid-area: left-sidebar;
+}
+
+#right-sidebar {
+  grid-area: right-sidebar;
+}
+
+#feed {
+  grid-area: feed;
+  margin: 0 1rem;
+}
+
+.post {
+  @include display-flex();
+  position: relative;
+  flex-direction: column;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
+  border-radius: 3px;
+  background: white;
+  font-size: 0.9rem;
+
+  &.event {
+    border-top: 6px solid $color_grey;
+    border-bottom: 6px solid $color_grey;
+    
+    .post-event__title {
+      position: absolute;
+      margin: 0;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      right: -0.5rem;
+      top: 0.5rem;
+      background: $color_grey;
+      color: white;
+      font-weight: bold;
+      z-index: 2;
+      box-shadow: 2px 2px 1px rgba(0,0,0,0.3);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    &.blue {
+      border-color: $color_blue;
+
+      .post-event__title {
+        background: $color_blue;
+      }
+    }
+
+    &.red {
+
+    }
+  }
+
+  .post__divider {
+    background: #ccc;
+    margin: 1rem 0;
+    height: 1px;
+  }
+
+  .post__header {
+    @include display-flex();
+    justify-content: space-between;
+
+    .post__club {
+      @include display-flex();
+      align-items: center;
+      
+      &:visited {
+        color: #000;
+      }
+
+      &:hover {
+        color: $color_dark;
+      }
+
+      p {
+        padding-left: 0.5rem;
+        font-weight: bold;
+      }
+    }
+
+    .post__datetime {
+      color: rgba(0,0,0,0.5);
+    }
+  }
+
+  .post__body {
+    text-align: justify;
+  }
+
+  .post__info {
+    @include display-flex();
+    justify-content: flex-end;
+
+    .post__likes {
+      @include display-flex();
+      opacity: 0.5;
+
+      p {
+        margin: 0;
+      }
+
+      button {
+        border: none;
+        background: none;
+        padding: 0 0 0 0.5rem;
+        cursor: pointer;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+  }
+}

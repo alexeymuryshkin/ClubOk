@@ -1,0 +1,14 @@
+@mixin display-flex() {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin event-color($color) {
+  border-color: $color;
+
+  .post-event__title {
+    background: $color;
+  }
+}
