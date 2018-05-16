@@ -76,6 +76,9 @@ main {
 a {
   text-decoration: none; }
 
+h1.center-aligned, h2.center-aligned, h3.center-aligned, h4.center-aligned, h5.center-aligned, h6.center-aligned {
+  text-align: center; }
+
 .grid {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -102,14 +105,10 @@ a {
 
 .container {
   margin: auto;
-  display: grid;
-  grid-template-columns: 100%;
-  grid-template-areas: "feed"; }
+  display: grid; }
   @media (min-width: 40rem) {
     .container {
-      width: 80%;
-      grid-template-columns: 20% 60% 20%;
-      grid-template-areas: "left-sidebar feed right-sidebar"; } }
+      width: 80%; } }
 
 .navbar {
   margin: 0;
@@ -243,99 +242,75 @@ a {
   .avatar-container img {
     position: absolute; }
 
-#left-sidebar {
-  grid-area: left-sidebar; }
+.segment {
+  padding: 1.5rem;
+  border-radius: 3px;
+  background: white;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2); }
 
-#right-sidebar {
-  grid-area: right-sidebar; }
-
-#feed {
-  grid-area: feed;
-  margin: 0 1rem; }
-
-.post {
+main {
   display: -webkit-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
-  position: relative;
   flex-direction: column;
-  padding: 1.5rem;
-  margin: 1.5rem 0;
-  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-  background: white;
-  font-size: 0.9rem; }
-  .post.event {
-    border-top: 6px solid #888888;
-    border-bottom: 6px solid #888888; }
-    .post.event .post-event__title {
-      position: absolute;
-      margin: 0;
-      padding: 0.25rem 0.5rem;
-      border-radius: 6px;
-      right: -0.5rem;
-      top: 0.5rem;
-      background: #888888;
-      color: white;
-      font-weight: bold;
-      z-index: 2;
-      box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3); }
-      .post.event .post-event__title:hover {
-        text-decoration: underline; }
-    .post.event.blue {
-      border-color: #0d71bb; }
-      .post.event.blue .post-event__title {
-        background: #0d71bb; }
-  .post .post__divider {
-    background: #ccc;
-    margin: 1rem 0;
-    height: 1px; }
-  .post .post__header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    justify-content: space-between; }
-    .post .post__header .post__club {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: -webkit-flex;
-      display: flex;
-      align-items: center; }
-      .post .post__header .post__club:visited {
-        color: #000; }
-      .post .post__header .post__club:hover {
-        color: #0e9de5; }
-      .post .post__header .post__club p {
-        padding-left: 0.5rem;
-        font-weight: bold; }
-    .post .post__header .post__datetime {
-      color: rgba(0, 0, 0, 0.5); }
-  .post .post__body {
-    text-align: justify; }
-  .post .post__info {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    justify-content: flex-end; }
-    .post .post__info .post__likes {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: -webkit-flex;
-      display: flex;
-      opacity: 0.5; }
-      .post .post__info .post__likes p {
-        margin: 0; }
-      .post .post__info .post__likes button {
-        border: none;
-        background: none;
-        padding: 0 0 0 0.5rem;
-        cursor: pointer; }
-        .post .post__info .post__likes button:focus {
-          outline: none; }
-      .post .post__info .post__likes:hover {
-        opacity: 0.7; }
+  align-items: stretch;
+  justify-content: center;
+  height: 80vh; }
+  @media (min-width: 40rem) {
+    main {
+      align-items: center; } }
 
-/*# sourceMappingURL=main.css.map */
+.signup-form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
+  margin: 0 1.5rem; }
+  .signup-form h4 {
+    text-align: center;
+    margin: 0.5rem 0; }
+  .signup-form .signup-form__field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    font-weight: bold; }
+    .signup-form .signup-form__field label {
+      padding: 0.5rem 0;
+      color: black;
+      opacity: 0.5; }
+    .signup-form .signup-form__field input[type="email"],
+    .signup-form .signup-form__field input[type="password"],
+    .signup-form .signup-form__field input[type="text"] {
+      border: 1px solid #ccc;
+      padding: 0.5rem 1rem;
+      border-radius: 3px;
+      font-family: inherit; }
+    .signup-form .signup-form__field input:focus {
+      outline: none;
+      border-color: #4bbcf4; }
+  .signup-form .signup-form__submit {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0 0 0; }
+    .signup-form .signup-form__submit input[type='submit'] {
+      cursor: pointer;
+      border: none;
+      padding: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: bold;
+      border-radius: 6px;
+      background: #4bbcf4; }
+      .signup-form .signup-form__submit input[type='submit']:hover {
+        background: #0e9de5; }
+  @media (min-width: 40rem) {
+    .signup-form {
+      width: 20rem; } }
+
+/*# sourceMappingURL=authorization.css.map */

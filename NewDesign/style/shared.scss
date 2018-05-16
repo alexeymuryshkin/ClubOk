@@ -27,6 +27,12 @@ a {
   text-decoration: none;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  &.center-aligned {
+    text-align: center;
+  }
+}
+
 .grid {
   @include display-flex();
   flex-direction: column;
@@ -63,13 +69,9 @@ a {
 .container {
   margin: auto;
   display: grid;
-  grid-template-columns: 100%;
-  grid-template-areas: "feed";
 
   @media (min-width: 40rem) {
     width: 80%;
-    grid-template-columns: 20% 60% 20%;
-    grid-template-areas: "left-sidebar feed right-sidebar";
   }
 }
 
@@ -249,4 +251,11 @@ a {
   img {
     position: absolute;
   }
+}
+
+.segment {
+  padding: 1.5rem;
+  border-radius: 3px;
+  background: white;
+  box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
 }

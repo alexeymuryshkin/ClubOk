@@ -1,5 +1,15 @@
 @import 'shared';
 
+.container {
+  grid-template-columns: 100%;
+  grid-template-areas: "feed";
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 20% 60% 20%;
+    grid-template-areas: "left-sidebar feed right-sidebar";
+  }
+}
+
 #left-sidebar {
   grid-area: left-sidebar;
 }
@@ -17,11 +27,7 @@
   @include display-flex();
   position: relative;
   flex-direction: column;
-  padding: 1.5rem;
   margin: 1.5rem 0;
-  box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
-  border-radius: 3px;
-  background: white;
   font-size: 0.9rem;
 
   &.event {

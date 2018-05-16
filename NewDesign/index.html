@@ -2,9 +2,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/authorization.css">
+
+    <title>ClubOk | Welcome</title>
 </head>
 <body>
+<header class="navbar container">
+    <div class="navbar__left">
+        <a href="feed.html" class="navbar__brand">
+            <img src="i/logo.png" alt="ClubOk">
+        </a>
+        <span class="navbar__divider"></span>
+        <div class="navbar__search">
+            <input type="text" placeholder="Search...">
+            <span class="icon-search"></span>
+        </div>
+    </div>
+    <div class="navbar__right">
+        <div class="navbar__profile" href="">
+            <div class="avatar-container round xs">
+                <img src="i/avatar.jpg" alt="">
+            </div>
+            <p>User</p>
+            <ul class="navbar__profile-items">
+                <li class="navbar__profile-item">Profile</li>
+                <li class="navbar__profile-item">Settings</li>
+                <li class="navbar__profile-item--danger">Logout</li>
+            </ul>
+        </div>
+    </div>
+</header>
+<main>
+    <h4 class="center-aligned">Welcome to ClubOk!</h4>
+    <form class="signup-form segment">
+        <h4 class="center-aligned">Sign Up</h4>
+        <div class="signup-form__field">
+            <label>email</label>
+            <input type="email" name="email">
+        </div>
+        <div class="signup-form__field">
+            <label>password</label>
+            <input type="password" name="password">
+        </div>
+        <div class="signup-form__submit">
+            <input type="submit" value="Sign Up">
+        </div>
+    </form>
+</main>
+<footer>
 
+</footer>
 </body>
 </html>

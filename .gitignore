@@ -33,3 +33,7 @@ local.properties
 # NodeJS
 node_modules/
 node/
+
+# Sass
+.sass-cache/
+*.css.map
