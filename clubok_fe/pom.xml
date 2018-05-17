@@ -35,20 +35,12 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Clean Node and Node Modules, Clean public/assets/ folder -->
+            <!-- Clean Node and Node Modules -->
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>
                     <filesets>
-                        <fileset>
-                            <directory>../clubok_be/src/main/resources/public/</directory>
-                            <excludes>
-                                <exclude>*.html</exclude>
-                                <exclude>images/</exclude>
-                            </excludes>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
                         <fileset>
                             <directory>${basedir}</directory>
                             <includes>
@@ -72,7 +64,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v8.9.4</nodeVersion>
+                            <nodeVersion>v8.11.2</nodeVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -88,6 +80,28 @@
                         </goals>
                         <configuration>
                             <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>../clubok_be/src/main/resources/public</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>./public</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>

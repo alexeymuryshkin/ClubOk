@@ -1,19 +1,9 @@
 {
-  "env": {
-    "development": {
-      "presets": [
-        "env",
-        "react",
-        "stage-2",
-        "react-hmre"
-      ]
-    },
-    "production": {
-      "presets": [
-        "env",
-        "react",
-        "stage-2"
-      ]
-    }
-  }
+  "presets": [
+    "env",
+    "react"
+  ],
+  "plugins": [
+    "transform-class-properties"
+  ]
 }
