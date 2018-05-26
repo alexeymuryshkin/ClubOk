@@ -8,10 +8,11 @@ import java.util.Properties;
 
 public class Config {
     private static Properties properties;
+    private static String env;
 
     public Config() {
         Map<String, String> envVars = new ProcessBuilder().environment();
-        String env = (envVars.get("JAVA_ENV") != null) ? envVars.get("JAVA_ENV") : "development";
+        env = (envVars.get("JAVA_ENV") != null) ? envVars.get("JAVA_ENV") : "development";
         properties = new Properties();
 
 
@@ -35,6 +36,10 @@ public class Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getEnvironment() {
+        return env;
     }
 
     public Properties getProperties() {

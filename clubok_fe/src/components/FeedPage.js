@@ -1,8 +1,11 @@
 import React from 'react';
+import NavBar from "./NavBar";
+import MainFeed from './MainFeed';
 
 const FeedPage = () => (
   <div>
-    This is a feed page
+    <NavBar/>
+    <MainFeed/>
   </div>
 );
 

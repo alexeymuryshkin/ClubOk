@@ -1,6 +1,6 @@
 # Project
 clubok_be/src/main/resources/public
-bundle.js
+dist/
 
 # IntelliJ
 .idea/

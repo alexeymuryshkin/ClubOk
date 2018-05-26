@@ -1,8 +1,12 @@
 import React from 'react';
+import NavBar from "./NavBar";
 
 const SignUpPage = () => (
   <div>
-    This is SignUp Page
+    <NavBar signedIn={false}/>
+    <main>
+      This is SignUp Page
+    </main>
   </div>
 );
 
