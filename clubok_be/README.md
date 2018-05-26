@@ -9,3 +9,4 @@
 | Password | `password` | `type: String`, `min: 6`, `max: 16` | `true` |
 | First Name | `fname` | `type: String` | `false` |
 | Last Name | `lname` | `type: String` | `false` |
+| Image Source | `imageSrc` | `type: String` | `false` |
