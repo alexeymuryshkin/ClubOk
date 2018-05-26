@@ -7,7 +7,7 @@ export const MainFeed = (props) => {
   return (
     <div>
       {props.posts.map((post) => (
-        <Post key={post.id.toString()} {...post}/>
+        <Post key={post.id} {...post}/>
       ))}
     </div>
   );

@@ -1,8 +1,9 @@
 package dc.clubok.db.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data @NoArgsConstructor
 public class PostClubInfo {
     private String id;
     private String imageSrc;

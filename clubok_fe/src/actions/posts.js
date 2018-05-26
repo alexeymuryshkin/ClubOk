@@ -5,6 +5,25 @@ export const addPost = (post) => ({
   post
 });
 
+export const startAddPost = (post) => {
+  return (dispatch, getState) => {
+    const token = getState().auth.token;
+    axios.post('/api/posts', {
+      ...post
+    }, {
+      headers: {
+        'x-auth': token
+      }
+    })
+      .then(() => {
+        dispatch(addPost(post));
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+};
+
 export const setPosts = (posts) => ({
   type: 'SET_POSTS',
   posts
@@ -12,7 +31,6 @@ export const setPosts = (posts) => ({
 
 export const startSetPosts = () => {
   return (dispatch, getState) => {
-    const posts = [];
     const token = getState().auth.token;
     axios.get('/api/posts', {
       headers: {
