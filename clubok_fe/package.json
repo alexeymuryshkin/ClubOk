@@ -12,6 +12,7 @@
   "author": "Anuar Otynshin <strigeandro@gmail.com>",
   "license": "ISC",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
@@ -27,6 +28,7 @@
     "extract-text-webpack-plugin": "4.0.0-beta.0",
     "history": "^4.7.2",
     "jest": "^23.0.0",
+    "json-loader": "^0.5.7",
     "moment": "^2.22.1",
     "node-sass": "^4.9.0",
     "normalize.css": "^8.0.0",

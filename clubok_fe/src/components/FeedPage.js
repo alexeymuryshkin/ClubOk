@@ -1,10 +1,11 @@
 import React from 'react';
-import NavBar from "./NavBar";
 import MainFeed from './MainFeed';
+import Options from "./Options";
 
 const FeedPage = () => (
   <div>
-    <NavBar/>
+    {/*<NavBar/>*/}
+    <Options/>
     <MainFeed/>
   </div>
 );

@@ -1,11 +1,20 @@
 import React from 'react';
+import {connect} from 'react-redux';
+import Post from "./Post";
 
-const MainFeed = () => {
+
+export const MainFeed = (props) => {
   return (
     <div>
-      This is main feed
+      {props.posts.map((post) => (
+        <Post key={post.id.toString()} {...post}/>
+      ))}
     </div>
   );
 };
 
-export default MainFeed;
+const mapStateToProps = (state) => ({
+  posts: state.posts
+});
+
+export default connect(mapStateToProps)(MainFeed);

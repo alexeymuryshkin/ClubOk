@@ -80,7 +80,7 @@
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build:prod</arguments>
+                            <arguments>run build:dev</arguments>
                         </configuration>
                     </execution>
                 </executions>

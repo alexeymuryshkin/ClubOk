@@ -2,6 +2,7 @@ package dc.clubok.db.controllers;
 
 import dc.clubok.db.models.Comment;
 import dc.clubok.db.models.Post;
+import dc.clubok.db.models.PostUserInfo;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.SearchParams;
@@ -21,7 +22,7 @@ public class PostController {
     }
 
     public static void createPost(Post post, User user) throws ClubOkException {
-        post.setUserId(user.getId().toHexString());
+        post.setUser(new PostUserInfo(user));
         post.setPostedAt(post.getId().getTimestamp());
         model.saveOne(post, Post.class);
 //        ClubOKService.broadcastPost(post);
