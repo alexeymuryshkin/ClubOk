@@ -25,7 +25,7 @@ public class EventRoute {
             List<Event> events = EventController.getEvents(params);
 
             Document result = new Document("total", events.size())
-                    .append("results", events);
+                    .append("result", events);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {

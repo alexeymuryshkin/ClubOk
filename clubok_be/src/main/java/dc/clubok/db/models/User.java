@@ -46,4 +46,9 @@ public class User extends Entity {
         setEmail(email);
         setPassword(password);
     }
+
+    public User(String email, String password, int permissionLevel) {
+        this(email, password);
+        setPermissionLevel(permissionLevel);
+    }
 }

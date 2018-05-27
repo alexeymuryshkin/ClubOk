@@ -12,7 +12,8 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public @Data class Club
         extends Entity {
-    @NotNull @NotEmpty
+    @NotNull (message = "Name must be specified")
+    @NotEmpty (message = "Club name cannot be empty")
     private String name;
     private String imageSrc;
     private String description;
@@ -28,9 +29,13 @@ public @Data class Club
         subscribers = new HashSet<>();
     }
 
-    public Club(String name, String description) {
+    public Club(String name) {
         this();
-        this.name = name;
-        this.description = description;
+        setName(name);
+    }
+
+    public Club(String name, String description) {
+        this(name);
+        setDescription(description);
     }
 }

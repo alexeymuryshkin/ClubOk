@@ -92,7 +92,7 @@ public class UserController {
         return model.findById(userId, User.class);
     }
 
-    public static void logout(String token) throws Exception {
+    public static void logout(String token) throws ClubOkException {
         User user = getUserByToken(token);
         if (user != null) {
             model.removeOneFromArray(user, "tokens", new Token("auth", token), User.class);

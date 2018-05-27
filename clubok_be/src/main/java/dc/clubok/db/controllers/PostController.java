@@ -1,9 +1,6 @@
 package dc.clubok.db.controllers;
 
-import dc.clubok.db.models.Comment;
-import dc.clubok.db.models.Post;
-import dc.clubok.db.models.PostUserInfo;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.*;
 import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.SearchParams;
 import org.bson.Document;
@@ -21,8 +18,9 @@ public class PostController {
         return model.findByParams(params, Post.class);
     }
 
-    public static void createPost(Post post, User user) throws ClubOkException {
+    public static void createPost(Post post, Club club, User user) throws ClubOkException {
         post.setUser(new PostUserInfo(user));
+        post.setClub(new PostClubInfo(club));
         post.setPostedAt(post.getId().getTimestamp());
         model.saveOne(post, Post.class);
 //        ClubOKService.broadcastPost(post);

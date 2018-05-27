@@ -62,8 +62,8 @@ public class UserRouteTest {
                 "error", ((Document) responseBody.get("response")).getString("status"));
     }
 
-    private List<User> getResults(Document responseBody) {
-        return gson.fromJson(gson.toJson(responseBody.get("results")), new TypeToken<List<User>>(){}.getType());
+    private List<User> getResult(Document responseBody) {
+        return gson.fromJson(gson.toJson(responseBody.get("result")), new TypeToken<List<User>>(){}.getType());
     }
     
     // GET /users
@@ -79,10 +79,10 @@ public class UserRouteTest {
         Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
         assertSuccess(responseBody);
 
-        assertTrue("response should have results", responseBody.containsKey("results"));
+        assertTrue("response should have result", responseBody.containsKey("result"));
 
-        List<User> results = getResults(responseBody);
-        assertEquals("should return correct number of users", Seed.users.size(), results.size());
+        List<User> result = getResult(responseBody);
+        assertEquals("should return correct number of users", Seed.users.size(), result.size());
     }
 
     @Test
@@ -102,9 +102,9 @@ public class UserRouteTest {
         Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
         assertSuccess(responseBody);
 
-        List<User> results = getResults(responseBody);
-        assertEquals("should return correct number of users", 1, results.size());
-        assertEquals("ids should match", results.get(0).getId(), Seed.users.get(2).getId());
+        List<User> result = getResult(responseBody);
+        assertEquals("should return correct number of users", 1, result.size());
+        assertEquals("ids should match", result.get(0).getId(), Seed.users.get(2).getId());
     }
 
     // POST /users
@@ -122,7 +122,7 @@ public class UserRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertTrue("should return success code",
+        assertTrue("should return success code, but " + response.getStatusLine().getStatusCode() + " returned",
                 HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
 
         Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));

@@ -1,8 +1,8 @@
 package dc.clubok;
 
 import com.google.gson.reflect.TypeToken;
+import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
 import dc.clubok.seed.Seed;
 import dc.clubok.utils.ClubOkException;
 import org.apache.http.HttpResponse;
@@ -12,6 +12,7 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.AfterClass;
@@ -49,6 +50,20 @@ public class PostRouteTest {
         Seed.populatePosts();
     }
 
+    private void assertSuccess(Document responseBody) {
+        assertEquals("should return success status, but returned error (details " + responseBody.getString("details") + ")",
+                "success", ((Document) responseBody.get("response")).getString("status"));
+    }
+
+    private void assertError(Document responseBody) {
+        assertEquals("should return error status, but returned success",
+                "error", ((Document) responseBody.get("response")).getString("status"));
+    }
+
+    private List<Post> getResult(Document responseBody) {
+        return gson.fromJson(gson.toJson(responseBody.get("result")), new TypeToken<List<Post>>(){}.getType());
+    }
+
     @Test public void GetPosts_Authorized_SUCCESS() throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/posts")
                 .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
@@ -56,11 +71,16 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertTrue("should return success code",
+        assertTrue("should return success code, but " + response.getStatusLine().getStatusCode() + " returned",
                 HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
 
-        List<User> usersResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), new TypeToken<List<Post>>(){}.getType());
-        assertEquals("should return correct number of posts",2, usersResponse.size());
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertSuccess(responseBody);
+
+        assertTrue("response should have result", responseBody.containsKey("result"));
+
+        List<Post> result = getResult(responseBody);
+        assertEquals("should return correct number of posts",Seed.posts.size(), result.size());
     }
 
     @Test public void GetPosts_Unauthorized_UNAUTHORIZED() throws IOException {
@@ -69,54 +89,52 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return UNAUTHORIZED",
-                SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+        assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
 //    TODO GET /posts/?parameters
 
     @Test public void PostPosts_CorrectData_SUCCESS() throws IOException, ClubOkException {
         String body = "Some text or anything else";
-        String type = "meeting";
+        String type = "regular";
 
-        Post post = new Post();
-        post.setUserId(Seed.users.get(0).getId().toHexString());
-        post.setClubId(Seed.clubs.get(1).getId().toHexString());
-
-        post.setType(type);
-        post.setBody(body);
+        Post post = new Post(Seed.clubs.get(1), Seed.users.get(0), type, body);
+        Document requestBody = Document.parse(gson.toJson(post));
+        requestBody.remove("club");
+        requestBody.append("club_id", post.getClub().getId());
 
         HttpUriRequest request = RequestBuilder.post(url + "/posts")
                 .setHeader("Content-Type", JSON)
                 .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
-                .setEntity(new StringEntity(gson.toJson(post)))
+                .setEntity(new StringEntity(requestBody.toJson()))
                 .build();
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertTrue("should return success code",
+        assertTrue("should return success code, but " + response.getStatusLine().getStatusCode() + " returned",
                 HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
-        String id = gson.fromJson(EntityUtils.toString(response.getEntity()), String.class);
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertSuccess(responseBody);
+
+        assertTrue("response should have post_id", responseBody.containsKey("post_id"));
+
+        String id = responseBody.getString("post_id");
         assertTrue("should return valid id", ObjectId.isValid(id));
 
 
         // Assertions in DB
-        Post postDb = model.findById(id, Post.class);
-        assertEquals("db should have correct number of posts", 3, model.count(Post.class));
-        assertNotNull("db should create user entry", postDb);
-        assertEquals("db entry should match returned id", id, postDb.getId().toHexString());
+        Post postDB = PostController.getPostById(id);
+        assertEquals("db should have correct number of posts", Seed.posts.size() + 1, model.count(Post.class));
+        assertNotNull("db should create user entry", postDB);
+        assertEquals("db entry should match returned id", id, postDB.getId().toHexString());
     }
 
     @Test public void PostPosts_Unauthorized_UNAUTHORIZED() throws IOException {
         String body = "Some text or anything else";
         String type = "meeting";
 
-        Post post = new Post();
-        post.setUserId(Seed.users.get(0).getId().toHexString());
-        post.setClubId(Seed.clubs.get(1).getId().toHexString());
-
-        post.setType(type);
-        post.setBody(body);
+        Post post = new Post(Seed.clubs.get(1), Seed.users.get(0), type, body);
 
         HttpUriRequest request = RequestBuilder.post(url + "/posts")
                 .setHeader("Content-Type", JSON)
@@ -125,20 +143,14 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return UNAUTHORIZED",
-                SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+        assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
     @Test public void PostPosts_InvalidData_BAD_REQUEST() throws IOException {
-        String body = "Some text or anything else";
+        String body = "";
         String type = "meeting";
 
-        Post post = new Post();
-        post.setUserId(Seed.users.get(1).getId().toHexString());
-        post.setClubId(Seed.clubs.get(1).getId().toHexString());
-
-        post.setType(type);
-        post.setBody(body);
+        Post post = new Post(Seed.clubs.get(1), Seed.users.get(1), type, body);
 
         HttpUriRequest request = RequestBuilder.post(url + "/posts")
                 .setHeader("Content-Type", JSON)
@@ -148,8 +160,10 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return BAD_REQUEST",
-                SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
     }
 
 //    TODO GET /posts/:id
@@ -162,11 +176,13 @@ public class PostRouteTest {
         // Assertions in response
         assertTrue("should return success code, but returned " + response.getStatusLine().getStatusCode(),
                 HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
-        Post postResponse = gson.fromJson(EntityUtils.toString(response.getEntity()), Post.class);
-        assertNotNull("should return post",
-                postResponse);
-        assertEquals("should have correct id",
-                Seed.posts.get(0).getId(), postResponse.getId());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertSuccess(responseBody);
+
+        Post post = gson.fromJson(gson.toJson(responseBody.get("result")), Post.class);
+        assertNotNull("should return post", post);
+        assertEquals("should match post id", Seed.posts.get(0).getId(), post.getId());
     }
 
     @Test public void GetPostsId_Unauthorized_UNAUTHORIZED() throws IOException {
@@ -175,8 +191,7 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return UNAUTHORIZED",
-                SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+        assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
     }
 
     @Test public void GetPostsId_IncorrectId_BAD_REQUEST() throws IOException {
@@ -186,8 +201,10 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return BAD_REQUEST",
-                SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
     }
 
     @Test public void GetPostsId_InvalidId_NOT_FOUND() throws IOException {
@@ -197,8 +214,10 @@ public class PostRouteTest {
         HttpResponse response = client.execute(request);
 
         // Assertions in response
-        assertEquals("should return NOT_FOUND",
-                SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+        assertEquals("should return NOT_FOUND", SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
     }
 
 //    TODO DELETE /posts/:id

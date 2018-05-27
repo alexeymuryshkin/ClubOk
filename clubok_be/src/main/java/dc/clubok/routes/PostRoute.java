@@ -1,11 +1,9 @@
 package dc.clubok.routes;
 
+import dc.clubok.db.controllers.ClubController;
 import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.controllers.UserController;
-import dc.clubok.db.models.Comment;
-import dc.clubok.db.models.CommentUserInfo;
-import dc.clubok.db.models.Post;
-import dc.clubok.db.models.User;
+import dc.clubok.db.models.*;
 import dc.clubok.utils.ClubOkException;
 import dc.clubok.utils.SearchParams;
 import org.bson.Document;
@@ -29,7 +27,7 @@ public class PostRoute {
             List<Post> posts = PostController.getPosts(params);
 
             Document result = new Document("total", posts.size())
-                    .append("results", posts);
+                    .append("result", posts);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
@@ -43,9 +41,13 @@ public class PostRoute {
 
     public static Route PostPosts = (Request request, Response response) -> {
         try {
+            Document data = Document.parse(request.body());
+
             Post post = gson.fromJson(request.body(), Post.class);
+            Club club = ClubController.getClubById(data.getString("club_id"));
             User user = UserController.getUserByToken(request.headers("x-auth"));
-            PostController.createPost(post, user);
+
+            PostController.createPost(post, club, user);
 
             Document result = new Document("post_id", post.getId().toHexString());
 
@@ -108,7 +110,7 @@ public class PostRoute {
 
     public static Route GetPostsIdComments = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", PostController.getCommentsByPostId(request.params(":id")));
+            Document result = new Document("result", PostController.getCommentsByPostId(request.params(":id")));
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
@@ -168,7 +170,7 @@ public class PostRoute {
 
     public static Route GetPostsIdLikes = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", PostController.getLikesByPostId(request.params(":id")));
+            Document result = new Document("result", PostController.getLikesByPostId(request.params(":id")));
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());

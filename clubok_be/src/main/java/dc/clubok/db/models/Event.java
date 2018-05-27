@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @EqualsAndHashCode(callSuper = true)
 public @Data class Event
         extends Entity {
-    private String clubId;
+    private EventClubInfo club;
     private @NotEmpty String name;
     private String description;
     private int start;
@@ -20,9 +20,9 @@ public @Data class Event
         setId(new ObjectId());
     }
 
-    public Event(String clubId, String name, String description, int start, int end) {
+    public Event(Club club, String name, String description, int start, int end) {
         this();
-        setClubId(clubId);
+        setClub(new EventClubInfo(club));
         setName(name);
         setDescription(description);
         setStart(start);

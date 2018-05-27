@@ -80,7 +80,7 @@ public class AdministrationRoute {
 
     public static Route GetAdministrationUsersIdTokens = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", UserController.getTokensByUserId(request.params(":id")));
+            Document result = new Document("result", UserController.getTokensByUserId(request.params(":id")));
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {

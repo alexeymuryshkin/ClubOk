@@ -33,7 +33,7 @@ public class UserRoute {
             List<User> users = UserController.getUsers(params);
 
             Document result = new Document("total", users.size())
-                    .append("results", users);
+                    .append("result", users);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
@@ -102,8 +102,8 @@ public class UserRoute {
 
     public static Route GetUsersMeSubscriptions = (Request request, Response response) -> {
         try {
-            Document results = new Document("results", UserController.getSubscriptionsByToken(request.headers("x-auth")));
-            return response(response, SC_OK, SUCCESS_QUERY, results);
+            Document result = new Document("result", UserController.getSubscriptionsByToken(request.headers("x-auth")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
@@ -146,8 +146,8 @@ public class UserRoute {
 
     public static Route GetUsersMeTokens = (Request request, Response response) -> {
         try {
-            Document results = new Document("results", UserController.getTokensByToken(request.headers("x-auth")));
-            return response(response, SC_OK, SUCCESS_QUERY, results);
+            Document result = new Document("result", UserController.getTokensByToken(request.headers("x-auth")));
+            return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());
@@ -204,7 +204,7 @@ public class UserRoute {
 
     public static Route GetUsersIdSubscriptions = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", UserController.getSubscriptionsByUserId(request.params(":id")));
+            Document result = new Document("result", UserController.getSubscriptionsByUserId(request.params(":id")));
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());

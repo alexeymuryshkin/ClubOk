@@ -27,7 +27,7 @@ public class ClubRoute {
             List<Club> clubs = ClubController.getClubs(params);
 
             Document result = new Document("total", clubs.size())
-                    .append("results", clubs);
+                    .append("result", clubs);
 
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
@@ -75,7 +75,7 @@ public class ClubRoute {
 
     public static Route GetClubsIdSubscribers = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", ClubController.getSubscribersByClubId(request.params(":id")));
+            Document result = new Document("result", ClubController.getSubscribersByClubId(request.params(":id")));
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
@@ -105,7 +105,7 @@ public class ClubRoute {
 
     public static Route GetClubsIdMembers = (Request request, Response response) -> {
         try {
-            Document result = new Document("results", ClubController.getMembersByClubId(request.params(":id")));
+            Document result = new Document("result", ClubController.getMembersByClubId(request.params(":id")));
             return response(response, SC_OK, SUCCESS_QUERY, result);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
