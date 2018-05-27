@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export const addUser = (user) => {
   return () => {
-    axios.post('/api/users', {
+    return axios.post('/api/users', {
       ...user
     })
       .then((response) => {

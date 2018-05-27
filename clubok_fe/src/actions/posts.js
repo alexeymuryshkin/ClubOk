@@ -38,8 +38,7 @@ export const startSetPosts = () => {
       }
     })
       .then((response) => {
-        console.log(response);
-        dispatch(setPosts(response.data.results));
+        dispatch(setPosts(response.data.result));
       })
       .catch((e) => {
         console.log(e);

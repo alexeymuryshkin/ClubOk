@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import FeedPage from "../components/FeedPage";
-import SignUpPage from "../components/SIgnUpPage";
+import AuthorizationPage from "../components/AuthorizationPage";
 import AddUserPage from "../components/AddUserPage";
 // import AddClub from "../components/AddClub";
 import AddPostPage from "../components/AddPostPage";
@@ -15,7 +15,7 @@ const AppRouter = () => (
       {/*<Route path="/create/club" component={AddClub}/>*/}
       <Route path="/create/post" component={AddPostPage}/>
       {/*<Route path="/create/event" component={AddEvent}/>*/}
-      <Route path="/signup" component={SignUpPage}/>
+      <Route path="/signup" component={AuthorizationPage}/>
     </Switch>
   </BrowserRouter>
 );

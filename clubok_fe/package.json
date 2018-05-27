@@ -4,7 +4,7 @@
   "description": "Web Social Network for University Clubs",
   "repository": "https://github.com/alexeymuryshkin/ClubOk",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config=jest.config.json",
     "build:dev": "webpack",
     "build:prod": "webpack -p --env production",
     "dev-server": "webpack-dev-server"
