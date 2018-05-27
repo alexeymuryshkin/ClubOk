@@ -3,6 +3,7 @@ package dc.clubok.routes;
 import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Comment;
+import dc.clubok.db.models.CommentUserInfo;
 import dc.clubok.db.models.Post;
 import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
@@ -121,7 +122,7 @@ public class PostRoute {
     public static Route PostPostsIdComments = (Request request, Response response) -> {
         try {
             Comment comment = gson.fromJson(request.body(), Comment.class);
-            comment.setUserId(UserController.getUserByToken(request.headers("x-auth")).getId().toHexString());
+            comment.setUser(new CommentUserInfo(UserController.getUserByToken(request.headers("x-auth"))));
             PostController.commentPost(request.params(":id"), comment);
 
             Document result = new Document("comment_id", comment.getId().toHexString());

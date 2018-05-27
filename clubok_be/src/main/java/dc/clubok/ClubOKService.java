@@ -5,6 +5,10 @@ import dc.clubok.db.models.User;
 import dc.clubok.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.ModelAndView;
+import spark.template.velocity.VelocityTemplateEngine;
+
+import java.util.HashMap;
 
 import static dc.clubok.routes.AdministrationRoute.*;
 import static dc.clubok.routes.ClubRoute.*;
@@ -21,8 +25,22 @@ public class ClubOKService {
 
     public static void main(String[] args) {
         port(Integer.valueOf(config.getProperties().getProperty("port")));
-        staticFiles.location("/public");
+        String staticFilesLocation = config.getEnvironment().equals("production") ?
+                "/public" :
+                System.getProperty("user.dir") + "/clubok_be/src/main/resources/public";
+
+        if (config.getEnvironment().equals("production")) {
+            staticFiles.location(staticFilesLocation);
+        } else {
+            staticFiles.externalLocation(staticFilesLocation);
+        }
+        notFound((request, response) -> new VelocityTemplateEngine().render(
+                new ModelAndView(new HashMap<String, Object>(), "/public/index.html")
+        ));
         logger.info("Server started at port " + config.getProperties().getProperty("port"));
+
+
+
 
 //        webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
@@ -42,7 +60,7 @@ public class ClubOKService {
                         body
                 ));
             });
-            for (String r: Constants.protectedRoutes) {
+            for (String r : Constants.protectedRoutes) {
                 before(r, Authenticate);
             }
 
@@ -139,7 +157,6 @@ public class ClubOKService {
                     delete("/:id", DeleteAdministrationClubsId, gson::toJson);
                     delete("/:id/subscribers/:uid", DeleteAdministrationClubsIdSubscribersId, gson::toJson);
                 });
-
 
 
             });

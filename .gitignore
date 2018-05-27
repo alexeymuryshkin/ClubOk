@@ -1,5 +1,6 @@
 # Project
-clubok_be/src/main/resources/public/assets/
+clubok_be/src/main/resources/public
+dist/
 
 # IntelliJ
 .idea/
@@ -33,3 +34,7 @@ local.properties
 # NodeJS
 node_modules/
 node/
+
+# Sass
+.sass-cache/
+*.css.map

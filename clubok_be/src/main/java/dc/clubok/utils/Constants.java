@@ -1,11 +1,12 @@
 package dc.clubok.utils;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import dc.clubok.config.Config;
 import dc.clubok.db.handlers.MongoHandle;
 import dc.clubok.db.models.Model;
 import dc.clubok.db.mongomodel.MongoModel;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import spark.Response;
 
 import javax.validation.Validation;
@@ -30,7 +31,10 @@ public class Constants {
             "ne"
     );
 
-    public static final Gson gson = new Gson();
+    public static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ObjectId.class, (JsonSerializer<ObjectId>) (src, typeOfSrc, context) -> new JsonPrimitive(src.toHexString()))
+            .registerTypeAdapter(ObjectId.class, (JsonDeserializer<ObjectId>) (json, typeOfT, context) -> new ObjectId(json.getAsString()))
+            .create();
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     /* Protected Routes */
@@ -68,7 +72,7 @@ public class Constants {
     /* Error Responses */
     public static final ClubOkResponse ERROR_SERVER_UNKNOWN = new ClubOkErrorResponse(50, "Unknown Server Error. See details");
     public static final ClubOkResponse ERROR_VALIDATION = new ClubOkErrorResponse(51, "Validation error");
-    public static final ClubOkResponse ERROR_CREATE =  new ClubOkErrorResponse(52, "Couldn't create entity");
+    public static final ClubOkResponse ERROR_CREATE = new ClubOkErrorResponse(52, "Couldn't create entity");
     public static final ClubOkResponse ERROR_QUERY = new ClubOkErrorResponse(53, "Query error");
     public static final ClubOkResponse ERROR_DB = new ClubOkErrorResponse(54, "Error accessing database");
     public static final ClubOkResponse ERROR_ILLEGAL_ID = new ClubOkErrorResponse(55, "Invalid ID format");

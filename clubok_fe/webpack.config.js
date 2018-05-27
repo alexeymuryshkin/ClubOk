@@ -1,46 +1,47 @@
-const packageJSON = require('./package.json');
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const webpack = require('webpack');
 
-const PATHS = {
-    build: path.join(__dirname, '..', 'clubok_be', 'src', 'main', 'resources', 'public', 'assets')
-};
-module.exports = {
-    context: path.join(__dirname, './app'),
-    entry: {
-        authorization: './jsx/AuthorizationPage.jsx',
-        feed: './jsx/FeedPage.jsx'
+module.exports = (env) => {
+  const isProduction = env === 'production';
+  const CSSExtract = new ExtractTextPlugin('styles.css');
+
+  return {
+    mode: isProduction ? 'production' : 'development',
+    entry: ['babel-polyfill', './src/app.js'],
+    output: {
+      path: path.join(__dirname, 'public', 'dist'),
+      filename: 'bundle.js'
     },
     module: {
-        rules: [
-            {
-                test: /\.(css|less)$/,
-                use: ExtractTextPlugin.extract(['css-loader', 'less-loader'])
-            },
-            {
-                test: /\.(js|jsx)$/,
-                exclude: /node_modules/,
-                use: ['babel-loader']
+      rules: [{
+        test: /\.js$/,
+        use: ['babel-loader'],
+        exclude: /node_modules/
+      }, {
+        test: /\.s?css$/,
+        use: CSSExtract.extract({
+          use: [{
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
             }
-        ]
-    },
-    resolve: {
-        alias: {
-            'semantic-ui': path.join(__dirname, "node_modules", "semantic-ui-css", "semantic.js"),
-        },
-        extensions: ['*', '.js', '.jsx']
-    },
-    output: {
-        path: PATHS.build,
-        filename: path.normalize('[name].js'),
-        publicPath: '/assets/'
+          }, {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }]
+        })
+      }]
     },
     plugins: [
-        new ExtractTextPlugin("/[name].css")
+      CSSExtract
     ],
+    devtool: isProduction ? 'source-map' : 'inline-source-map',
     devServer: {
-        contentBase: "../clubok_be/src/main/resources/public",
-        hot: true
-    },
+      contentBase: path.join(__dirname, 'public'),
+      historyApiFallback: true,
+      publicPath: '/dist/'
+    }
+  };
 };

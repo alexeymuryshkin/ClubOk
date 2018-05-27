@@ -6,7 +6,7 @@ import SignUpComp from "./Components/SignUpComp";
 import NavBar from "./Components/NavBar";
 import {Grid, Image} from "semantic-ui-react";
 
-class AuthorizationPage extends Component{
+class Authorization extends Component{
 
     constructor(props) {
         super(props);
@@ -58,6 +58,6 @@ class AuthorizationPage extends Component{
 }
 
 ReactDOM.render(
-    <AuthorizationPage/>,
+    <Authorization/>,
     document.getElementById('app')
 );

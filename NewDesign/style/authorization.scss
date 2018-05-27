@@ -1,0 +1,77 @@
+@import 'shared';
+
+main {
+  @include display-flex();
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  height: 80vh;
+
+  @media (min-width: 40rem) {
+    align-items: center;
+  }
+}
+
+.signup-form {
+  @include display-flex();
+  flex-direction: column;
+  margin: 0 1.5rem;
+
+  h4 {
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .signup-form__field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    font-weight: bold;
+
+    label {
+      padding: 0.5rem 0;
+      color: black;
+      opacity: 0.5;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      border: 1px solid #ccc;
+      padding: 0.5rem 1rem;
+      border-radius: 3px;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: $color_primary;
+    }
+  }
+
+  .signup-form__submit {
+    @include display-flex();
+    justify-content: center;
+    margin: 1.5rem 0 0 0;
+
+    input[type='submit'] {
+      cursor: pointer;
+      border: none;
+      padding: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: bold;
+      border-radius: 6px;
+      background: $color_primary;
+
+      &:hover {
+        background: $color_dark;
+      }
+    }
+  }
+
+  @media (min-width: 40rem) {
+    width: 20rem;
+  }
+}
