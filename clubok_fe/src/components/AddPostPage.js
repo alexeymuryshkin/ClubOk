@@ -4,6 +4,10 @@ import {startAddPost} from "../actions/posts";
 
 class AddPostPage extends React.Component {
   state = {
+    club: {
+      id: '',
+      name: 'Nomad'
+    },
     body: '',
     error: ''
   };

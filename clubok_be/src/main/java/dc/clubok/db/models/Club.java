@@ -17,6 +17,7 @@ public @Data class Club
     private String name;
     private String imageSrc;
     private String description;
+    private String link;
 
     private Set<Event> events;
     private Set<Membership> members;
