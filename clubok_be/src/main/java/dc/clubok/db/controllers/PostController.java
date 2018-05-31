@@ -42,7 +42,7 @@ public class PostController {
             Document details = new Document("details", "Such post does not exist");
             throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
-        model.addOneToSet(post, "likes", user.getId(), Post.class);
+        model.addOneToSet(post, "likes", new Like(user), Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {
@@ -64,7 +64,7 @@ public class PostController {
         return post.getComments();
     }
 
-    public static Set<String> getLikesByPostId(String postId) throws ClubOkException {
+    public static Set<Like> getLikesByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
             Document details = new Document("details", "Such post does not exist");

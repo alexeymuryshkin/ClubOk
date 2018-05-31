@@ -15,11 +15,39 @@ export const startAddPost = (post) => {
         'x-auth': token
       }
     })
-      .then(() => {
-        dispatch(addPost(post));
+      .then((response) => {
+        console.log(response)
       })
       .catch((e) => {
         console.log(e);
+        if (e.response) {
+          console.log(e.response)
+        }
+      });
+  };
+};
+
+export const likePost = (post_id) => ({
+  type: 'LIKE_POST',
+  post_id
+});
+
+export const startLikePost = (post_id) => {
+  return (dispatch, getState) => {
+    const token = getState().auth.token;
+    axios.post(`/api/posts/${post_id}/likes`, {}, {
+      headers: {
+        'x-auth': token
+      }
+    })
+      .then(() => {
+        dispatch(likePost(post_id));
+      })
+      .catch((e) => {
+        console.log(e);
+        if (e.response) {
+          console.log(e.response);
+        }
       });
   };
 };

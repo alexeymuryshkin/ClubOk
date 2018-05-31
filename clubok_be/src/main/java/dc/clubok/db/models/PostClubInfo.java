@@ -14,5 +14,6 @@ public class PostClubInfo {
         setId(club.getId().toHexString());
         setImageSrc(club.getImageSrc());
         setName(club.getName());
+        setLink(club.getLink());
     }
 }

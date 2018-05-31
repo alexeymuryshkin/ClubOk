@@ -6,12 +6,11 @@ import AddUserPage from "../components/AddUserPage";
 import AddPostPage from "../components/AddPostPage";
 import AddClubPage from "../components/AddClubPage";
 import NotFoundPage from "../components/NotFoundPage";
-import Options from "../components/Options";
 // import AddEvent from "../components/AddEvent";
 
 const AppRouter = () => (
   <BrowserRouter>
-    <Options/>
+    {/*<Options/>*/}
     <Switch>
       <Route path="/" component={FeedPage} exact={true}/>
       <Route path="/create/user" component={AddUserPage}/>

@@ -1,20 +1,17 @@
 package dc.clubok.db.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
-public class CommentUserInfo {
+@Data @NoArgsConstructor
+public class Like {
     private String id;
     private String imageSrc;
     private String link;
-    private String fname;
-    private String lname;
 
-    public CommentUserInfo(User user) {
+    public Like(User user) {
         setId(user.getId().toHexString());
         setImageSrc(user.getImageSrc());
         setLink(user.getLink());
-        setFname(user.getFname());
-        setLname(user.getLname());
     }
 }

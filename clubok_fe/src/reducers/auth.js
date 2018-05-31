@@ -1,5 +1,5 @@
 const authReducerDefaultState = {
-  token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YWViMmY2NjM5ZmEzNTE5NmM5YTY3MTMiLCJpYXQiOjE1MjUzNjI1MzR9.BgLjRe5IJDp0TDN18kZwcQIpZn1museBEvMOiYM-Y3U'
+  token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhY2Nlc3MiOiJhdXRoIiwiaWQiOiI1YjBkYTU4MDJhOTZhNjI3MmM2YjUzOTAiLCJpYXQiOjE1Mjc2MjA5OTJ9.C_28RHzIn9xfh1Eqz5_zz0BSWq6uZKDA2s7XsfLw_jA'
 };
 
 export default (state = authReducerDefaultState, action) => {

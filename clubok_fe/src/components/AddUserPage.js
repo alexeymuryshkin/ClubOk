@@ -9,6 +9,7 @@ export class AddUserPage extends React.Component {
     password: '',
     fname: '',
     lname: '',
+    permissionLevel: '1',
     error: ''
   };
 
@@ -32,6 +33,11 @@ export class AddUserPage extends React.Component {
     this.setState(() => ({lname}));
   };
 
+  onPermissionLevelChange = (e) => {
+    const permissionLevel = e.target.value;
+    this.setState(() => ({permissionLevel}));
+  };
+
   onSubmit = (e) => {
     e.preventDefault();
 
@@ -45,7 +51,8 @@ export class AddUserPage extends React.Component {
         email: this.state.email,
         password: this.state.password,
         fname: this.state.fname,
-        lname: this.state.lname
+        lname: this.state.lname,
+        permissionLevel: this.state.permissionLevel
       };
 
       this.props.addUser(user);
@@ -76,6 +83,10 @@ export class AddUserPage extends React.Component {
             placeholder="Last Name"
             onChange={this.onLastNameChange}
           />
+          <select value={this.state.permissionLevel} onChange={this.onPermissionLevelChange}>
+            <option value="1">Regular User</option>
+            <option value="5">Administrator</option>
+          </select>
           <button>Save</button>
         </form>
       </div>

@@ -25,6 +25,7 @@ public class User extends Entity {
     private @NotNull String password;
 
     private String imageSrc;
+    private String link;
     private int permissionLevel;
     private String fname;
     private String lname;

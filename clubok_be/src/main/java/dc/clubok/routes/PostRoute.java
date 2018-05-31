@@ -44,7 +44,7 @@ public class PostRoute {
             Document data = Document.parse(request.body());
 
             Post post = gson.fromJson(request.body(), Post.class);
-            Club club = ClubController.getClubById(data.getString("club_id"));
+            Club club = ClubController.getClubById(data.getString("clubId"));
             User user = UserController.getUserByToken(request.headers("x-auth"));
 
             PostController.createPost(post, club, user);

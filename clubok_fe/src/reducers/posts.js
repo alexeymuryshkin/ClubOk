@@ -7,6 +7,8 @@ export default (state = postsReducerDefaultState, action) => {
         ...state,
         action.post
       ];
+    case 'LIKE_POST':
+      return state;
     case 'SET_POSTS':
       return action.posts;
     default:
