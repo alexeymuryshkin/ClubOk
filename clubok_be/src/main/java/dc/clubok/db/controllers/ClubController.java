@@ -15,15 +15,6 @@ import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 
 public class ClubController {
     public static void createClub(Club club) throws ClubOkException {
-        String link = club.getName().toLowerCase().replace(' ', '_');
-        int order = 0;
-        String orderString = "";
-        while (getClubByLink(link + orderString) != null) {
-            order++;
-            orderString = "_" + String.valueOf(order);
-        }
-        club.setLink(link + orderString);
-
         model.saveOne(club, Club.class);
     }
 

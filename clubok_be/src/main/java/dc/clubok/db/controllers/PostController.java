@@ -35,14 +35,13 @@ public class PostController {
         model.addOneToArray(post, "comments", comment, Post.class);
     }
 
-    public static void likePost(String postId, String token) throws ClubOkException {
-        User user = UserController.getUserByToken(token);
+    public static void likePost(String postId, User user) throws ClubOkException {
         Post post = PostController.getPostById(postId);
         if (post == null) {
             Document details = new Document("details", "Such post does not exist");
             throw new ClubOkException(ERROR_QUERY, details, SC_NOT_FOUND);
         }
-        model.addOneToSet(post, "likes", new Like(user), Post.class);
+        model.addOneToSet(post, "likes", user.getId().toHexString(), Post.class);
     }
 
     public static Post getPostById(String postId) throws ClubOkException {
@@ -64,7 +63,7 @@ public class PostController {
         return post.getComments();
     }
 
-    public static Set<Like> getLikesByPostId(String postId) throws ClubOkException {
+    public static Set<String> getLikesByPostId(String postId) throws ClubOkException {
         Post post = getPostById(postId);
         if (post == null) {
             Document details = new Document("details", "Such post does not exist");
@@ -122,6 +121,6 @@ public class PostController {
         }
         User user = UserController.getUserByToken(token);
 
-        model.removeOneFromArray(post, "likes", user.getId(), Post.class);
+        model.removeOneFromArray(post, "likes", user.getId().toHexString(), Post.class);
     }
 }

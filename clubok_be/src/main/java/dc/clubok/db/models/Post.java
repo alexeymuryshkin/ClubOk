@@ -27,7 +27,7 @@ public class Post
 
     private Event event;
 
-    private Set<Like> likes;
+    private Set<String> likes;
     private List<Comment> comments;
     private List<String> images;
 

@@ -2,7 +2,8 @@ import React from 'react';
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import moment from "moment";
-import {startLikePost} from "../actions/posts";
+import {startCommentPost, startLikePost} from "../actions/posts";
+import Comment from "./Comment";
 
 export class Post extends React.Component {
   constructor(props) {
@@ -10,12 +11,30 @@ export class Post extends React.Component {
 
     this.state = {
       likes: props.likes,
-      comments: props.comments
+      comments: props.comments,
+      commentText: '',
+      error: ''
     };
   }
 
+  onCommentChange = (e) => {
+    const commentText = e.target.value.trim();
+    this.setState(() => ({commentText}));
+  };
+
   onLike = () => {
     this.props.startLikePost(this.props.id);
+  };
+
+  onCommentSubmit = (e) => {
+    e.preventDefault();
+    if (!this.state.commentText) {
+      this.setState(() => ({error: 'Enter comment'}));
+    } else {
+      this.setState(() => ({error: ''}));
+      this.props.startCommentPost(this.props.id, {text: this.state.commentText});
+      this.setState(() => ({text: ''}));
+    }
   };
 
   render() {
@@ -37,7 +56,20 @@ export class Post extends React.Component {
           </div>
         </div>
         <div>
-
+          {this.props.comments.map((comment) => (
+            <Comment key={comment.id} postId={this.props.id} {...comment}/>
+          ))}
+        </div>
+        <div>
+          <form onSubmit={this.onCommentSubmit}>
+            <input
+              type="text"
+              value={this.state.commentText}
+              placeholder="Add Comment..."
+              onChange={this.onCommentChange}
+            />
+            <button>Send</button>
+          </form>
         </div>
       </div>
     );
@@ -45,7 +77,8 @@ export class Post extends React.Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  startLikePost: (post_id) => dispatch(startLikePost(post_id))
+  startLikePost: (postId) => dispatch(startLikePost(postId)),
+  startCommentPost: (postId, comment) => dispatch(startCommentPost(postId, comment))
 });
     
 export default connect(undefined, mapDispatchToProps)(Post);

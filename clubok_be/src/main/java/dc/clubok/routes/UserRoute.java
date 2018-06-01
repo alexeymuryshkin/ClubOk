@@ -73,7 +73,9 @@ public class UserRoute {
                 User user = gson.fromJson(request.body(), User.class);
                 response.header("x-auth", UserController.loginUser(user.getEmail(), user.getPassword()).getToken());
 
-                return response(response, SC_NO_CONTENT, SUCCESS_LOGIN);
+                Document result = new Document("userId", user.getId().toHexString());
+
+                return response(response, SC_OK, SUCCESS_LOGIN, result);
             } else {
                 Document details = new Document("details", "You have already logged in");
                 throw new ClubOkException(ERROR_UNAUTHORIZED_REQUEST, details);

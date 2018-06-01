@@ -126,8 +126,7 @@ public class PostRoute {
             Comment comment = gson.fromJson(request.body(), Comment.class);
             comment.setUser(new CommentUserInfo(UserController.getUserByToken(request.headers("x-auth"))));
             PostController.commentPost(request.params(":id"), comment);
-
-            Document result = new Document("comment_id", comment.getId().toHexString());
+            Document result = new Document("result", comment);
 
             return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
@@ -183,8 +182,10 @@ public class PostRoute {
 
     public static Route PostPostsIdLikes = (Request request, Response response) -> {
         try {
-            PostController.likePost(request.params(":id"), request.headers("x-auth"));
-            return response(response, SC_CREATED, SUCCESS_CREATE);
+            User user = UserController.getUserByToken(request.headers("x-auth"));
+            PostController.likePost(request.params(":id"), user);
+
+            return response(response, SC_NO_CONTENT, SUCCESS_CREATE);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());

@@ -27,21 +27,100 @@ export const startAddPost = (post) => {
   };
 };
 
-export const likePost = (post_id) => ({
+export const likePost = (postId, userId) => ({
   type: 'LIKE_POST',
-  post_id
+  postId,
+  userId
 });
 
-export const startLikePost = (post_id) => {
+export const unlikePost = (postId, userId) => ({
+  type: 'UNLIKE_POST',
+  postId,
+  userId
+});
+
+export const startLikePost = (postId) => {
   return (dispatch, getState) => {
     const token = getState().auth.token;
-    axios.post(`/api/posts/${post_id}/likes`, {}, {
+    const userId = getState().auth.id;
+    const post = getState().posts.filter((post) => post.id === postId)[0];
+
+    if (post.likes.filter((id) => id === userId).length !== 0) {
+      axios.delete(`/api/posts/${postId}/likes`, {
+        headers: {
+          'x-auth': token
+        }
+      })
+        .then(() => {
+          dispatch(unlikePost(postId, userId))
+        })
+        .catch((e) => {
+          console.log(e);
+          if (e.response) {
+            console.log(e.response);
+          }
+        });
+    } else {
+      axios.post(`/api/posts/${postId}/likes`, {}, {
+        headers: {
+          'x-auth': token
+        }
+      })
+        .then(() => {
+          dispatch(likePost(postId, userId));
+        })
+        .catch((e) => {
+          console.log(e);
+          if (e.response) {
+            console.log(e.response);
+          }
+        });
+    }
+  };
+};
+
+export const commentPost = (postId, comment) => ({
+  type: 'COMMENT_POST',
+  postId,
+  comment
+});
+
+export const startCommentPost = (postId, comment) => {
+  return (dispatch, getState) => {
+    const token = getState().auth.token;
+    axios.post(`/api/posts/${postId}/comments`, {...comment}, {
+      headers: {
+        'x-auth': token
+      }
+    })
+      .then((response) => {
+        dispatch(commentPost(postId, response.data.result));
+      })
+      .catch((e) => {
+        console.log(e);
+        if (e.response) {
+          console.log(e.response);
+        }
+      });
+  }
+};
+
+export const removeComment = (postId, commentId) => ({
+  type: 'REMOVE_COMMENT',
+  postId,
+  commentId
+});
+
+export const startRemoveComment = (postId, commentId) => {
+  return (dispatch, getState) => {
+    const token = getState().auth.token;
+    axios.delete(`/api/posts/${postId}/comments/${commentId}`, {
       headers: {
         'x-auth': token
       }
     })
       .then(() => {
-        dispatch(likePost(post_id));
+        dispatch(removeComment(postId, commentId));
       })
       .catch((e) => {
         console.log(e);

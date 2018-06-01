@@ -7,11 +7,9 @@ import lombok.NoArgsConstructor;
 public class Like {
     private String id;
     private String imageSrc;
-    private String link;
 
     public Like(User user) {
         setId(user.getId().toHexString());
         setImageSrc(user.getImageSrc());
-        setLink(user.getLink());
     }
 }

@@ -31,7 +31,6 @@ public class UserController {
             Document details = new Document("details", "Couldn't generate authentication token");
             throw new ClubOkException(ERROR_CREATE, details, SC_INTERNAL_SERVER_ERROR);
         }
-        user.setLink(user.getId().toHexString());
 
         model.saveOne(user, User.class);
         return token;
