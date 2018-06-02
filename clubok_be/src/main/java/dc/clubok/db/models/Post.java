@@ -1,28 +1,51 @@
 package dc.clubok.db.models;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.ValidationOptions;
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class Post
-        extends Entity {
-    @NotNull (message = "Club must be specified")
+import static com.mongodb.client.model.Filters.*;
+
+@Getter @Setter
+public class Post extends Entity {
+    public static void setupCollection(MongoDatabase db) {
+        String collectionName = Post.class.getSimpleName().toLowerCase() + "s";
+        boolean collectionCreated = false;
+        for(String name: db.listCollectionNames()) {
+            if (name.equals(collectionName)) collectionCreated = true;
+        }
+
+        if (!collectionCreated) {
+            db.createCollection(collectionName, new CreateCollectionOptions().validationOptions(VALIDATION_OPTIONS));
+        }
+    }
+
+    private static final ValidationOptions VALIDATION_OPTIONS = new ValidationOptions().validator(
+            and(
+                    and(
+                            exists("club"),
+                            exists("user"),
+                            exists("body"),
+                            exists("type"),
+                            exists("postedAt")
+                    ),
+                    regex("body", ".+"),
+                    or(ne("type", "event"), exists("event"))
+            )
+    );
+
     private PostClubInfo club;
-    @NotNull (message = "User must be specified")
     private PostUserInfo user;
     private int postedAt;
     private String type;
-    @NotNull (message = "Body must be specified")
-    @NotEmpty (message = "Body cannot be empty")
     private String body;
 
     private Event event;
@@ -45,5 +68,10 @@ public class Post
         setPostedAt(getId().getTimestamp());
         setType(type);
         setBody(body);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Post (%s) [%s]: %s", getId().toHexString(), getType(), getBody());
     }
 }

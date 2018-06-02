@@ -46,6 +46,7 @@ public class UserRouteTest {
     @Before
     public void setDb() {
         mongo.getDb().drop();
+        mongo.setupCollections();
         Seed.populateUsers();
         Seed.populateClubs();
         Seed.populateEvents();
@@ -220,6 +221,49 @@ public class UserRouteTest {
                 .setEntity(new StringEntity(gson.toJson(
                         new User()
                 )))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+
+        // Assertions in DB
+        assertEquals("db should have correct number of users",3, model.count(User.class));
+    }
+
+    @Test
+    public void PostUsers_NoEmail_BAD_REQUEST() throws IOException, ClubOkException {
+        User user = new User();
+        user.setPassword("somePassword");
+
+        HttpUriRequest request = RequestBuilder.post(url + "/users")
+                .addHeader("Content-Type", JSON)
+                .setEntity(new StringEntity(gson.toJson(user)))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+
+        // Assertions in DB
+        assertEquals("db should have correct number of users",3, model.count(User.class));
+    }
+
+    @Test
+    public void PostUsers_EmptyEmail_BAD_REQUEST() throws IOException, ClubOkException {
+        User user = new User();
+        user.setEmail("");
+        user.setPassword("somePassword");
+
+        HttpUriRequest request = RequestBuilder.post(url + "/users")
+                .addHeader("Content-Type", JSON)
+                .setEntity(new StringEntity(gson.toJson(user)))
                 .build();
         HttpResponse response = client.execute(request);
 

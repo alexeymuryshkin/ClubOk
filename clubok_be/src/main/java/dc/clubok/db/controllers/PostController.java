@@ -19,11 +19,14 @@ public class PostController {
     }
 
     public static void createPost(Post post, Club club, User user) throws ClubOkException {
-        post.setUser(new PostUserInfo(user));
-        post.setClub(new PostClubInfo(club));
+        if (user != null) post.setUser(new PostUserInfo(user));
+        if (club != null) post.setClub(new PostClubInfo(club));
         post.setPostedAt(post.getId().getTimestamp());
         model.saveOne(post, Post.class);
-//        ClubOKService.broadcastPost(post);
+    }
+
+    public static void createManyPosts(List<Post> posts) throws ClubOkException {
+        model.saveMany(posts, Post.class);
     }
 
     public static void commentPost(String postId, Comment comment) throws ClubOkException {

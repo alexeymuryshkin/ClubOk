@@ -52,6 +52,4 @@ public interface Model {
 
     <T extends Entity, S> void removeManyFromArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException;
 
-    <T extends Entity> void validate(T entity) throws ClubOkException;
-
 }

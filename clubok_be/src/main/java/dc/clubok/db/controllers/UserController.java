@@ -23,7 +23,21 @@ import static dc.clubok.utils.Constants.*;
 import static org.apache.http.HttpStatus.*;
 
 public class UserController {
-    public static Token createUser(User user) throws ClubOkException {
+    public static void createUser(User user) throws ClubOkException {
+        if (user.getPassword() == null || user.getPassword().length() > 18 || user.getPassword().length() < 6) {
+            Document details = new Document("details", "Password length should be between 6 an 18 characters");
+            throw new ClubOkException(ERROR_VALIDATION, details, SC_BAD_REQUEST);
+        }
+        user.setPassword(Crypt.hash(user.getPassword().toCharArray()));
+        model.saveOne(user, User.class);
+    }
+
+    public static void createManyUsers(List<User> users) throws ClubOkException {
+        users.forEach(user -> user.setPassword(Crypt.hash(user.getPassword().toCharArray())));
+        model.saveMany(users, User.class);
+    }
+
+    public static Token registerUser(User user) throws ClubOkException {
         Token token;
         try {
             token = generateAuthToken(user);
@@ -32,7 +46,7 @@ public class UserController {
             throw new ClubOkException(ERROR_CREATE, details, SC_INTERNAL_SERVER_ERROR);
         }
 
-        model.saveOne(user, User.class);
+        createUser(user);
         return token;
     }
 

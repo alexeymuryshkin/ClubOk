@@ -16,6 +16,10 @@ public class EventController {
         model.saveOne(event, Event.class);
     }
 
+    public static void createManyEvents(List<Event> events) throws ClubOkException {
+        model.saveMany(events, Event.class);
+    }
+
     public static List<Event> getEvents(SearchParams params) throws ClubOkException {
         return model.findByParams(params, Event.class);
     }

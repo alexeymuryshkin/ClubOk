@@ -49,9 +49,9 @@ public class UserRoute {
         try {
             if (request.headers("x-auth") == null) {
                 User user = gson.fromJson(request.body(), User.class);
-                response.header("x-auth", UserController.createUser(user).getToken());
+                response.header("x-auth", UserController.registerUser(user).getToken());
 
-            Document result = new Document("user_id", user.getId());
+                Document result = new Document("user_id", user.getId());
 
                 return response(response, SC_CREATED, SUCCESS_REGISTRATION, result);
             } else {

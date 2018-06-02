@@ -40,8 +40,6 @@ public class ClubOKService {
         logger.info("Server started at port " + config.getProperties().getProperty("port"));
 
 
-
-
 //        webSocket("/feed", FeedWebSocketHandler.class);
         path("/api", () -> {
             before("/*", (request, response) -> {

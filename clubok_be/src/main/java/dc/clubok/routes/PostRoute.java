@@ -49,7 +49,7 @@ public class PostRoute {
 
             PostController.createPost(post, club, user);
 
-            Document result = new Document("post_id", post.getId().toHexString());
+            Document result = new Document("postId", post.getId().toHexString());
 
             return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
@@ -84,7 +84,7 @@ public class PostRoute {
     public static Route DeletePostsId = (Request request, Response response) -> {
         try {
             PostController.deletePostById(request.params(":id"));
-            return response(response, SC_NO_CONTENT, SUCCESS_DELETE);
+            return response(response, SC_OK, SUCCESS_DELETE);
         } catch (ClubOkException e) {
             logger.error(e.getResponse().getMessage());
             return response(response, e.getStatusCode(), e.getResponse(), e.getDetails());

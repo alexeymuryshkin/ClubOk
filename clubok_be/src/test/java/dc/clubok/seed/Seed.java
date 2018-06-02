@@ -1,5 +1,8 @@
 package dc.clubok.seed;
 
+import dc.clubok.db.controllers.ClubController;
+import dc.clubok.db.controllers.EventController;
+import dc.clubok.db.controllers.PostController;
 import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Club;
 import dc.clubok.db.models.Event;
@@ -11,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static dc.clubok.utils.Constants.PL_ADMINISTRATOR;
-import static dc.clubok.utils.Constants.model;
 
 public class Seed {
     public static List<User> users;
@@ -34,7 +36,7 @@ public class Seed {
         }
 
         try {
-            model.saveMany(users, User.class);
+            UserController.createManyUsers(users);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -46,7 +48,7 @@ public class Seed {
         clubs = Arrays.asList(club1, club2);
 
         try {
-            model.saveMany(clubs, Club.class);
+            ClubController.createManyClubs(clubs);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,7 +60,7 @@ public class Seed {
         posts = Arrays.asList(post1, post2);
 
         try {
-            model.saveMany(posts, Post.class);
+            PostController.createManyPosts(posts);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,7 +77,7 @@ public class Seed {
         events = Arrays.asList(event1, event2, event3);
 
         try {
-            model.saveMany(events, Event.class);
+            EventController.createManyEvents(events);
         } catch (Exception e) {
             e.printStackTrace();
         }

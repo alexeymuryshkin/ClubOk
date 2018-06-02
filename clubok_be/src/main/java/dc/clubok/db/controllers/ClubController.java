@@ -18,6 +18,10 @@ public class ClubController {
         model.saveOne(club, Club.class);
     }
 
+    public static void createManyClubs(List<Club> clubs) throws ClubOkException {
+        model.saveMany(clubs, Club.class);
+    }
+
     public static List<Club> getClubs(SearchParams params) throws ClubOkException {
         return model.findByParams(params, Club.class);
     }

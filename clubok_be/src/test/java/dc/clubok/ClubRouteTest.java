@@ -42,6 +42,7 @@ public class ClubRouteTest {
     @Before
     public void setDb() {
         mongo.getDb().drop();
+        mongo.setupCollections();
         Seed.populateUsers();
         Seed.populateClubs();
     }
@@ -82,8 +83,7 @@ public class ClubRouteTest {
 
     // GET /clubs/:id
     @Test
-    public void GetClubsId_CorrectId_SUCCESS()
-            throws IOException {
+    public void GetClubsId_CorrectId_SUCCESS() throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/clubs/" + Seed.clubs.get(1).getId().toHexString())
                 .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
                 .build();
@@ -101,8 +101,7 @@ public class ClubRouteTest {
     }
 
     @Test
-    public void GetClubsId_InvalidId_NOTFOUND()
-            throws IOException {
+    public void GetClubsId_InvalidId_NOTFOUND() throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/clubs/5a9d3051937f6d2ff45e7836")
                 .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
                 .build();

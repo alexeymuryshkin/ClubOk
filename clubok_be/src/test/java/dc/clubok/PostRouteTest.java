@@ -45,6 +45,7 @@ public class PostRouteTest {
     @Before
     public void setDb() {
         mongo.getDb().drop();
+        mongo.setupCollections();
         Seed.populateUsers();
         Seed.populateClubs();
         Seed.populatePosts();
@@ -101,7 +102,7 @@ public class PostRouteTest {
         Post post = new Post(Seed.clubs.get(1), Seed.users.get(0), type, body);
         Document requestBody = Document.parse(gson.toJson(post));
         requestBody.remove("club");
-        requestBody.append("club_id", post.getClub().getId());
+        requestBody.append("clubId", post.getClub().getId());
 
         HttpUriRequest request = RequestBuilder.post(url + "/posts")
                 .setHeader("Content-Type", JSON)
@@ -117,11 +118,10 @@ public class PostRouteTest {
         Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
         assertSuccess(responseBody);
 
-        assertTrue("response should have post_id", responseBody.containsKey("post_id"));
+        assertTrue("response should have postId", responseBody.containsKey("postId"));
 
-        String id = responseBody.getString("post_id");
+        String id = responseBody.getString("postId");
         assertTrue("should return valid id", ObjectId.isValid(id));
-
 
         // Assertions in DB
         Post postDB = PostController.getPostById(id);
@@ -166,7 +166,6 @@ public class PostRouteTest {
         assertError(responseBody);
     }
 
-//    TODO GET /posts/:id
     @Test public void GetPostsId_CorrectId_SUCCESS() throws IOException {
         HttpUriRequest request = RequestBuilder.get(url + "/posts/" + Seed.posts.get(0).getId().toHexString())
                 .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
@@ -220,9 +219,179 @@ public class PostRouteTest {
         assertError(responseBody);
     }
 
-//    TODO DELETE /posts/:id
+    @Test public void DeletePostsId_CorrectId_SUCCESS() throws IOException {
+        HttpUriRequest request = RequestBuilder.delete(url + "/posts/" + Seed.posts.get(0).getId().toHexString())
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .build();
+        HttpResponse response = client.execute(request);
 
-//    TODO PATCH /posts/:id
+        // Assertions in response
+        assertTrue("should return success code, but " + response.getStatusLine().getStatusCode() + " returned",
+                HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertSuccess(responseBody);
+
+        // Assertions in DB
+        Post postDB = PostController.getPostById(Seed.posts.get(0).getId().toHexString());
+        assertNull("db should delete post", postDB);
+        assertEquals("db should have correct number of posts", Seed.posts.size() - 1, model.count(Post.class));
+    }
+
+    @Test public void DeletePostsId_Unauthorized_UNAUTHORIZED() throws IOException {
+        HttpUriRequest request = RequestBuilder.delete(url + "/posts/" + Seed.posts.get(0).getId().toHexString())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+
+        // Assertions in DB
+        Post postDB = PostController.getPostById(Seed.posts.get(0).getId().toHexString());
+        assertNotNull("db should not delete post", postDB);
+        assertEquals("db should have correct number of posts", Seed.posts.size(), model.count(Post.class));
+    }
+
+    @Test public void DeletePostsId_IncorrectId_BAD_REQUEST() throws IOException {
+        HttpUriRequest request = RequestBuilder.delete(url + "/posts/fdfsd654f")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+    }
+
+    @Test public void DeletePostsId_InvalidId_NOT_FOUND() throws IOException {
+        HttpUriRequest request = RequestBuilder.delete(url + "/posts/5b11baba2a96a63530dc6978")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return NOT_FOUND", SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+    }
+
+    @Test public void PatchPostsId_CorrectData_SUCCESS() throws IOException {
+        String body = "Some new body";
+        String type = "meeting";
+
+        Document update = new Document("body", body)
+                .append("type", type);
+
+        HttpUriRequest request = RequestBuilder.patch(url + "/posts/" + Seed.posts.get(1).getId().toHexString())
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .setHeader("Content-Type", JSON)
+                .setEntity(new StringEntity(update.toJson()))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertTrue("should return success code, but " + response.getStatusLine().getStatusCode() + " returned",
+                HttpStatus.isSuccess(response.getStatusLine().getStatusCode()));
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertSuccess(responseBody);
+
+        // Assertions in DB
+        Post postDB = PostController.getPostById(Seed.posts.get(1).getId().toHexString());
+        assertEquals("db should have correct number of posts", Seed.posts.size(), model.count(Post.class));
+        assertEquals("db should accept changes on body", body, postDB.getBody());
+        assertEquals("db should accept changes on type", type, postDB.getType());
+//        TODO add last modified
+    }
+
+    @Test public void PatchPostsId_InvalidData_BAD_REQUEST() throws IOException {
+        String body = "";
+        String type = "meeting";
+
+        Document update = new Document("body", body)
+                .append("type", type);
+
+        HttpUriRequest request = RequestBuilder.patch(url + "/posts/" + Seed.posts.get(1).getId().toHexString())
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .setHeader("Content-Type", JSON)
+                .setEntity(new StringEntity(update.toJson()))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+
+        // Assertions in DB
+        Post postDB = PostController.getPostById(Seed.posts.get(0).getId().toHexString());
+        assertEquals("db should not accept changes on body", Seed.posts.get(0).getBody(), postDB.getBody());
+        assertEquals("db should not accept changes on type", Seed.posts.get(0).getType(), postDB.getType());
+    }
+
+    @Test public void PatchPostsId_Unauthorized_UNAUTHORIZED() throws IOException {
+        String body = "Some new body";
+        String type = "meeting";
+
+        Document update = new Document("body", body)
+                .append("type", type);
+
+        HttpUriRequest request = RequestBuilder.patch(url + "/posts/" + Seed.posts.get(0).getId().toHexString())
+                .setHeader("Content-Type", JSON)
+                .setEntity(new StringEntity(update.toJson()))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        assertEquals("should return UNAUTHORIZED", SC_UNAUTHORIZED, response.getStatusLine().getStatusCode());
+
+        // Assertions in DB
+        Post postDB = PostController.getPostById(Seed.posts.get(0).getId().toHexString());
+        assertEquals("db should not accept changes on body", Seed.posts.get(0).getBody(), postDB.getBody());
+        assertEquals("db should not accept changes on type", Seed.posts.get(0).getType(), postDB.getType());
+    }
+
+    @Test public void PatchPostsId_IncorrectId_BAD_REQUEST() throws IOException {
+        String body = "Some new body";
+        String type = "meeting";
+
+        Document update = new Document("body", body)
+                .append("type", type);
+
+        HttpUriRequest request = RequestBuilder.patch(url + "/posts/fdfsd654f")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .setEntity(new StringEntity(update.toJson()))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return BAD_REQUEST", SC_BAD_REQUEST, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+    }
+
+    @Test public void PatchPostsId_InvalidId_NOT_FOUND() throws IOException {
+        String body = "Some new body";
+        String type = "meeting";
+
+        Document update = new Document("body", body)
+                .append("type", type);
+
+        HttpUriRequest request = RequestBuilder.patch(url + "/posts/5b11baba2a96a63530dc6978")
+                .setHeader("x-auth", Seed.users.get(0).getTokens().get(0).getToken())
+                .setEntity(new StringEntity(update.toJson()))
+                .build();
+        HttpResponse response = client.execute(request);
+
+        // Assertions in response
+        assertEquals("should return NOT_FOUND", SC_NOT_FOUND, response.getStatusLine().getStatusCode());
+
+        Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
+        assertError(responseBody);
+    }
 
 //    TODO GET /posts/:id/comments
 

@@ -21,7 +21,7 @@ public class AdministrationRoute {
     public static Route PostAdministrationUsers = (Request request, Response response) -> {
         try {
             User user = gson.fromJson(request.body(), User.class);
-            UserController.createUser(user);
+            UserController.registerUser(user);
 
             Document result = new Document("result", user);
             return response(response, SC_CREATED, SUCCESS_CREATE, result);
@@ -39,7 +39,7 @@ public class AdministrationRoute {
             Club club = gson.fromJson(request.body(), Club.class);
             ClubController.createClub(club);
 
-            Document result = new Document("club_id", club.getId().toHexString());
+            Document result = new Document("clubId", club.getId().toHexString());
             return response(response, SC_CREATED, SUCCESS_CREATE, result);
         } catch (ClubOkException e) {
             logger.error(e.getMessage());

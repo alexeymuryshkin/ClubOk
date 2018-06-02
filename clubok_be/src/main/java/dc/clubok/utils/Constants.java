@@ -9,8 +9,6 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import spark.Response;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +33,6 @@ public class Constants {
             .registerTypeAdapter(ObjectId.class, (JsonSerializer<ObjectId>) (src, typeOfSrc, context) -> new JsonPrimitive(src.toHexString()))
             .registerTypeAdapter(ObjectId.class, (JsonDeserializer<ObjectId>) (json, typeOfT, context) -> new ObjectId(json.getAsString()))
             .create();
-    public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     /* Protected Routes */
     public static final List<String> protectedRoutes = Arrays.asList(

@@ -44,6 +44,7 @@ public class AdministrationRouteTest {
     @Before
     public void setDb() {
         mongo.getDb().drop();
+        mongo.setupCollections();
         Seed.populateUsers();
         Seed.populateClubs();
     }
@@ -80,9 +81,9 @@ public class AdministrationRouteTest {
         Document responseBody = Document.parse(EntityUtils.toString(response.getEntity()));
         assertSuccess(responseBody);
 
-        assertTrue("response should have club_id", responseBody.containsKey("club_id"));
+        assertTrue("response should have clubId", responseBody.containsKey("clubId"));
 
-        String id = responseBody.getString("club_id");
+        String id = responseBody.getString("clubId");
         assertTrue("should return valid id", ObjectId.isValid(id));
 
         // Assertions in DB

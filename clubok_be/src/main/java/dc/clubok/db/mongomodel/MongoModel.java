@@ -5,12 +5,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import dc.clubok.ClubOKService;
-import dc.clubok.db.controllers.UserController;
 import dc.clubok.db.models.Entity;
 import dc.clubok.db.models.Model;
-import dc.clubok.db.models.User;
 import dc.clubok.utils.ClubOkException;
-import dc.clubok.utils.Crypt;
 import dc.clubok.utils.SearchParams;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -18,10 +15,8 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.ConstraintViolation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
@@ -41,38 +36,32 @@ public class MongoModel implements Model {
     /* Save to Database */
     @Override
     public <T extends Entity> void saveOne(T entity, Class<T> type) throws ClubOkException {
-        MongoCollection<T> collection = getCollection(type);
-        validate(entity);
-
-        if (entity instanceof User)
-            ((User) entity).setPassword(Crypt.hash(((User) entity).getPassword().toCharArray()));
-
         try {
-            collection.insertOne(entity);
+            getCollection(type).insertOne(entity);
         } catch (MongoException me) {
-            Document details = new Document("details", me.getMessage());
-            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+            Document details;
+            if (me.getCode() == 121) {
+                details = new Document("details", "Validation failed");
+                throw new ClubOkException(ERROR_VALIDATION, details);
+            } else if (me.getCode() == 11000) {
+                details = new Document("details", "Such entry already exist");
+                throw new ClubOkException(ERROR_VALIDATION, details);
+            } else {
+                details = new Document("details", me.getMessage());
+                throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+            }
         }
         logger.info("Entity [" + entity.getClass().getSimpleName() + "] was created");
     }
 
     @Override
     public <T extends Entity> void saveMany(List<T> entities, Class<T> type) throws ClubOkException {
-        MongoCollection<T> collection = getCollection(type);
-
-        for (Entity entity : entities) {
-            validate(entity);
-            if (entity instanceof User)
-                ((User) entity).setPassword(Crypt.hash(((User) entity).getPassword().toCharArray()));
-        }
-
         try {
-            collection.insertMany(entities);
+            getCollection(type).insertMany(entities);
         } catch (MongoException me) {
             Document details = new Document("details", me.getMessage());
             throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
         }
-
         logger.info("Entities [" + entities.get(0).getClass().getSimpleName() + "] were created");
     }
 
@@ -173,10 +162,9 @@ public class MongoModel implements Model {
     @Override
     public <T extends Entity> void deleteById(String id, Class<T> type) throws ClubOkException {
         try {
-            getCollection(type).deleteOne(eq(id));
-        } catch (MongoException me) {
-            Document details = new Document("details", me.getMessage());
-            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+            deleteById(new ObjectId(id), type);
+        } catch (IllegalArgumentException iae) {
+            throw new ClubOkException(ERROR_ILLEGAL_ID);
         }
     }
 
@@ -196,8 +184,14 @@ public class MongoModel implements Model {
         try {
             getCollection(type).updateOne(query, update);
         } catch (MongoException me) {
-            Document details = new Document("details", me.getMessage());
-            throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+            Document details;
+            if (me.getCode() == 121) {
+                details = new Document("details", "Validation failed");
+                throw new ClubOkException(ERROR_VALIDATION, details);
+            } else {
+                details = new Document("details", me.getMessage());
+                throw new ClubOkException(ERROR_DB, details, SC_INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
@@ -252,32 +246,4 @@ public class MongoModel implements Model {
     public <T extends Entity, S> void removeManyFromArray(T entity, String fieldName, List<S> values, Class<T> type) throws ClubOkException {
         update(entity, pullAll(fieldName, values), type);
     }
-
-    /* Model Validation */
-    @Override
-    public <T extends Entity> void validate(T entity) throws ClubOkException {
-        logger.debug("Validating [" + entity.getClass().getSimpleName() + "]");
-        Set<ConstraintViolation<Entity>> violations = validator.validate(entity);
-
-        List<String> violationsList = new ArrayList<>();
-
-        if (entity instanceof User && UserController.findByEmail(((User) entity).getEmail()) != null) {
-            Document details = new Document("details", "Validation Error [User] with email " + ((User) entity).getEmail() + " already exists");
-            throw new ClubOkException(ERROR_VALIDATION, details);
-        }
-
-        for (ConstraintViolation<Entity> violation : violations) {
-            violationsList.add("Validation Error [" + entity.getClass().getSimpleName() + "] - " +
-                    "Property: " + violation.getPropertyPath() +
-                    "Value: " + violation.getInvalidValue() +
-                    "Message: " + violation.getMessage());
-        }
-
-        Document details = new Document("details", violationsList);
-
-        if (violations.size() != 0)
-            throw new ClubOkException(ERROR_VALIDATION, details);
-    }
-
-
 }
